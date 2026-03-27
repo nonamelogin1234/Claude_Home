@@ -4,7 +4,7 @@
 Домашний медиасервер на базе Maibenben M547. Jellyfin для просмотра фильмов, qBittorrent для торрентов, Nextcloud для файлов.
 
 ## СТАТУС
-🟡 Nextcloud запущен, ждёт DNS записи и SSL сертификата
+🟢 Nextcloud установлен, HTTPS работает, доступен на https://nextcloud.myserver-ai.ru
 
 ## ЧТО СДЕЛАНО
 - [2026-03-27] Установлен Docker на сервере → работает
@@ -18,13 +18,13 @@
 - [2026-03-27] Установлен qBittorrent в Docker → порт 8080, работает
 - [2026-03-27] Установлен Nextcloud (Docker + MariaDB + Redis) → порт 8181, данные /srv/nextcloud
 - [2026-03-27] На VPS: nginx конфиг для nextcloud.myserver-ai.ru (HTTP), установлен acme.sh
-- [2026-03-27] Ждёт: DNS A-запись nextcloud → 147.45.238.120 в Cloudflare
+- [2026-03-27] DNS A-запись nextcloud → 147.45.238.120 добавлена в Cloudflare (DNS only)
+- [2026-03-27] SSL сертификат получен через acme.sh (Let's Encrypt) → /.acme.sh/nextcloud.myserver-ai.ru_ecc/
+- [2026-03-27] nginx на VPS настроен на HTTPS → Nextcloud доступен на https://nextcloud.myserver-ai.ru
 
 ## СЛЕДУЮЩИЙ ШАГ
-1. Добавить DNS A-запись `nextcloud` → `147.45.238.120` в Cloudflare (DNS only)
-2. Запустить acme.sh для SSL: `~/.acme.sh/acme.sh --issue -d nextcloud.myserver-ai.ru --webroot /var/www/certbot`
-3. Обновить nginx на VPS до HTTPS конфига
-4. Первый вход в Nextcloud, создать admin аккаунт
+- Первый вход: https://nextcloud.myserver-ai.ru — создать admin аккаунт
+- Подключить HDD 1TB для хранилища (когда будет готово железо)
 
 ## ГРАБЛИ
 - Диск Z: примонтированный от admin PowerShell не виден в Explorer → монтировать через startup скрипт обычного пользователя
@@ -42,7 +42,7 @@
   - Env: OVERWRITEPROTOCOL=https, OVERWRITECLIURL=https://nextcloud.myserver-ai.ru
 - Nginx домашний: порт 80 → Jellyfin :8096
 - VPS nginx: nextcloud.myserver-ai.ru → http://10.8.0.27:8181 (файл: /etc/nginx/sites-enabled/nextcloud)
-- acme.sh установлен на VPS в /root/.acme.sh/
+- acme.sh: установлен в /.acme.sh/, сертификат в /.acme.sh/nextcloud.myserver-ai.ru_ecc/
 - Samba: шара Jellyfin → /srv/jellyfin, пользователь sergei
 - Windows диск Z: → \\192.168.0.103\Jellyfin
 - Подключение: `powershell -ExecutionPolicy Bypass -File C:\Users\user\home.ps1 -cmd "КОМАНДА"`

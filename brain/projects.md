@@ -4,6 +4,6 @@
 |--------|--------|---------------|-------|
 | 🎬 КиноКлод | 🟢 MCP работает | Таблицы БД + инструменты оценок | kinoclaude/ |
 | 🔍 DocAI | 🟡 В процессе | Протестировать на реальном PDF с OpenAI ключом | docai/ |
-| 🏠 Домашний сервер | 🟡 Nextcloud ждёт DNS+SSL | DNS A nextcloud→147.45.238.120, потом acme.sh на VPS | homeserver/ |
+| 🏠 Домашний сервер | 🟢 Nextcloud готов | Первый вход, создать admin, потом HDD 1TB | homeserver/ |
 | 🏃 Health Connect sync | 🟢 Готово | — | — |
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
