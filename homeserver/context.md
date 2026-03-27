@@ -4,7 +4,7 @@
 Домашний медиасервер на базе Maibenben M547. Jellyfin для просмотра фильмов, qBittorrent для торрентов, Nextcloud для файлов.
 
 ## СТАТУС
-🟢 Nextcloud установлен, HTTPS работает, доступен на https://nextcloud.myserver-ai.ru
+🟢 Immich установлен, HTTPS работает, доступен на https://photos.myserver-ai.ru
 
 ## ЧТО СДЕЛАНО
 - [2026-03-27] Установлен Docker на сервере → работает
@@ -21,10 +21,13 @@
 - [2026-03-27] DNS A-запись nextcloud → 147.45.238.120 добавлена в Cloudflare (DNS only)
 - [2026-03-27] SSL сертификат получен через acme.sh (Let's Encrypt) → /.acme.sh/nextcloud.myserver-ai.ru_ecc/
 - [2026-03-27] nginx на VPS настроен на HTTPS → Nextcloud доступен на https://nextcloud.myserver-ai.ru
+- [2026-03-28] Подключён HDD 1TB USB → /srv/hdd, ext4, UUID в fstab (nofail)
+- [2026-03-28] Установлен Immich (Docker Compose) → порт 2283, хранилище /srv/hdd/immich
+- [2026-03-28] SSL + nginx на VPS → Immich доступен на https://photos.myserver-ai.ru
 
 ## СЛЕДУЮЩИЙ ШАГ
-- Первый вход: https://nextcloud.myserver-ai.ru — создать admin аккаунт
-- Подключить HDD 1TB для хранилища (когда будет готово железо)
+- Первый вход: https://photos.myserver-ai.ru — создать admin аккаунт
+- Установить мобильное приложение Immich, настроить автобэкап фото
 
 ## ГРАБЛИ
 - Диск Z: примонтированный от admin PowerShell не виден в Explorer → монтировать через startup скрипт обычного пользователя
@@ -42,7 +45,12 @@
   - Env: OVERWRITEPROTOCOL=https, OVERWRITECLIURL=https://nextcloud.myserver-ai.ru
 - Nginx домашний: порт 80 → Jellyfin :8096
 - VPS nginx: nextcloud.myserver-ai.ru → http://10.8.0.27:8181 (файл: /etc/nginx/sites-enabled/nextcloud)
-- acme.sh: установлен в /.acme.sh/, сертификат в /.acme.sh/nextcloud.myserver-ai.ru_ecc/
+- acme.sh: установлен в /.acme.sh/, сертификаты в /.acme.sh/*_ecc/, установлены в /etc/nginx/ssl/
+- Immich: Docker Compose в /srv/immich/docker-compose.yml, БД: /srv/immich/db
+  - Хранилище фото: /srv/hdd/immich (HDD 1TB)
+  - DB: PostgreSQL (pgvecto-rs), user: immich, pass: immich_pass_2026
+  - VPS nginx: photos.myserver-ai.ru → http://10.8.0.27:2283 (файл: /etc/nginx/sites-enabled/immich)
+  - client_max_body_size: 50000m, proxy_read_timeout: 600s
 - Samba: шара Jellyfin → /srv/jellyfin, пользователь sergei
 - Windows диск Z: → \\192.168.0.103\Jellyfin
 - Подключение: `powershell -ExecutionPolicy Bypass -File C:\Users\user\home.ps1 -cmd "КОМАНДА"`

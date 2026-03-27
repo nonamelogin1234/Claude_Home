@@ -4,6 +4,6 @@
 |--------|--------|---------------|-------|
 | 🎬 КиноКлод | 🟢 MCP работает | Таблицы БД + инструменты оценок | kinoclaude/ |
 | 🔍 DocAI | 🟡 В процессе | Протестировать на реальном PDF с OpenAI ключом | docai/ |
-| 🏠 Домашний сервер | 🟢 Nextcloud готов | Первый вход, создать admin, потом HDD 1TB | homeserver/ |
+| 🏠 Домашний сервер | 🟢 Immich готов | Первый вход https://photos.myserver-ai.ru, настроить мобильное приложение | homeserver/ |
 | 🏃 Health Connect sync | 🟢 Готово | — | — |
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
