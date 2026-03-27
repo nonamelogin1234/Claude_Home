@@ -137,8 +137,8 @@ class AskWorker(QThread):
                 self.finished.emit("Индексированных файлов не найдено. Сначала обработайте PDF.")
                 return
 
-            self.progress.emit(f"Найдено {len(chunks)} фрагментов. Запрос к Claude...")
-            os.environ['ANTHROPIC_API_KEY'] = self.api_key
+            self.progress.emit(f"Найдено {len(chunks)} фрагментов. Запрос к ChatGPT...")
+            os.environ['OPENAI_API_KEY'] = self.api_key
 
             import ask as ask_module
             answer = ask_module.ask_claude(self.question, chunks)
@@ -232,9 +232,9 @@ class SettingsDialog(QDialog):
 
         self.api_key_edit = QLineEdit()
         self.api_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        self.api_key_edit.setPlaceholderText("sk-ant-...")
-        self.api_key_edit.setText(db.get_setting('anthropic_api_key'))
-        layout.addRow("Anthropic API Key:", self.api_key_edit)
+        self.api_key_edit.setPlaceholderText("sk-proj-...")
+        self.api_key_edit.setText(db.get_setting('openai_api_key'))
+        layout.addRow("OpenAI API Key:", self.api_key_edit)
 
         info = QLabel(f"Данные приложения: {db.APP_DIR}")
         info.setStyleSheet("color: gray; font-size: 11px;")
@@ -253,7 +253,7 @@ class SettingsDialog(QDialog):
         layout.addRow(buttons)
 
     def save_and_accept(self):
-        db.set_setting('anthropic_api_key', self.api_key_edit.text().strip())
+        db.set_setting('openai_api_key', self.api_key_edit.text().strip())
         self.accept()
 
 
@@ -645,11 +645,11 @@ class MainWindow(QMainWindow):
         if not question:
             return
 
-        api_key = db.get_setting('anthropic_api_key')
+        api_key = db.get_setting('openai_api_key')
         if not api_key:
             QMessageBox.warning(
                 self, "API Key не задан",
-                "Укажите Anthropic API Key в Файл → Настройки."
+                "Укажите OpenAI API Key в Файл → Настройки."
             )
             return
 
