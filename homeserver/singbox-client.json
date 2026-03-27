@@ -6,9 +6,8 @@
     "servers": [
       {
         "tag": "main",
-        "type": "https",
-        "server": "1.1.1.1",
-        "server_port": 443
+        "type": "udp",
+        "server": "77.88.8.8"
       }
     ],
     "final": "main"
@@ -19,7 +18,7 @@
       "tag": "tun-in",
       "address": ["172.19.0.1/30"],
       "auto_route": true,
-      "strict_route": true
+      "strict_route": false
     }
   ],
   "outbounds": [
