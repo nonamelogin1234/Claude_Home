@@ -5,26 +5,13 @@
   "dns": {
     "servers": [
       {
-        "tag": "remote",
+        "tag": "main",
         "type": "udp",
         "server": "8.8.8.8",
         "detour": "proxy"
-      },
-      {
-        "tag": "local",
-        "type": "udp",
-        "server": "1.1.1.1",
-        "detour": "direct"
       }
     ],
-    "rules": [
-      {
-        "outbound": "any",
-        "server": "local"
-      }
-    ],
-    "final": "remote",
-    "strategy": "prefer_ipv4"
+    "final": "main"
   },
   "inbounds": [
     {
@@ -81,7 +68,7 @@
         "outbound": "direct"
       }
     ],
-    "default_domain_resolver": "local",
+    "default_domain_resolver": "main",
     "final": "proxy",
     "auto_detect_interface": true
   }
