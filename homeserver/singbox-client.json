@@ -1,22 +1,40 @@
 {
-  "log": {"level": "warn"},
+  "log": {
+    "level": "warn"
+  },
   "dns": {
     "servers": [
-      {"tag": "remote", "address": "8.8.8.8", "detour": "proxy"},
-      {"tag": "local", "address": "1.1.1.1", "detour": "direct"}
+      {
+        "tag": "remote",
+        "type": "udp",
+        "server": "8.8.8.8",
+        "detour": "proxy"
+      },
+      {
+        "tag": "local",
+        "type": "udp",
+        "server": "1.1.1.1",
+        "detour": "direct"
+      }
     ],
-    "rules": [{"outbound": "any", "server": "local"}],
+    "rules": [
+      {
+        "outbound": "any",
+        "server": "local"
+      }
+    ],
     "final": "remote",
     "strategy": "prefer_ipv4"
   },
-  "inbounds": [{
-    "type": "tun",
-    "tag": "tun-in",
-    "inet4_address": "172.19.0.1/30",
-    "auto_route": true,
-    "strict_route": true,
-    "sniff": true
-  }],
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "address": ["172.19.0.1/30"],
+      "auto_route": true,
+      "strict_route": true
+    }
+  ],
   "outbounds": [
     {
       "type": "vless",
@@ -27,22 +45,43 @@
       "tls": {
         "enabled": true,
         "server_name": "vpn.myserver-ai.ru",
-        "utls": {"enabled": true, "fingerprint": "chrome"}
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        }
       },
       "transport": {
         "type": "ws",
         "path": "/vpn/",
-        "headers": {"Host": "vpn.myserver-ai.ru"}
+        "headers": {
+          "Host": "vpn.myserver-ai.ru"
+        }
       }
     },
-    {"type": "direct", "tag": "direct"},
-    {"type": "block", "tag": "block"}
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
   ],
   "route": {
     "rules": [
-      {"protocol": "dns", "action": "hijack-dns"},
-      {"ip_is_private": true, "outbound": "direct"}
+      {
+        "action": "sniff"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      }
     ],
+    "default_domain_resolver": "local",
     "final": "proxy",
     "auto_detect_interface": true
   }
