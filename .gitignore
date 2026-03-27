@@ -1,0 +1,12 @@
+# Машинно-специфичные файлы — не коммитить
+CLAUDE.local.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Временные файлы
+*.tmp
+*.log

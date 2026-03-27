@@ -1,0 +1,14 @@
+# CLAUDE.local.md — МАШИННО-СПЕЦИФИЧНЫЕ НАСТРОЙКИ
+# Скопируй этот файл как CLAUDE.local.md (он в .gitignore, не коммитится)
+# Заполни под свой комп
+
+## Этот компьютер
+- Имя: [домашний / рабочий]
+- Пользователь: [user / torganov-a]
+- Путь к репо: C:\Users\[user]\Documents\Claude_Home
+- Путь к srv.ps1: C:\Users\[user]\srv.ps1
+
+## VPS команды с этого компа
+```
+powershell -ExecutionPolicy Bypass -File C:\Users\[user]\srv.ps1 -cmd "КОМАНДА"
+```
