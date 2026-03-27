@@ -4,6 +4,6 @@
 |--------|--------|---------------|-------|
 | 🎬 КиноКлод | 🟢 MCP работает | Таблицы БД + инструменты оценок | kinoclaude/ |
 | 🔍 DocAI | 🟡 В процессе | Протестировать на реальном PDF с OpenAI ключом | docai/ |
-| 🏠 Домашний сервер | 🟡 В процессе | Jellyfin, Nextcloud | — |
+| 🏠 Домашний сервер | 🟢 Jellyfin готов | qBittorrent на сервере, Nextcloud | homeserver/ |
 | 🏃 Health Connect sync | 🟢 Готово | — | — |
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |

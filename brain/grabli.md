@@ -41,6 +41,11 @@
 
 - AdGuard Home УДАЛЁН (2026-03-22) — не пытаться переподключать
 - SSH с домашнего ПК не работает при включённом WireGuard VPN → отключать WireGuard перед SSH
+- SMB шара на русской Windows: "Everyone" не работает → использовать `$env:USERNAME` или "Все"
+- Windows локальные пользователи не могут войти по сети из-за политики ForceGuest → фикс: `Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "ForceGuest" -Value 0`
+- `$`-переменные nginx (например `$host`) теряются при передаче через home.ps1 → использовать `printf` вместо python3/heredoc
+- Сетевой диск, примонтированный в admin PowerShell, НЕ виден в обычном Explorer — `EnableLinkedConnections` не всегда помогает → монтировать через скрипт автозапуска от имени обычного пользователя
+- Скорость SMB упирается в 100Мбит (~11 МБ/с) если роутер/порт не гигабитный
 
 ## Hevy / Health Connect
 
