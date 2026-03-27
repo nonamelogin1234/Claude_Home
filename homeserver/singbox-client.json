@@ -1,0 +1,50 @@
+{
+  "log": {"level": "warn"},
+  "dns": {
+    "servers": [
+      {"tag": "remote", "address": "8.8.8.8", "detour": "proxy"},
+      {"tag": "local", "address": "1.1.1.1", "detour": "direct"}
+    ],
+    "rules": [{"outbound": "any", "server": "local"}],
+    "final": "remote",
+    "strategy": "prefer_ipv4"
+  },
+  "inbounds": [{
+    "type": "tun",
+    "tag": "tun-in",
+    "inet4_address": "172.19.0.1/30",
+    "auto_route": true,
+    "strict_route": true,
+    "sniff": true
+  }],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "vpn.myserver-ai.ru",
+      "server_port": 443,
+      "uuid": "eb9dff6e-149d-4569-b446-4cde3b041422",
+      "tls": {
+        "enabled": true,
+        "server_name": "vpn.myserver-ai.ru",
+        "utls": {"enabled": true, "fingerprint": "chrome"}
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/vpn/",
+        "headers": {"Host": "vpn.myserver-ai.ru"}
+      }
+    },
+    {"type": "direct", "tag": "direct"},
+    {"type": "block", "tag": "block"},
+    {"type": "dns", "tag": "dns-out"}
+  ],
+  "route": {
+    "rules": [
+      {"protocol": "dns", "outbound": "dns-out"},
+      {"ip_is_private": true, "outbound": "direct"}
+    ],
+    "final": "proxy",
+    "auto_detect_interface": true
+  }
+}
