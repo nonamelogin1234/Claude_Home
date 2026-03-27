@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+test_output*
+test_out.txt
+*.vecs.npy
+*.meta.json
+dist/
+build/
+*.spec
+.env

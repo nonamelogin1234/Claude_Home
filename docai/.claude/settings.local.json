@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip list:*)",
+      "Bash(tesseract --version)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"import fitz; doc = fitz.open\\(''C:/Users/gor-r/Desktop/Claude_Code/test.pdf''\\); print\\(f''Pages: {len\\(doc\\)}''\\); page = doc[0]; text = page.get_text\\(\\); print\\(repr\\(text[:200]\\)\\)\")",
+      "Bash(python -c \":*)",
+      "Read(//c/Users/gor-r//**)",
+      "Read(//c/Users/gor-r/**)",
+      "Bash(python docai.py test.pdf test_output.json)",
+      "Bash(python docai.py test.pdf test_output.json -q)",
+      "Bash(python -c \"import sys; sys.stdout.buffer.write\\(sys.stdin.buffer.read\\(\\)\\)\")",
+      "Bash(python ask.py --build test_output.json)",
+      "Bash(python ask.py --no-llm \"какая высота этажа?\")",
+      "Bash(python ask.py --no-llm \"площадь застройки\")",
+      "Bash(python ask.py --no-llm -k 12 \"площадь застройки\")",
+      "Bash(python ask.py --no-llm \"отметка чистого пола\")",
+      "Bash(python ask.py --no-llm \"какая высота жилых помещений\")"
+    ]
+  }
+}
