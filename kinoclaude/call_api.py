@@ -1,9 +1,4 @@
-import urllib.request
-import json
-import ssl
-import sys
-
-sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+import urllib.request, json, ssl, base64
 
 ctx = ssl.create_default_context()
 ctx.check_hostname = False
@@ -20,14 +15,8 @@ def shell(cmd):
     with urllib.request.urlopen(req, context=ctx, timeout=30) as resp:
         return json.loads(resp.read())
 
-# Статус сервиса
-r = shell("systemctl is-active kinoclaude")
-print("service active:", r['stdout'].strip())
+with open(r"C:\Users\user\Documents\Claude_Home\kinoclaude\profile.md", "rb") as f:
+    b64 = base64.b64encode(f.read()).decode()
 
-# Статус обогащения
-r2 = shell("docker exec postgres psql -U jarvis -d jarvis_memory -c \"SELECT COUNT(*) as total, COUNT(enriched_at) as enriched FROM kinoclaude_ratings;\"")
-print("DB stats:", r2['stdout'])
-
-# Проверяем лог обогащения
-r3 = shell("tail -3 /tmp/enrich.log 2>/dev/null || echo 'no log'")
-print("enrich log:", r3['stdout'])
+r = shell(f"echo '{b64}' | base64 -d > /opt/kinoclaude/profile.md && echo 'ok'")
+print("profile.md:", r['stdout'].strip())
