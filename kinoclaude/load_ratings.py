@@ -9,7 +9,7 @@ import requests
 import psycopg2
 from datetime import datetime
 
-RAW_URL = "https://raw.githubusercontent.com/sergei-fev/Claude_Home/main/kinoclaude/kinoclaude_ratings.md"
+RAW_URL = "https://raw.githubusercontent.com/nonamelogin1234/Claude_Home/main/kinoclaude/kinoclaude_ratings.md"
 DB_DSN = "host=172.18.0.4 dbname=jarvis_memory user=jarvis password=jarvis_pass"
 API_TOKEN = "33455aff-64f4-4f82-849e-e98473c46ce8"
 KP_BASE = "https://kinopoiskapiunofficial.tech/api"
