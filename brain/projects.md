@@ -8,3 +8,4 @@
 | 📡 VPN через Cloudflare | 🔴 Заморожен | Нужен российский relay-сервер с whitelisted IP | homeserver/ |
 | 🏃 Health Connect sync | 🟢 Готово | — | — |
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
+| 📊 Мониторинг-дашборд | 🟡 Почти готов | Вписать Telegram bot_token + chat_id в alertmanager | dashboard/ |
