@@ -1,0 +1,99 @@
+groups:
+  - name: infrastructure
+    interval: 30s
+    rules:
+
+      # Цель не отдаёт метрики
+      - alert: TargetDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Цель недоступна: {{ $labels.job }} / {{ $labels.instance }}"
+          description: "Метрики не собираются уже более 2 минут."
+
+      # Высокий CPU (> 85% в течение 5 мин)
+      - alert: HighCPU
+        expr: 100 - (avg by(instance, host) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокий CPU на {{ $labels.host }}"
+          description: "Загрузка CPU: {{ $value | printf \"%.1f\" }}%"
+
+      # Мало RAM (> 90% занято)
+      - alert: HighMemory
+        expr: >
+          (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
+          / node_memory_MemTotal_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Мало RAM на {{ $labels.host }}"
+          description: "Использование памяти: {{ $value | printf \"%.1f\" }}%"
+
+      # Мало места на диске (< 15% свободно)
+      - alert: LowDisk
+        expr: >
+          (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay"}
+          / node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|overlay"}) * 100 < 15
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Мало места: {{ $labels.host }}:{{ $labels.mountpoint }}"
+          description: "Свободно {{ $value | printf \"%.1f\" }}%"
+
+      # Ключевой Docker-контейнер упал
+      - alert: ContainerDown
+        expr: >
+          time() - container_last_seen{name=~"n8n|postgres|vaultwarden|wg-easy|tunnel"} > 120
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Контейнер упал: {{ $labels.name }}"
+          description: "Docker контейнер {{ $labels.name }} не отвечает более 2 минут."
+
+      # PostgreSQL недоступен
+      - alert: PostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL недоступен"
+          description: "Нет подключения к jarvis_memory (postgres-exporter сообщает pg_up=0)."
+
+      # systemd сервис упал
+      - alert: SystemdServiceFailed
+        expr: node_systemd_unit_state{state="failed"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Сервис упал: {{ $labels.name }}"
+          description: "systemd сервис {{ $labels.name }} в состоянии failed на VPS."
+
+      # Домашний сервер недоступен
+      - alert: HomeServerDown
+        expr: up{job="node-homeserver"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Домашний сервер недоступен"
+          description: "Node Exporter на homeserver (10.8.0.27) не отвечает более 5 минут."
+
+      # Высокая нагрузка (load average > число CPU * 2)
+      - alert: HighLoadAverage
+        expr: node_load1 > (count by(instance)(node_cpu_seconds_total{mode="idle"}) * 2)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокий load average на {{ $labels.host }}"
+          description: "Load1 = {{ $value | printf \"%.2f\" }}"
