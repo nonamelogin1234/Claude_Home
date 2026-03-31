@@ -26,7 +26,7 @@
 | docai | 8765 | RAG поиск по PDF |
 | kinoclaude | 8766→8767 | KinoClaude MCP |
 | 3proxy | 8443 | SOCKS5 прокси |
-| sing-box | 10080 | VPN (sing-box), доступен через vpn.myserver-ai.ru/vpn/ |
+| sing-box | 10080/TCP (WS), 2083/TCP (Reality), 443/UDP (Hysteria2) | VPN — 3 протокола, см. VPN_Hide/context.md |
 | zabbix-agent | — | Мониторинг (агент) |
 | nginx | 80/443/7723/7724/8767 | Reverse proxy |
 
