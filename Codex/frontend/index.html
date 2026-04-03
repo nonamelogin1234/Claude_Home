@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RPG Tracker of Sergey</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/chart.umd.min.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-glow"></div>
+    <main class="layout">
+      <header class="hero-panel card reveal" id="hero-card">
+        <div class="crest">⚔️</div>
+        <div class="hero-copy">
+          <p class="eyebrow">Летопись трансформации</p>
+          <h1>Сергей</h1>
+          <p class="hero-class" id="hero-class">Воин — Путь Трансформации</p>
+          <div class="hero-meta">
+            <span id="hero-level">Уровень —</span>
+            <span id="hero-rank">Ранг —</span>
+            <span id="hero-last-workout">Последний бой —</span>
+          </div>
+          <div class="progress-shell">
+            <div class="progress-label">
+              <span>Путь к следующему рангу</span>
+              <span id="hero-progress-label">0%</span>
+            </div>
+            <div class="progress-bar"><span id="hero-progress-bar"></span></div>
+          </div>
+        </div>
+        <div class="attributes" id="hero-stats"></div>
+      </header>
+
+      <section class="grid-main">
+        <section class="card section reveal">
+          <div class="section-head">
+            <p class="eyebrow">Quest Log</p>
+            <h2>Квесты пути</h2>
+          </div>
+          <div class="quest-columns">
+            <div>
+              <h3>Активные</h3>
+              <div id="active-quests" class="stack"></div>
+            </div>
+            <div>
+              <h3>Архив</h3>
+              <div id="archive-quests" class="stack"></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="card section reveal">
+          <div class="section-head">
+            <p class="eyebrow">Chronicle</p>
+            <h2>Лог событий</h2>
+          </div>
+          <div id="events-list" class="events-list"></div>
+        </aside>
+      </section>
+
+      <section class="card section reveal">
+        <div class="section-head">
+          <p class="eyebrow">Boss Hunt</p>
+          <h2>Контрольные боссы</h2>
+        </div>
+        <div id="bosses-list" class="boss-grid"></div>
+      </section>
+
+      <section class="grid-bottom">
+        <section class="card section reveal">
+          <div class="section-head">
+            <p class="eyebrow">Vitals</p>
+            <h2>Статистика похода</h2>
+          </div>
+          <div id="stats-grid" class="stats-grid"></div>
+        </section>
+
+        <section class="card section reveal chart-card">
+          <div class="section-head">
+            <p class="eyebrow">Weight Arc</p>
+            <h2>Динамика веса за 30 дней</h2>
+          </div>
+          <canvas id="weight-chart" height="220"></canvas>
+        </section>
+      </section>
+    </main>
+
+    <div class="status-bar" id="status-bar">
+      <span id="status-text">Подготовка свитков...</span>
+      <span id="status-updated">--</span>
+    </div>
+  </body>
+</html>
