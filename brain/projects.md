@@ -7,7 +7,7 @@
 | 🏠 Домашний сервер | 🟢 Immich готов | Первый вход https://photos.myserver-ai.ru, настроить мобильное приложение | homeserver/ |
 | 📡 VPN через Cloudflare | 🔴 Заморожен | Нужен российский relay-сервер с whitelisted IP | homeserver/ |
 | 🕵️ VPN Hide (анти-DPI) | 🟢 Готово | Проверить на мобильном интернете | VPN_Hide/ |
-| ⚔️ RPG Трекер | 🟢 Готово | — | rpg/ |
+| ⚔️ RPG Трекер (Codex) | 🟢 Задеплоен | — | Codex/ |
 | 🏃 Health Connect sync | 🟢 Готово | — | — |
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
 | 📊 Мониторинг-дашборд | 🟡 Почти готов | Вписать Telegram bot_token + chat_id в alertmanager | dashboard/ |
