@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ СЕРГЕЙ — ПУТЬ ТРАНСФОРМАЦИИ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div id="loading-overlay">
+        <div class="rune-loader">
+            <div class="rune">⚔</div>
+            <p>Загрузка данных героя...</p>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <header class="page-header">
+            <div class="header-ornament">⸻⟨ ✦ ⟩⸻</div>
+            <h1 class="page-title">ХРОНИКИ ГЕРОЯ</h1>
+            <div class="last-updated" id="last-updated">обновлено только что</div>
+            <div class="header-ornament">⸻⟨ ✦ ⟩⸻</div>
+        </header>
+
+        <main class="layout">
+            <!-- HERO CARD -->
+            <section class="hero-card panel" id="hero-section">
+                <div class="panel-corner tl"></div>
+                <div class="panel-corner tr"></div>
+                <div class="panel-corner bl"></div>
+                <div class="panel-corner br"></div>
+                <div class="hero-avatar">
+                    <div class="avatar-symbol">⚔</div>
+                </div>
+                <div class="hero-info">
+                    <div class="hero-name" id="hero-name">СЕРГЕЙ</div>
+                    <div class="hero-class" id="hero-class">Воин — Путь Трансформации</div>
+                    <div class="hero-level-badge">
+                        <span class="level-label">УРОВЕНЬ</span>
+                        <span class="level-number" id="hero-level">—</span>
+                        <span class="level-name" id="hero-level-name">—</span>
+                    </div>
+                    <div class="level-progress-container">
+                        <div class="progress-label">Прогресс к следующему уровню</div>
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" id="level-progress-bar" style="width:0%"></div>
+                        </div>
+                        <div class="progress-text" id="level-progress-text">—</div>
+                    </div>
+                </div>
+                <div class="hero-stats-grid">
+                    <div class="stat-block">
+                        <div class="stat-icon">⚔️</div>
+                        <div class="stat-label">СИЛА</div>
+                        <div class="stat-value" id="stat-strength">—</div>
+                        <div class="stat-unit">кг</div>
+                    </div>
+                    <div class="stat-block">
+                        <div class="stat-icon">🏃</div>
+                        <div class="stat-label">ВЫНОСЛ.</div>
+                        <div class="stat-value" id="stat-endurance">—</div>
+                        <div class="stat-unit">шаг/100</div>
+                    </div>
+                    <div class="stat-block">
+                        <div class="stat-icon">🌙</div>
+                        <div class="stat-label">ВОССТ.</div>
+                        <div class="stat-value" id="stat-recovery">—</div>
+                        <div class="stat-unit">мин</div>
+                    </div>
+                    <div class="stat-block">
+                        <div class="stat-icon">💪</div>
+                        <div class="stat-label">ОБЪЁМ</div>
+                        <div class="stat-value" id="stat-volume">—</div>
+                        <div class="stat-unit">тонн</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MIDDLE ROW: QUESTS + BOSSES -->
+            <div class="middle-row">
+                <!-- QUEST LOG -->
+                <section class="quest-log panel" id="quests-section">
+                    <div class="panel-corner tl"></div>
+                    <div class="panel-corner tr"></div>
+                    <div class="panel-corner bl"></div>
+                    <div class="panel-corner br"></div>
+                    <h2 class="panel-title">⚔ ЖУРНАЛ КВЕСТОВ</h2>
+                    <div class="quests-divider"></div>
+                    <div class="quests-active" id="quests-active">
+                        <div class="quests-subtitle">◆ АКТИВНЫЕ</div>
+                        <div id="active-quests-list"></div>
+                    </div>
+                    <div class="quests-divider"></div>
+                    <div class="quests-completed">
+                        <div class="quests-subtitle">✓ ЗАВЕРШЁННЫЕ</div>
+                        <div id="completed-quests-list"></div>
+                    </div>
+                </section>
+
+                <!-- BOSSES -->
+                <section class="bosses panel" id="bosses-section">
+                    <div class="panel-corner tl"></div>
+                    <div class="panel-corner tr"></div>
+                    <div class="panel-corner bl"></div>
+                    <div class="panel-corner br"></div>
+                    <h2 class="panel-title">🐉 БОССЫ ПУТИ</h2>
+                    <div class="current-weight-display">
+                        <span class="cw-label">Текущий вес:</span>
+                        <span class="cw-value" id="current-weight-display">—</span>
+                        <span class="cw-unit">кг</span>
+                    </div>
+                    <div id="bosses-list"></div>
+                </section>
+            </div>
+
+            <!-- STATS ROW -->
+            <section class="stats-panel panel" id="stats-section">
+                <div class="panel-corner tl"></div>
+                <div class="panel-corner tr"></div>
+                <div class="panel-corner bl"></div>
+                <div class="panel-corner br"></div>
+                <h2 class="panel-title">📊 СВИТКИ СТАТИСТИКИ</h2>
+                <div class="stats-cards-grid" id="stats-cards-grid">
+                    <div class="stat-card" id="sc-weight">
+                        <div class="sc-label">ВЕС</div>
+                        <div class="sc-value" id="sc-weight-val">—</div>
+                        <div class="sc-unit">кг</div>
+                    </div>
+                    <div class="stat-card" id="sc-workouts">
+                        <div class="sc-label">ВСЕГО ТР.</div>
+                        <div class="sc-value" id="sc-workouts-val">—</div>
+                        <div class="sc-unit">сессий</div>
+                    </div>
+                    <div class="stat-card" id="sc-workouts30">
+                        <div class="sc-label">ЗА 30 ДНЕЙ</div>
+                        <div class="sc-value" id="sc-workouts30-val">—</div>
+                        <div class="sc-unit">тренировок</div>
+                    </div>
+                    <div class="stat-card" id="sc-streak">
+                        <div class="sc-label">СЕРИЯ</div>
+                        <div class="sc-value" id="sc-streak-val">—</div>
+                        <div class="sc-unit">недель подряд</div>
+                    </div>
+                    <div class="stat-card" id="sc-total-vol">
+                        <div class="sc-label">ОБЪЁМ ВСЕГО</div>
+                        <div class="sc-value" id="sc-total-vol-val">—</div>
+                        <div class="sc-unit">тонн</div>
+                    </div>
+                    <div class="stat-card" id="sc-avg5">
+                        <div class="sc-label">СРЕДНИЙ ОБЪ.</div>
+                        <div class="sc-value" id="sc-avg5-val">—</div>
+                        <div class="sc-unit">кг (5 тр.)</div>
+                    </div>
+                    <div class="stat-card" id="sc-best" style="grid-column: span 2;">
+                        <div class="sc-label">🏆 РЕКОРДНАЯ ТРЕНИРОВКА</div>
+                        <div class="sc-value" id="sc-best-val">—</div>
+                        <div class="sc-unit" id="sc-best-date">—</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BOTTOM ROW: CHART + EVENTS -->
+            <div class="bottom-row">
+                <!-- WEIGHT CHART -->
+                <section class="chart-panel panel" id="chart-section">
+                    <div class="panel-corner tl"></div>
+                    <div class="panel-corner tr"></div>
+                    <div class="panel-corner bl"></div>
+                    <div class="panel-corner br"></div>
+                    <h2 class="panel-title">📈 ХРОНИКА ВЕСА</h2>
+                    <div class="chart-container">
+                        <canvas id="weight-chart"></canvas>
+                    </div>
+                </section>
+
+                <!-- EVENT LOG -->
+                <section class="event-log panel" id="events-section">
+                    <div class="panel-corner tl"></div>
+                    <div class="panel-corner tr"></div>
+                    <div class="panel-corner bl"></div>
+                    <div class="panel-corner br"></div>
+                    <h2 class="panel-title">📜 ЛОГ СОБЫТИЙ</h2>
+                    <div class="event-list" id="event-list"></div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="page-footer">
+            <div>⸻⟨ ДАННЫЕ ОБНОВЛЯЮТСЯ КАЖДЫЕ 5 МИНУТ ⟩⸻</div>
+        </footer>
+    </div>
+
+    <script src="static/app.js"></script>
+</body>
+</html>

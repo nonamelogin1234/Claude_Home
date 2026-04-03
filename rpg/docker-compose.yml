@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  rpg-tracker:
+    build: ./backend
+    container_name: rpg-tracker
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - DB_HOST=172.18.0.4
+      - DB_PORT=5432
+      - DB_NAME=jarvis_memory
+      - DB_USER=jarvis
+      - DB_PASSWORD=jarvis_pass
+      - PORT=8768
+    volumes:
+      - ./frontend:/app/frontend:ro
