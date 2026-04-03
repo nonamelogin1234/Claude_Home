@@ -11,9 +11,13 @@ from config import Settings
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
+def _get_settings() -> Settings:
+    return Settings()
+
+
 def verify_api_key(
     key: str | None = Depends(api_key_header),
-    settings: Settings = Depends(Settings),
+    settings: Settings = Depends(_get_settings),
 ) -> None:
     if not settings.api_key:
         return
