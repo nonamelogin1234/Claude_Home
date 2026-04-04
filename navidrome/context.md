@@ -14,11 +14,14 @@ Subsonic API для мобильных клиентов (Symfonium и др.).
 - [2026-04-04] Выпущен Let's Encrypt сертификат (ECC) через acme.sh
 - [2026-04-04] Задеплоен nginx конфиг на VPS: music.myserver-ai.ru → 10.8.0.27:4533 через WireGuard
 - [2026-04-04] Проверка: HTTP 200, Subsonic API отвечает
+- [2026-04-04] Добавлен ReverseProxyWhitelist = 10.8.0.0/24 (Navidrome знает что за HTTPS прокси)
+- [2026-04-04] DNS переключён на grey cloud (DNS only) — браузер коннектится напрямую к VPS
 
 ## СЛЕДУЮЩИЙ ШАГ
-1. Открыть https://music.myserver-ai.ru — создать admin-пользователя (первый вход)
-2. Залить музыку: `rsync -av /путь/к/музыке/ sergei@homeserver:/home/sergei/music/`
-3. Настроить мобильный клиент (Symfonium): сервер = https://music.myserver-ai.ru
+1. Открыть http://192.168.0.103:4533/app/ → создать admin-пользователя
+2. После этого https://music.myserver-ai.ru/app/ заработает полностью
+3. В Symfonium: Add provider → Navidrome → URL: https://music.myserver-ai.ru
+4. Залить музыку в Z:\Music\ — Navidrome подхватит автоматически
 
 ## ТЕХНИЧЕСКИЕ ДЕТАЛИ
 
@@ -40,8 +43,9 @@ Subsonic API для мобильных клиентов (Symfonium и др.).
 # Статус
 systemctl status navidrome          # на домашнем сервере
 
-# Залить музыку (с Windows)
-rsync -av "C:\Music\" sergei@homeserver:/home/sergei/music/
+# Залить музыку (с Windows) — прямо в Z:\Music\ через проводник или rsync
+# rsync через SSH:
+rsync -av "/c/Music/" sergei@192.168.0.103:/srv/jellyfin/Music/
 
 # Subsonic API ping (после создания пользователя)
 curl "https://music.myserver-ai.ru/rest/ping.view?u=admin&p=ПАРОЛЬ&v=1.16.0&c=test&f=json"
@@ -53,3 +57,6 @@ sudo systemctl restart navidrome
 ## ГРАБЛИ
 - ZeroSSL отклоняет домен при Cloudflare proxy → использовать `--server letsencrypt`
 - acme.sh через srv.ps1 запускать через `bash -c '...'` — иначе ошибка пути
+- Белый экран через nginx: Navidrome не знал что за HTTPS → ReverseProxyWhitelist = "10.8.0.0/24"
+- Cloudflare Rocket Loader ломает React SPA → grey cloud (DNS only) для music поддомена
+- Symfonium: выбирать Navidrome/Subsonic, НЕ WebDAV
