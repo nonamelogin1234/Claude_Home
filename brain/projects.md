@@ -8,6 +8,7 @@
 | 📡 VPN через Cloudflare | 🔴 Заморожен | Нужен российский relay-сервер с whitelisted IP | homeserver/ |
 | 🕵️ VPN Hide (анти-DPI) | 🟢 Готово | Проверить на мобильном интернете | VPN_Hide/ |
 | ⚔️ RPG Трекер (Codex) | 🟢 Задеплоен | — | Codex/ |
+| 🎵 Navidrome | 🟢 Готово | Создать admin-пользователя на https://music.myserver-ai.ru, залить музыку через rsync | navidrome/ |
 | 🏃 Health Connect sync | 🟢 Готово | — | — |
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
 | 📊 Мониторинг-дашборд | 🟡 Почти готов | Вписать Telegram bot_token + chat_id в alertmanager | dashboard/ |
