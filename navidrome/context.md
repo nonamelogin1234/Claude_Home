@@ -9,7 +9,7 @@ Subsonic API для мобильных клиентов (Symfonium и др.).
 
 ## ЧТО СДЕЛАНО
 - [2026-04-04] Установлен Navidrome v0.61.0 как systemd-сервис на домашнем сервере → active (running)
-- [2026-04-04] Папка с музыкой перенесена на HDD: /srv/hdd/music (рядом с Immich, общий диск)
+- [2026-04-04] Папка с музыкой: /srv/jellyfin/Music (Samba Z:\Music, тот же диск что Films/Series)
 - [2026-04-04] Добавлена DNS A-запись music.myserver-ai.ru → 147.45.238.120 в Cloudflare
 - [2026-04-04] Выпущен Let's Encrypt сертификат (ECC) через acme.sh
 - [2026-04-04] Задеплоен nginx конфиг на VPS: music.myserver-ai.ru → 10.8.0.27:4533 через WireGuard
@@ -25,7 +25,7 @@ Subsonic API для мобильных клиентов (Symfonium и др.).
 ### Домашний сервер
 - Бинарь: `/usr/local/bin/navidrome`
 - Конфиг: `/home/sergei/navidrome.toml`
-- Музыка: `/srv/hdd/music/` (на HDD-диске, рядом с Immich)
+- Музыка: `/srv/jellyfin/Music/` (Samba-шара Z:\, рядом с Films и Series)
 - Данные/БД: `/home/sergei/navidrome-data/`
 - Порт: `4533`
 - Сервис: `systemctl status navidrome`
