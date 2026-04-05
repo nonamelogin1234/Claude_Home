@@ -17,7 +17,7 @@
 | vaultwarden | 8081 | https://vault.myserver-ai.ru |
 | wg-easy | 51820/51821 | WireGuard VPN |
 | tunnel | — | Cloudflare Tunnel |
-| miniflux | 8090 (127.0.0.1) | RSS-ридер, https://rss.myserver-ai.ru |
+
 
 ## Systemd сервисы на VPS
 
@@ -51,7 +51,7 @@
 | photos.myserver-ai.ru | 10.8.0.27:2283 | Immich на домашнем сервере |
 | nextcloud.myserver-ai.ru | 10.8.0.27:8181 | Nextcloud на домашнем сервере |
 | vpn.myserver-ai.ru/vpn/ | :10080 | sing-box VPN (WebSocket) |
-| rss.myserver-ai.ru | miniflux :8090 | |
+
 
 ## Домашний сервер
 
