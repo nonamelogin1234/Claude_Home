@@ -214,13 +214,16 @@ body {
   padding: 28px;
   position: relative;
   overflow: hidden;
-  animation: fadeInUp 0.5s ease both;
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  animation: fadeInUp 0.5s cubic-bezier(0.0,0.0,0.2,1) both;
+  transition:
+    box-shadow 0.2s cubic-bezier(0.0,0.0,0.2,1),
+    transform  0.15s cubic-bezier(0.0,0.0,0.2,1);
+  will-change: transform;
+  transform-style: preserve-3d;
 }
 
 .panel:hover {
   box-shadow: var(--shadow-hover);
-  transform: translateY(-1px);
 }
 
 /* top accent line */
@@ -480,7 +483,11 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   text-align: center;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  transition:
+    border-color 0.15s cubic-bezier(0.0,0.0,0.2,1),
+    box-shadow   0.15s cubic-bezier(0.0,0.0,0.2,1),
+    transform    0.15s cubic-bezier(0.0,0.0,0.2,1);
+  cursor: default;
 }
 
 .stat-block:hover {
@@ -776,7 +783,11 @@ body {
   border-radius: var(--radius);
   padding: 16px 12px;
   text-align: center;
-  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  cursor: pointer;
+  transition:
+    border-color 0.15s cubic-bezier(0.0,0.0,0.2,1),
+    box-shadow   0.15s cubic-bezier(0.0,0.0,0.2,1),
+    transform    0.15s cubic-bezier(0.0,0.0,0.2,1);
 }
 
 .stat-card:hover {
@@ -900,6 +911,11 @@ body {
 @keyframes shimmer {
   from { left: -100%; }
   to   { left: 200%;  }
+}
+
+@keyframes rippleExpand {
+  0%   { transform: scale(0);   opacity: 1;   }
+  100% { transform: scale(1);   opacity: 0;   }
 }
 
 /* =====================
