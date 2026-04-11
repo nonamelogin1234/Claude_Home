@@ -856,6 +856,22 @@ body {
 .ev-text { color: var(--text-main); line-height: 1.45; }
 
 /* =====================
+   SECTION DIVIDER
+   ===================== */
+.section-divider {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  opacity: 0.7;
+}
+
+.section-divider svg {
+  width: 100%;
+  height: 18px;
+  display: block;
+}
+
+/* =====================
    PAGE FOOTER
    ===================== */
 .page-footer {

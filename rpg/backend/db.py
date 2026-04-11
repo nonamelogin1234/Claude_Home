@@ -112,7 +112,7 @@ def fetch_quest_data() -> Optional[dict]:
         cur.execute("SELECT COUNT(*) AS cnt FROM hevy_workouts")
         total_workouts = int(cur.fetchone()["cnt"])
 
-        # recent sleep
+        # recent sleep — extended to 14 rows to cover both 5-night and 7-night streaks
         cur.execute("""
             SELECT date, deep_sleep_min
             FROM health_daily_summary
@@ -145,6 +145,51 @@ def fetch_quest_data() -> Optional[dict]:
         row = cur.fetchone()
         last_workout_date = row["last_dt"] if row else None
 
+        # weight measurements count in last 7 days
+        cur.execute("""
+            SELECT COUNT(*) AS cnt
+            FROM body_measurements
+            WHERE measured_at >= CURRENT_DATE - INTERVAL '7 days'
+        """)
+        weight_measurements_7d = int(cur.fetchone()["cnt"])
+
+        # current month volume
+        cur.execute("""
+            SELECT COALESCE(SUM(total_volume_kg), 0) AS vol
+            FROM hevy_workouts
+            WHERE date_trunc('month', workout_date) = date_trunc('month', CURRENT_DATE)
+        """)
+        current_month_volume = float(cur.fetchone()["vol"])
+
+        # avg volume of last 3 completed months
+        cur.execute("""
+            SELECT COALESCE(AVG(monthly_vol), 0) AS avg_vol
+            FROM (
+                SELECT SUM(total_volume_kg) AS monthly_vol
+                FROM hevy_workouts
+                WHERE workout_date >= CURRENT_DATE - INTERVAL '4 months'
+                  AND date_trunc('month', workout_date) < date_trunc('month', CURRENT_DATE)
+                GROUP BY date_trunc('month', workout_date)
+                ORDER BY date_trunc('month', workout_date) DESC
+                LIMIT 3
+            ) sub
+        """)
+        avg_monthly_volume_3m = float(cur.fetchone()["avg_vol"])
+
+        # leg press: last 2 session max weights
+        cur.execute("""
+            SELECT MAX(weight_kg) AS max_w
+            FROM hevy_sets
+            WHERE LOWER(exercise_title) LIKE '%жим%ног%'
+               OR LOWER(exercise_title) LIKE '%leg press%'
+            GROUP BY workout_date
+            ORDER BY workout_date DESC
+            LIMIT 2
+        """)
+        leg_press_rows = [float(r["max_w"]) for r in cur.fetchall() if r["max_w"] is not None]
+        leg_press_current = leg_press_rows[0] if len(leg_press_rows) > 0 else 0.0
+        leg_press_prev = leg_press_rows[1] if len(leg_press_rows) > 1 else 0.0
+
         cur.close()
         conn.close()
 
@@ -155,6 +200,11 @@ def fetch_quest_data() -> Optional[dict]:
             "current_week_volume": current_week_volume,
             "max_weekly_volume": max_weekly_volume,
             "last_workout_date": last_workout_date,
+            "weight_measurements_7d": weight_measurements_7d,
+            "current_month_volume": current_month_volume,
+            "avg_monthly_volume_3m": avg_monthly_volume_3m,
+            "leg_press_current": leg_press_current,
+            "leg_press_prev": leg_press_prev,
         }
     except Exception:
         traceback.print_exc()
@@ -297,14 +347,12 @@ def _compute_streak_weeks(workout_dates) -> int:
         current = datetime.date.fromisoformat(str(most_recent))
 
     streak = 0
-    # Walk backwards week by week
     check_date = current
     while True:
         iso = check_date.isocalendar()
         key = (iso[0], iso[1])
         if key in week_set:
             streak += 1
-            # Go to previous Monday
             days_since_monday = check_date.weekday()
             check_date = check_date - datetime.timedelta(days=days_since_monday + 7)
         else:

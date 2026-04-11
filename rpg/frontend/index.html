@@ -3,111 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚔️ СЕРГЕЙ — ПУТЬ ТРАНСФОРМАЦИИ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <title>Сергей · Путь трансформации</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div id="loading-overlay">
-        <div class="rune-loader">
-            <div class="rune">⚔</div>
-            <p>Загрузка данных героя...</p>
+        <div class="lotus-loader">
+            <div class="loader-wave">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+            </div>
+            <p>загружаем путь</p>
         </div>
     </div>
 
     <div id="app" class="hidden">
         <header class="page-header">
-            <div class="header-ornament">⸻⟨ ✦ ⟩⸻</div>
-            <h1 class="page-title">ХРОНИКИ ГЕРОЯ</h1>
-            <div class="last-updated" id="last-updated">обновлено только что</div>
-            <div class="header-ornament">⸻⟨ ✦ ⟩⸻</div>
+            <div class="header-ornament"><span class="header-ornament-icon">◆</span></div>
+            <h1 class="page-title">Путь</h1>
+            <div class="header-tagline">Сергей · трансформация</div>
+            <div class="last-updated" id="last-updated">
+                <span class="refresh-dot" id="refresh-dot"></span>
+                обновлено только что
+            </div>
+            <div class="header-ornament"><span class="header-ornament-icon">◆</span></div>
         </header>
 
         <main class="layout">
             <!-- HERO CARD -->
             <section class="hero-card panel" id="hero-section">
-                <div class="panel-corner tl"></div>
-                <div class="panel-corner tr"></div>
-                <div class="panel-corner bl"></div>
-                <div class="panel-corner br"></div>
-                <div class="hero-avatar">
-                    <div class="avatar-symbol">⚔</div>
+                <canvas id="water-canvas"></canvas>
+                <div class="hero-sun-overlay">
+                    <div class="sun-glow sun-glow-1"></div>
+                    <div class="sun-glow sun-glow-2"></div>
+                    <div class="sun-rays"></div>
                 </div>
-                <div class="hero-info">
-                    <div class="hero-name" id="hero-name">СЕРГЕЙ</div>
-                    <div class="hero-class" id="hero-class">Воин — Путь Трансформации</div>
-                    <div class="hero-level-badge">
-                        <span class="level-label">УРОВЕНЬ</span>
-                        <span class="level-number" id="hero-level">—</span>
-                        <span class="level-name" id="hero-level-name">—</span>
+                <div class="hero-content">
+                    <div class="hero-avatar">
+                        <div class="avatar-symbol">✦</div>
                     </div>
-                    <div class="level-progress-container">
-                        <div class="progress-label">Прогресс к следующему уровню</div>
-                        <div class="progress-bar-track">
-                            <div class="progress-bar-fill" id="level-progress-bar" style="width:0%"></div>
+                    <div class="hero-info">
+                        <div class="hero-name" id="hero-name">СЕРГЕЙ</div>
+                        <div class="hero-class" id="hero-class">Путь трансформации</div>
+                        <div class="hero-level-badge">
+                            <span class="level-label">ЭТАП</span>
+                            <span class="level-number" id="hero-level">—</span>
+                            <span class="level-name" id="hero-level-name">—</span>
                         </div>
-                        <div class="progress-text" id="level-progress-text">—</div>
+                        <div class="level-progress-container">
+                            <div class="progress-label">Прогресс к следующему этапу</div>
+                            <div class="progress-bar-track">
+                                <div class="progress-bar-fill" id="level-progress-bar" style="width:0%"></div>
+                            </div>
+                            <div class="progress-text" id="level-progress-text">—</div>
+                        </div>
                     </div>
-                </div>
-                <div class="hero-stats-grid">
-                    <div class="stat-block">
-                        <div class="stat-icon">⚔️</div>
-                        <div class="stat-label">СИЛА</div>
-                        <div class="stat-value" id="stat-strength">—</div>
-                        <div class="stat-unit">кг</div>
-                    </div>
-                    <div class="stat-block">
-                        <div class="stat-icon">🏃</div>
-                        <div class="stat-label">ВЫНОСЛ.</div>
-                        <div class="stat-value" id="stat-endurance">—</div>
-                        <div class="stat-unit">шаг/100</div>
-                    </div>
-                    <div class="stat-block">
-                        <div class="stat-icon">🌙</div>
-                        <div class="stat-label">ВОССТ.</div>
-                        <div class="stat-value" id="stat-recovery">—</div>
-                        <div class="stat-unit">мин</div>
-                    </div>
-                    <div class="stat-block">
-                        <div class="stat-icon">💪</div>
-                        <div class="stat-label">ОБЪЁМ</div>
-                        <div class="stat-value" id="stat-volume">—</div>
-                        <div class="stat-unit">тонн</div>
+                    <div class="hero-stats-grid">
+                        <div class="stat-block">
+                            <div class="stat-icon">🏋️</div>
+                            <div class="stat-label">Жим ног</div>
+                            <div class="stat-value" id="stat-strength">—</div>
+                            <div class="stat-unit">кг</div>
+                        </div>
+                        <div class="stat-block">
+                            <div class="stat-icon">🚶</div>
+                            <div class="stat-label">Шаги</div>
+                            <div class="stat-value" id="stat-endurance">—</div>
+                            <div class="stat-unit">в день / 100</div>
+                        </div>
+                        <div class="stat-block">
+                            <div class="stat-icon">🌙</div>
+                            <div class="stat-label">Сон</div>
+                            <div class="stat-value" id="stat-recovery">—</div>
+                            <div class="stat-unit">мин глубок.</div>
+                        </div>
+                        <div class="stat-block">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-label">Объём</div>
+                            <div class="stat-value" id="stat-volume">—</div>
+                            <div class="stat-unit">тонн / мес</div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- MIDDLE ROW: QUESTS + BOSSES -->
+            <!-- SECTION DIVIDER -->
+            <div class="section-divider" aria-hidden="true">
+                <svg viewBox="0 0 320 18" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <line x1="0" y1="9" x2="136" y2="9" stroke="#C4673A" stroke-width="0.5" stroke-opacity="0.3"/>
+                    <polygon points="148,9 155,4 162,9 155,14" fill="none" stroke="#C9A84C" stroke-width="0.8" stroke-opacity="0.55"/>
+                    <circle cx="155" cy="9" r="1.5" fill="#C9A84C" fill-opacity="0.55"/>
+                    <line x1="174" y1="9" x2="320" y2="9" stroke="#C4673A" stroke-width="0.5" stroke-opacity="0.3"/>
+                </svg>
+            </div>
+
+            <!-- MIDDLE ROW: ПРАКТИКИ + РУБЕЖИ -->
             <div class="middle-row">
-                <!-- QUEST LOG -->
+                <!-- ПРАКТИКИ -->
                 <section class="quest-log panel" id="quests-section">
-                    <div class="panel-corner tl"></div>
-                    <div class="panel-corner tr"></div>
-                    <div class="panel-corner bl"></div>
-                    <div class="panel-corner br"></div>
-                    <h2 class="panel-title">⚔ ЖУРНАЛ КВЕСТОВ</h2>
-                    <div class="quests-divider"></div>
+                    <h2 class="panel-title">Практики</h2>
+                    <div class="panel-ornament">◆ · · ◆ · · ◆</div>
                     <div class="quests-active" id="quests-active">
-                        <div class="quests-subtitle">◆ АКТИВНЫЕ</div>
+                        <div class="quests-subtitle">В процессе</div>
                         <div id="active-quests-list"></div>
                     </div>
                     <div class="quests-divider"></div>
                     <div class="quests-completed">
-                        <div class="quests-subtitle">✓ ЗАВЕРШЁННЫЕ</div>
+                        <div class="quests-subtitle">Достигнуто</div>
                         <div id="completed-quests-list"></div>
                     </div>
                 </section>
 
-                <!-- BOSSES -->
+                <!-- РУБЕЖИ ПУТИ -->
                 <section class="bosses panel" id="bosses-section">
-                    <div class="panel-corner tl"></div>
-                    <div class="panel-corner tr"></div>
-                    <div class="panel-corner bl"></div>
-                    <div class="panel-corner br"></div>
-                    <h2 class="panel-title">🐉 БОССЫ ПУТИ</h2>
+                    <h2 class="panel-title">Рубежи пути</h2>
+                    <div class="panel-ornament">◆ · · ◆ · · ◆</div>
                     <div class="current-weight-display">
-                        <span class="cw-label">Текущий вес:</span>
+                        <span class="cw-label">Текущий вес</span>
                         <span class="cw-value" id="current-weight-display">—</span>
                         <span class="cw-unit">кг</span>
                     </div>
@@ -115,80 +131,91 @@
                 </section>
             </div>
 
+            <!-- SECTION DIVIDER -->
+            <div class="section-divider" aria-hidden="true">
+                <svg viewBox="0 0 320 18" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <line x1="0" y1="9" x2="136" y2="9" stroke="#C4673A" stroke-width="0.5" stroke-opacity="0.3"/>
+                    <polygon points="148,9 155,4 162,9 155,14" fill="none" stroke="#C9A84C" stroke-width="0.8" stroke-opacity="0.55"/>
+                    <circle cx="155" cy="9" r="1.5" fill="#C9A84C" fill-opacity="0.55"/>
+                    <line x1="174" y1="9" x2="320" y2="9" stroke="#C4673A" stroke-width="0.5" stroke-opacity="0.3"/>
+                </svg>
+            </div>
+
             <!-- STATS ROW -->
             <section class="stats-panel panel" id="stats-section">
-                <div class="panel-corner tl"></div>
-                <div class="panel-corner tr"></div>
-                <div class="panel-corner bl"></div>
-                <div class="panel-corner br"></div>
-                <h2 class="panel-title">📊 СВИТКИ СТАТИСТИКИ</h2>
+                <h2 class="panel-title">Статистика</h2>
+                <div class="panel-ornament">◆ · · ◆ · · ◆</div>
                 <div class="stats-cards-grid" id="stats-cards-grid">
                     <div class="stat-card" id="sc-weight">
-                        <div class="sc-label">ВЕС</div>
+                        <div class="sc-label">Вес</div>
                         <div class="sc-value" id="sc-weight-val">—</div>
                         <div class="sc-unit">кг</div>
                     </div>
                     <div class="stat-card" id="sc-workouts">
-                        <div class="sc-label">ВСЕГО ТР.</div>
+                        <div class="sc-label">Всего тренировок</div>
                         <div class="sc-value" id="sc-workouts-val">—</div>
                         <div class="sc-unit">сессий</div>
                     </div>
                     <div class="stat-card" id="sc-workouts30">
-                        <div class="sc-label">ЗА 30 ДНЕЙ</div>
+                        <div class="sc-label">За 30 дней</div>
                         <div class="sc-value" id="sc-workouts30-val">—</div>
                         <div class="sc-unit">тренировок</div>
                     </div>
                     <div class="stat-card" id="sc-streak">
-                        <div class="sc-label">СЕРИЯ</div>
+                        <div class="sc-label">Серия</div>
                         <div class="sc-value" id="sc-streak-val">—</div>
                         <div class="sc-unit">недель подряд</div>
                     </div>
                     <div class="stat-card" id="sc-total-vol">
-                        <div class="sc-label">ОБЪЁМ ВСЕГО</div>
+                        <div class="sc-label">Объём всего</div>
                         <div class="sc-value" id="sc-total-vol-val">—</div>
                         <div class="sc-unit">тонн</div>
                     </div>
                     <div class="stat-card" id="sc-avg5">
-                        <div class="sc-label">СРЕДНИЙ ОБЪ.</div>
+                        <div class="sc-label">Средний объём</div>
                         <div class="sc-value" id="sc-avg5-val">—</div>
                         <div class="sc-unit">кг (5 тр.)</div>
                     </div>
                     <div class="stat-card" id="sc-best" style="grid-column: span 2;">
-                        <div class="sc-label">🏆 РЕКОРДНАЯ ТРЕНИРОВКА</div>
+                        <div class="sc-label">Рекордная тренировка</div>
                         <div class="sc-value" id="sc-best-val">—</div>
                         <div class="sc-unit" id="sc-best-date">—</div>
                     </div>
                 </div>
             </section>
 
-            <!-- BOTTOM ROW: CHART + EVENTS -->
+            <!-- SECTION DIVIDER -->
+            <div class="section-divider" aria-hidden="true">
+                <svg viewBox="0 0 320 18" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                    <line x1="0" y1="9" x2="136" y2="9" stroke="#C4673A" stroke-width="0.5" stroke-opacity="0.3"/>
+                    <polygon points="148,9 155,4 162,9 155,14" fill="none" stroke="#C9A84C" stroke-width="0.8" stroke-opacity="0.55"/>
+                    <circle cx="155" cy="9" r="1.5" fill="#C9A84C" fill-opacity="0.55"/>
+                    <line x1="174" y1="9" x2="320" y2="9" stroke="#C4673A" stroke-width="0.5" stroke-opacity="0.3"/>
+                </svg>
+            </div>
+
+            <!-- BOTTOM ROW: CHART + ХРОНИКА -->
             <div class="bottom-row">
-                <!-- WEIGHT CHART -->
+                <!-- ХРОНИКА ВЕСА -->
                 <section class="chart-panel panel" id="chart-section">
-                    <div class="panel-corner tl"></div>
-                    <div class="panel-corner tr"></div>
-                    <div class="panel-corner bl"></div>
-                    <div class="panel-corner br"></div>
-                    <h2 class="panel-title">📈 ХРОНИКА ВЕСА</h2>
+                    <h2 class="panel-title">Хроника веса</h2>
+                    <div class="panel-ornament">◆ · · ◆ · · ◆</div>
                     <div class="chart-container">
                         <canvas id="weight-chart"></canvas>
                     </div>
                 </section>
 
-                <!-- EVENT LOG -->
+                <!-- ХРОНИКА -->
                 <section class="event-log panel" id="events-section">
-                    <div class="panel-corner tl"></div>
-                    <div class="panel-corner tr"></div>
-                    <div class="panel-corner bl"></div>
-                    <div class="panel-corner br"></div>
-                    <h2 class="panel-title">📜 ЛОГ СОБЫТИЙ</h2>
+                    <h2 class="panel-title">Хроника</h2>
+                    <div class="panel-ornament">◆ · · ◆ · · ◆</div>
                     <div class="event-list" id="event-list"></div>
                 </section>
             </div>
         </main>
 
         <footer class="page-footer">
-            <div>⸻⟨ ДАННЫЕ ОБНОВЛЯЮТСЯ КАЖДЫЕ 5 МИНУТ ⟩⸻</div>
+            <div>данные обновляются каждые 5 минут</div>
         </footer>
     </div>
 

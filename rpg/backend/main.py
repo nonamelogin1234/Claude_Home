@@ -33,11 +33,11 @@ def root():
 
 # ─── Level thresholds ────────────────────────────────────────────────────────
 LEVELS = [
-    (1, 0, 10, "Новобранец"),
-    (2, 10, 25, "Воин"),
-    (3, 25, 50, "Ветеран"),
-    (4, 50, 100, "Чемпион"),
-    (5, 100, 999999, "Легенда"),
+    (1, 0, 10, "Начало"),
+    (2, 10, 25, "На ходу"),
+    (3, 25, 50, "В ритме"),
+    (4, 50, 100, "Форма"),
+    (5, 100, 999999, "Образ жизни"),
 ]
 
 
@@ -45,7 +45,7 @@ def compute_level(workouts: int):
     for lvl, prev_thr, next_thr, name in LEVELS:
         if workouts < next_thr or lvl == 5:
             return lvl, name, prev_thr, next_thr
-    return 5, "Легенда", 100, 999999
+    return 5, "Образ жизни", 100, 999999
 
 
 # ─── /api/hero ───────────────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ def get_hero():
 
     hero = HeroStats(
         name="СЕРГЕЙ",
-        class_name="Воин — Путь Трансформации",
+        class_name="Путь трансформации",
         level=level,
         level_name=level_name,
         workouts_count=workouts_count,
@@ -102,6 +102,11 @@ def get_quests():
             "current_week_volume": 0.0,
             "max_weekly_volume": 0.0,
             "last_workout_date": None,
+            "weight_measurements_7d": 0,
+            "current_month_volume": 0.0,
+            "avg_monthly_volume_3m": 0.0,
+            "leg_press_current": 0.0,
+            "leg_press_prev": 0.0,
         }
 
     today = datetime.date.today()
@@ -111,10 +116,15 @@ def get_quests():
     current_week_volume = data["current_week_volume"]
     max_weekly_volume = data["max_weekly_volume"]
     last_workout_date = data["last_workout_date"]
+    weight_measurements_7d = data.get("weight_measurements_7d", 0)
+    current_month_volume = data.get("current_month_volume", 0.0)
+    avg_monthly_volume_3m = data.get("avg_monthly_volume_3m", 0.0)
+    leg_press_current = data.get("leg_press_current", 0.0)
+    leg_press_prev = data.get("leg_press_prev", 0.0)
 
     quests = []
 
-    # ── Quest 1: Воин без пропусков ──────────────────────────────────────────
+    # ── Quest 1: Постоянство ─────────────────────────────────────────────────
     days_since_last = None
     if last_workout_date:
         if hasattr(last_workout_date, "toordinal"):
@@ -123,7 +133,6 @@ def get_quests():
             ld = datetime.date.fromisoformat(str(last_workout_date))
         days_since_last = (today - ld).days
 
-    # check no gap > 4 days in last 30 days
     dates_30d = sorted(
         [d for d in workout_dates if (today - (d if hasattr(d, "toordinal") else datetime.date.fromisoformat(str(d)))).days <= 30],
         reverse=True,
@@ -141,7 +150,6 @@ def get_quests():
         no_big_gap = False
 
     last_ok = days_since_last is not None and days_since_last <= 4
-    q1_active = no_big_gap and last_ok
     if days_since_last is not None and days_since_last <= 4:
         q1_progress = max(0.0, (4 - days_since_last) / 4)
     else:
@@ -149,12 +157,12 @@ def get_quests():
 
     quests.append(Quest(
         id="no_skip",
-        icon="⚔️",
-        name="Воин без пропусков",
-        description="Нет пропусков > 4 дней за 30 дней",
+        icon="🔁",
+        name="Постоянство",
+        description="Нет пропусков больше 4 дней за 30 дней",
         status="active" if not (no_big_gap and last_ok) else "active",
         progress=round(q1_progress, 3),
-        progress_text=f"{days_since_last if days_since_last is not None else '?'} дней с последней тренировки",
+        progress_text=f"{days_since_last if days_since_last is not None else '?'} дн. с последней тренировки",
     ))
 
     # ── Quest 2: Страж сна ───────────────────────────────────────────────────
@@ -171,13 +179,13 @@ def get_quests():
         id="sleep_guard",
         icon="🌙",
         name="Страж сна",
-        description="5 ночей подряд глубокого сна > 120 мин",
+        description="5 ночей подряд глубокого сна более 120 мин",
         status=q2_status,
         progress=round(q2_progress, 3),
         progress_text=f"{sleep_streak}/5 ночей подряд",
     ))
 
-    # ── Quest 3: Покоритель объёма ───────────────────────────────────────────
+    # ── Quest 3: Рекорд недели ───────────────────────────────────────────────
     if max_weekly_volume > 0:
         q3_progress = min(1.0, current_week_volume / max_weekly_volume)
         q3_status = "completed" if current_week_volume >= max_weekly_volume else "active"
@@ -188,8 +196,8 @@ def get_quests():
     quests.append(Quest(
         id="volume_conqueror",
         icon="📦",
-        name="Покоритель объёма",
-        description="Превзойди рекордную неделю по объёму",
+        name="Рекорд недели",
+        description="Превзойти рекордную неделю по объёму",
         status=q3_status,
         progress=round(q3_progress, 3),
         progress_text=f"{current_week_volume:.0f} / {max_weekly_volume:.0f} кг",
@@ -239,29 +247,155 @@ def get_quests():
         description="Первая тренировка завершена",
         status="completed" if total_workouts >= 1 else "locked",
         progress=1.0 if total_workouts >= 1 else 0.0,
-        progress_text="Выполнено" if total_workouts >= 1 else "0/1",
+        progress_text="достигнуто" if total_workouts >= 1 else "0/1",
     ))
 
-    # ── Quest 6: Ветеран зала ────────────────────────────────────────────────
+    # ── Quest 6: В ритме ─────────────────────────────────────────────────────
     quests.append(Quest(
         id="veteran",
         icon="🏅",
-        name="Ветеран зала",
+        name="В ритме",
         description="10 тренировок выполнено",
         status="completed" if total_workouts >= 10 else "active",
         progress=min(1.0, total_workouts / 10.0),
         progress_text=f"{total_workouts}/10 тренировок",
     ))
 
-    # ── Quest 7: Железный человек ────────────────────────────────────────────
+    # ── Quest 7: Марафон зала ────────────────────────────────────────────────
     quests.append(Quest(
         id="iron_man",
         icon="💪",
-        name="Железный человек",
+        name="Марафон зала",
         description="25 тренировок выполнено",
         status="completed" if total_workouts >= 25 else "active",
         progress=min(1.0, total_workouts / 25.0),
         progress_text=f"{total_workouts}/25 тренировок",
+    ))
+
+    # ── Quest 8: Пятничный ритуал ────────────────────────────────────────────
+    workout_dates_set = set()
+    for d in workout_dates:
+        dd = d if hasattr(d, "toordinal") else datetime.date.fromisoformat(str(d))
+        workout_dates_set.add(dd)
+
+    last_4_fridays = []
+    d = today
+    while len(last_4_fridays) < 4:
+        if d.weekday() == 4:  # Friday
+            last_4_fridays.append(d)
+        d -= datetime.timedelta(days=1)
+
+    friday_count = sum(1 for fd in last_4_fridays if fd in workout_dates_set)
+    quests.append(Quest(
+        id="friday_ritual",
+        icon="🌆",
+        name="Пятничный ритуал",
+        description="Посетить зал в пятницу 4 недели подряд",
+        status="completed" if friday_count >= 4 else "active",
+        progress=round(friday_count / 4.0, 3),
+        progress_text=f"{friday_count}/4 пятниц",
+    ))
+
+    # ── Quest 9: Без никотина ─────────────────────────────────────────────────
+    quit_date = datetime.date(2025, 2, 13)
+    nicotine_days = (today - quit_date).days
+    quests.append(Quest(
+        id="no_nicotine",
+        icon="🚭",
+        name="Без никотина",
+        description="Дней без сигарет с 13 февраля 2025",
+        status="active",
+        progress=1.0,
+        progress_text=f"{nicotine_days} дней",
+    ))
+
+    # ── Quest 10: Постоянство веса ───────────────────────────────────────────
+    quests.append(Quest(
+        id="weight_consistency",
+        icon="⚖️",
+        name="Постоянство веса",
+        description="Взвешиваться минимум 5 раз за последние 7 дней",
+        status="completed" if weight_measurements_7d >= 5 else "active",
+        progress=round(min(weight_measurements_7d, 5) / 5.0, 3),
+        progress_text=f"{weight_measurements_7d}/5 взвешиваний",
+    ))
+
+    # ── Quest 11: Объём месяца ────────────────────────────────────────────────
+    if avg_monthly_volume_3m > 0:
+        q11_progress = min(1.0, current_month_volume / avg_monthly_volume_3m)
+        q11_status = "completed" if current_month_volume >= avg_monthly_volume_3m else "active"
+    else:
+        q11_progress = 0.0
+        q11_status = "active"
+
+    quests.append(Quest(
+        id="monthly_volume_goal",
+        icon="📈",
+        name="Объём месяца",
+        description="Набрать объём тренировок выше среднего за 3 месяца",
+        status=q11_status,
+        progress=round(q11_progress, 3),
+        progress_text=f"{current_month_volume:.0f} / {avg_monthly_volume_3m:.0f} кг",
+    ))
+
+    # ── Quest 12: Серия сна ────────────────────────────────────────────────────
+    sleep_streak_90 = 0
+    for _, deep_sleep in recent_sleep:
+        if deep_sleep is not None and int(deep_sleep) > 90:
+            sleep_streak_90 += 1
+        else:
+            break
+
+    q12_progress = min(sleep_streak_90, 7) / 7.0
+    q12_status = "completed" if sleep_streak_90 >= 7 else "active"
+    quests.append(Quest(
+        id="sleep_quality_streak",
+        icon="✨",
+        name="Серия сна",
+        description="7 ночей подряд с глубоким сном более 90 мин",
+        status=q12_status,
+        progress=round(q12_progress, 3),
+        progress_text=f"{sleep_streak_90}/7 ночей подряд",
+    ))
+
+    # ── Quest 13: Первая сотня ───────────────────────────────────────────────
+    quests.append(Quest(
+        id="hundred_sessions",
+        icon="💯",
+        name="Первая сотня",
+        description="Завершить 100 тренировок",
+        status="completed" if total_workouts >= 100 else "active",
+        progress=min(1.0, total_workouts / 100.0),
+        progress_text=f"{total_workouts}/100 тренировок",
+    ))
+
+    # ── Quest 14: Рекорд жима ─────────────────────────────────────────────────
+    if leg_press_current > 0 and leg_press_prev > 0:
+        if leg_press_current > leg_press_prev:
+            lp_status = "completed"
+            lp_progress = 1.0
+            lp_text = f"{leg_press_current:.0f} кг — новый рекорд"
+        else:
+            lp_status = "active"
+            lp_progress = round(leg_press_current / leg_press_prev, 3)
+            lp_text = f"{leg_press_current:.0f} / {leg_press_prev:.0f} кг"
+    elif leg_press_current > 0:
+        lp_status = "active"
+        lp_progress = 0.5
+        lp_text = f"текущий: {leg_press_current:.0f} кг"
+    else:
+        lp_status = "locked"
+        lp_progress = 0.0
+        lp_text = "нет данных"
+
+    quests.append(Quest(
+        id="leg_press_record",
+        icon="🦵",
+        name="Рекорд жима",
+        description="Превысить личный рекорд в жиме ног",
+        status=lp_status,
+        progress=lp_progress,
+        progress_text=lp_text,
     ))
 
     result = [q.dict() for q in quests]
@@ -271,11 +405,11 @@ def get_quests():
 
 # ─── /api/bosses ─────────────────────────────────────────────────────────────
 BOSSES_DEF = [
-    ("Страж Порога", "🛡️", 110.0),
-    ("Хранитель Плато", "⚗️", 105.0),
-    ("Дракон Сотни", "🐉", 99.0),
-    ("Теневой Лорд", "👁️", 90.0),
-    ("Финальный Босс", "💀", 85.0),
+    ("Первый порог — 110 кг", "⚖️", 110.0),
+    ("Хранитель плато — 105 кг", "⚗️", 105.0),
+    ("Ниже ста — 99 кг", "🎯", 99.0),
+    ("Комфортный вес — 90 кг", "🌿", 90.0),
+    ("Целевой вес — 85 кг", "✦", 85.0),
 ]
 
 START_WEIGHT = 120.0
@@ -358,7 +492,6 @@ def get_events():
     if not raw:
         raw = []
 
-    # Normalize dates and sort
     def get_date(e):
         d = e.get("date")
         if d is None:
@@ -385,11 +518,11 @@ def get_events():
             if prev_vol is not None and prev_vol > 0:
                 pct = (vol - prev_vol) / prev_vol * 100
                 sign = "+" if pct >= 0 else ""
-                vol_str += f" ({sign}{pct:.1f}% к прошлой)"
+                vol_str += f" ({sign}{pct:.1f}%)"
             events.append(Event(
                 date_str=date_str,
-                icon="⚔️",
-                text=f"Воин завершил тренировку. Объём: {vol_str}",
+                icon="🏋️",
+                text=f"Тренировка завершена · {vol_str}",
             ))
         elif etype == "weight":
             weight = e.get("weight", 0.0)
@@ -400,11 +533,11 @@ def get_events():
             ))
         elif etype == "sleep":
             ds = e.get("deep_sleep", 0)
-            if ds > 120:
+            if ds > 90:
                 events.append(Event(
                     date_str=date_str,
                     icon="🌙",
-                    text=f"Ночь отдыха. Глубокий сон: {ds} мин",
+                    text=f"Глубокий сон: {ds} мин",
                 ))
             elif ds > 0:
                 events.append(Event(
@@ -418,7 +551,7 @@ def get_events():
             events.append(Event(
                 date_str=date_str,
                 icon="🏆",
-                text=f"Новый рекорд: {exercise} — {weight:.1f} кг",
+                text=f"Рекорд: {exercise} — {weight:.1f} кг",
             ))
 
     result = [ev.dict() for ev in events]
