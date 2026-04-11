@@ -22,225 +22,232 @@ document.addEventListener('DOMContentLoaded', () => {
 //  WATERFALL — Particle Physics System
 // ════════════════════════════════════════════════════════════
 
-class WaterfallSystem {
-    constructor(canvas) {
-        this.canvas  = canvas;
-        this.ctx     = canvas.getContext('2d');
-        this.main    = [];   // falling drops
-        this.splash  = [];   // impact spray
-        this.mist    = [];   // soft fog blobs
-        this.streams = [];   // fixed x positions
-        this.t       = 0;
+// ── Density profile: gaussian peaks for natural waterfall look ──────────────
+function _waterfallDensity(xNorm, peaks) {
+    // xNorm = 0..1; peaks = [{cx, sigma, amp}]
+    return peaks.reduce((acc, p) => {
+        const d = (xNorm - p.cx) / p.sigma;
+        return acc + p.amp * Math.exp(-0.5 * d * d);
+    }, 0.04);  // base ambient
+}
 
-        // Pre-render a reusable mist sprite to avoid per-frame gradients
-        this._mistSprite = this._buildMistSprite();
+class WaterfallCurtain {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx    = canvas.getContext('2d');
+        this.foam   = [];
+        this.mist   = [];
+        this.t      = 0;
+        // 2–3 dense columns that create "natural" waterfall structure
+        this.peaks  = [
+            { cx: 0.28, sigma: 0.14, amp: 0.28 },
+            { cx: 0.62, sigma: 0.16, amp: 0.32 },
+            { cx: 0.82, sigma: 0.09, amp: 0.18 },
+        ];
         this._resize();
     }
 
     _resize() {
-        const r = this.canvas.parentElement.getBoundingClientRect();
-        this.W  = r.width  || 900;
-        this.H  = r.height || 220;
+        const r   = this.canvas.parentElement.getBoundingClientRect();
+        this.W    = r.width  || 900;
+        this.H    = r.height || 280;
         this.canvas.width  = this.W;
         this.canvas.height = this.H;
-        this.fallY  = this.H * 0.82;   // where drops hit the pool
-        // Distribute streams across width — avoid pure edges
-        const count = Math.max(4, Math.min(8, Math.floor(this.W / 180)));
-        this.streams = [];
-        for (let i = 0; i < count; i++) {
-            this.streams.push({
-                x:     this.W * (0.08 + 0.84 * (i / (count - 1))),
-                rate:  5 + Math.random() * 4,    // particles per frame
-                phase: Math.random() * Math.PI * 2,
-            });
-        }
+        this.poolY = this.H * 0.80;
+        this._buildThreads();
     }
 
-    _buildMistSprite() {
-        const sz = 80;
-        const oc = document.createElement('canvas');
-        oc.width = oc.height = sz;
-        const ctx = oc.getContext('2d');
-        const g = ctx.createRadialGradient(sz/2, sz/2, 0, sz/2, sz/2, sz/2);
-        g.addColorStop(0,   'rgba(180,215,240,0.06)');
-        g.addColorStop(0.5, 'rgba(160,200,230,0.03)');
-        g.addColorStop(1,   'rgba(140,190,225,0)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, sz, sz);
-        return oc;
+    _buildThreads() {
+        const spacing = 5.5;
+        const count   = Math.ceil(this.W / spacing);
+        this.threads  = Array.from({ length: count }, (_, i) => {
+            const x     = i * spacing + (Math.random() - 0.5) * 2;
+            const xNorm = x / this.W;
+            const dens  = _waterfallDensity(xNorm, this.peaks);
+            return {
+                x,
+                speed:   2.0 + Math.random() * 5.5,
+                offset:  Math.random() * this.poolY * 2,
+                w:       0.5 + Math.random() * 1.5,
+                op:      Math.min(0.38, dens + Math.random() * 0.05),
+                dashLen: 10 + Math.random() * 28,
+                gapLen:  3  + Math.random() * 20,
+                driftF:  0.002 + Math.random() * 0.006,
+                driftPh: Math.random() * Math.PI * 2,
+            };
+        });
     }
 
-    _spawnDrop(sx) {
-        const speed = 1.8 + Math.random() * 2.2;
-        const spreadFactor = 1 + this.H * 0.004;   // wider near bottom
-        return {
-            x:    sx + (Math.random() - 0.5) * 6,
-            y:    -4,
-            vx:   (Math.random() - 0.5) * 0.6,
-            vy:   speed,
-            r:    0.9 + Math.random() * 1.4,
-            a:    0.22 + Math.random() * 0.38,
-            life: 1.0,
-            dr:   0.006 + Math.random() * 0.005,
-            layer: Math.floor(Math.random() * 3),
-            spread: spreadFactor,
-        };
+    _spawnFoam(x) {
+        if (Math.random() > 0.22) return;
+        const xNorm = x / this.W;
+        const dens  = _waterfallDensity(xNorm, this.peaks);
+        if (Math.random() > dens * 3.5 + 0.15) return;
+        const angle = -Math.PI * 0.88 + Math.random() * Math.PI * 0.76;
+        const sp    = 0.6 + Math.random() * 3.2;
+        this.foam.push({
+            x, y: this.poolY + (Math.random() - 0.5) * 6,
+            vx: Math.cos(angle) * sp,
+            vy: Math.sin(angle) * sp - 1.0,
+            r:  1.5 + Math.random() * 6,
+            a:  0.55 + Math.random() * 0.4,
+            dr: 0.018 + Math.random() * 0.022,
+        });
     }
 
-    _spawnSplash(x, y) {
-        const n = 3 + Math.floor(Math.random() * 5);
-        for (let i = 0; i < n; i++) {
-            const angle = -Math.PI * 0.9 + Math.random() * Math.PI * 0.8;
-            const sp = 1.2 + Math.random() * 3.0;
-            this.splash.push({
-                x, y,
-                vx: Math.cos(angle) * sp,
-                vy: Math.sin(angle) * sp - 1.8,
-                r:  0.6 + Math.random() * 1.0,
-                a:  0.55 + Math.random() * 0.35,
-                dr: 0.03 + Math.random() * 0.025,
-            });
-        }
-    }
-
-    _spawnMist(x, y) {
-        if (Math.random() > 0.18) return;
+    _spawnMist() {
+        if (Math.random() > 0.06) return;
+        const cx = this.peaks[Math.floor(Math.random() * this.peaks.length)].cx * this.W;
         this.mist.push({
-            x: x + (Math.random() - 0.5) * 50,
-            y: y + (Math.random() - 0.5) * 12,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: -0.25 - Math.random() * 0.45,
-            sz: 28 + Math.random() * 36,
-            a:  0.08 + Math.random() * 0.08,
-            dr: 0.003 + Math.random() * 0.003,
+            x: cx + (Math.random() - 0.5) * this.W * 0.55,
+            y: this.poolY + (Math.random() - 0.5) * 18,
+            vx: (Math.random() - 0.5) * 0.9,
+            vy: -0.35 - Math.random() * 0.85,
+            r:  30 + Math.random() * 70,
+            a:  0.04 + Math.random() * 0.05,
+            dr: 0.0015 + Math.random() * 0.002,
         });
     }
 
     update() {
-        const G = 0.11;
-
-        // Spawn from streams
-        this.streams.forEach(s => {
-            const n = Math.round(s.rate * (0.7 + 0.3 * Math.sin(this.t * 0.04 + s.phase)));
-            for (let i = 0; i < n && this.main.length < 400; i++) {
-                this.main.push(this._spawnDrop(s.x));
-            }
+        // Scroll threads
+        this.threads.forEach(th => {
+            th.offset = (th.offset + th.speed) % (this.poolY * 2);
+            th.x += Math.sin(this.t * th.driftF + th.driftPh) * 0.06;
         });
-
-        // Update main drops
-        this.main = this.main.filter(p => {
-            p.vy += G;
-            p.vx *= 0.998;
-            p.x  += p.vx;
-            p.y  += p.vy;
-            p.life -= p.dr;
-            if (p.y >= this.fallY) {
-                this._spawnSplash(p.x, this.fallY);
-                this._spawnMist(p.x, this.fallY);
-                return false;
-            }
-            return p.life > 0;
+        // Spawn particles
+        if (this.t % 2 === 0) {
+            this.threads.forEach(th => this._spawnFoam(th.x));
+        }
+        this._spawnMist();
+        // Update foam
+        this.foam = this.foam.filter(p => {
+            p.x += p.vx; p.y += p.vy; p.vy += 0.055; p.vx *= 0.96;
+            p.life = (p.life || 1) - p.dr;
+            return p.life > 0 && p.y < this.poolY + 14;
         });
-
-        // Update splash
-        this.splash = this.splash.filter(p => {
-            p.vy += G * 0.65;
-            p.x  += p.vx;
-            p.y  += p.vy;
-            p.vx *= 0.97;
-            p.life -= p.dr;
-            return p.life > 0 && p.y < this.fallY + 6;
-        });
-
         // Update mist
         this.mist = this.mist.filter(p => {
-            p.x += p.vx + Math.sin(this.t * 0.025 + p.y * 0.08) * 0.2;
-            p.y += p.vy;
-            p.a  = Math.max(0, p.a - 0.0002);
-            p.life -= p.dr;
+            p.x += p.vx + Math.sin(this.t * 0.012) * 0.35;
+            p.y += p.vy; p.r += 0.45;
+            p.life = (p.life || 1) - p.dr;
             return p.life > 0;
         });
-
         this.t++;
     }
 
     draw() {
-        const ctx = this.ctx;
-        const W   = this.W;
-        const H   = this.H;
+        const ctx   = this.ctx;
+        const W     = this.W;
+        const H     = this.H;
         ctx.clearRect(0, 0, W, H);
 
-        // ── Mist (back layer) — stamp pre-rendered sprite ──────────────────
-        this.mist.forEach(p => {
-            const opacity = p.a * p.life;
-            if (opacity < 0.005) return;
-            ctx.save();
-            ctx.globalAlpha = opacity;
-            ctx.drawImage(this._mistSprite,
-                p.x - p.sz / 2, p.y - p.sz / 2,
-                p.sz, p.sz);
-            ctx.restore();
-        });
-
-        // ── Main drops — elongated tear shapes, 3 depth layers ─────────────
+        // ── 1. Water curtain (scrolling dashed threads) ────────────────────
         ctx.save();
-        ctx.lineCap = 'round';
-        [0, 1, 2].forEach(layer => {
-            const opMult    = [0.38, 0.65, 1.0][layer];
-            const scaleMult = [0.72, 0.87, 1.0][layer];
-            const colorB    = [200, 215, 230][layer];
-
-            this.main.filter(p => p.layer === layer).forEach(p => {
-                const alpha = p.a * p.life * opMult;
-                if (alpha < 0.01) return;
-
-                const speed  = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                const tail   = Math.min(speed * 2.0, 10);
-                const nx     = speed > 0 ? p.vx / speed : 0;
-                const ny     = speed > 0 ? p.vy / speed : 1;
-                const r      = p.r * scaleMult;
-
-                ctx.beginPath();
-                ctx.moveTo(p.x - nx * tail, p.y - ny * tail);
-                ctx.lineTo(p.x + nx * 0.5,  p.y + ny * 0.5);
-                ctx.strokeStyle = `rgba(100,${colorB},238,${alpha})`;
-                ctx.lineWidth   = r * 2.0;
-                ctx.stroke();
-            });
+        ctx.lineCap = 'butt';
+        this.threads.forEach(th => {
+            const g = ctx.createLinearGradient(0, 0, 0, this.poolY);
+            g.addColorStop(0,    `rgba(100,175,238,0)`);
+            g.addColorStop(0.07, `rgba(95,170,235,${th.op * 0.3})`);
+            g.addColorStop(0.32, `rgba(85,162,232,${th.op})`);
+            g.addColorStop(0.70, `rgba(75,152,228,${th.op * 1.4})`);
+            g.addColorStop(0.91, `rgba(155,218,255,${th.op * 1.0})`);
+            g.addColorStop(1,    `rgba(200,240,255,0)`);
+            ctx.strokeStyle    = g;
+            ctx.lineWidth      = th.w;
+            ctx.setLineDash([th.dashLen, th.gapLen]);
+            ctx.lineDashOffset = -th.offset;
+            ctx.beginPath();
+            ctx.moveTo(th.x, 0);
+            ctx.lineTo(th.x, this.poolY);
+            ctx.stroke();
         });
+        ctx.setLineDash([]);
         ctx.restore();
 
-        // ── Splash dots ─────────────────────────────────────────────────────
+        // ── 2. Light sparkles (shimmer through water) ──────────────────────
         ctx.save();
-        this.splash.forEach(p => {
-            const alpha = p.a * p.life;
-            if (alpha < 0.01) return;
-            ctx.globalAlpha = alpha;
-            ctx.fillStyle = `rgba(155,205,240,1)`;
+        if (this.t % 2 === 0) {
+            const n = 14 + Math.floor(Math.random() * 18);
+            for (let i = 0; i < n; i++) {
+                // Bias sparkles toward dense zones
+                const pk    = this.peaks[Math.floor(Math.random() * this.peaks.length)];
+                const sx    = pk.cx * W + (Math.random() - 0.5) * W * 0.3;
+                const sy    = 8 + Math.random() * this.poolY * 0.9;
+                const sg    = ctx.createRadialGradient(sx, sy, 0, sx, sy, 3.5);
+                sg.addColorStop(0, 'rgba(255,255,255,0.7)');
+                sg.addColorStop(1, 'rgba(200,240,255,0)');
+                ctx.fillStyle = sg;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        ctx.restore();
+
+        // ── 3. Mist blobs ─────────────────────────────────────────────────
+        ctx.save();
+        this.mist.forEach(p => {
+            const a = (p.a || 0.04) * (p.life || 1);
+            if (a < 0.005) return;
+            const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+            g.addColorStop(0,   `rgba(215,238,255,${a})`);
+            g.addColorStop(0.5, `rgba(190,225,250,${a * 0.38})`);
+            g.addColorStop(1,   `rgba(170,215,248,0)`);
+            ctx.fillStyle = g;
             ctx.beginPath();
-            ctx.arc(Math.round(p.x), Math.round(p.y), p.r, 0, Math.PI * 2);
+            ctx.ellipse(p.x, p.y, p.r, p.r * 0.42, 0, 0, Math.PI * 2);
             ctx.fill();
         });
         ctx.restore();
 
-        // ── Pool surface — animated sine ────────────────────────────────────
+        // ── 4. Foam / white spray ─────────────────────────────────────────
+        ctx.save();
+        this.foam.forEach(p => {
+            const a = (p.a || 0.5) * (p.life || 1);
+            if (a < 0.015) return;
+            const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+            g.addColorStop(0,   `rgba(255,255,255,${a})`);
+            g.addColorStop(0.45,`rgba(218,245,255,${a * 0.5})`);
+            g.addColorStop(1,   `rgba(185,228,255,0)`);
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.restore();
+
+        // ── 5. Pool surface ───────────────────────────────────────────────
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(0, H);
-        for (let x = 0; x <= W; x += 3) {
-            const wy = this.fallY
-                + Math.sin(x * 0.038 + this.t * 0.055) * 2.8
-                + Math.sin(x * 0.021 + this.t * 0.033) * 1.6;
+        for (let x = 0; x <= W; x += 2) {
+            const xNorm = x / W;
+            const dens  = _waterfallDensity(xNorm, this.peaks);
+            const amp   = 1.5 + dens * 6;
+            const wy = this.poolY
+                + Math.sin(x * 0.042 + this.t * 0.062) * amp
+                + Math.sin(x * 0.019 + this.t * 0.038) * (amp * 0.6)
+                + Math.sin(x * 0.095 + this.t * 0.11)  * (amp * 0.3);
             ctx.lineTo(x, wy);
         }
-        ctx.lineTo(W, H);
-        ctx.lineTo(0, H);
-        ctx.closePath();
-        const pg = ctx.createLinearGradient(0, this.fallY, 0, H);
-        pg.addColorStop(0, 'rgba(80,155,215,0.22)');
-        pg.addColorStop(1, 'rgba(46,95,163,0.06)');
+        ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+        const pg = ctx.createLinearGradient(0, this.poolY, 0, H);
+        pg.addColorStop(0,   'rgba(78,158,225,0.32)');
+        pg.addColorStop(0.4, 'rgba(58,132,205,0.18)');
+        pg.addColorStop(1,   'rgba(46,95,163,0.05)');
         ctx.fillStyle = pg;
         ctx.fill();
+        ctx.restore();
+
+        // ── 6. Top-edge fade (water "materializes" from above) ───────────
+        ctx.save();
+        const tf = ctx.createLinearGradient(0, 0, 0, 44);
+        // Use the actual page background color
+        tf.addColorStop(0, 'rgba(250,246,239,1)');
+        tf.addColorStop(1, 'rgba(250,246,239,0)');
+        ctx.fillStyle = tf;
+        ctx.fillRect(0, 0, W, 44);
         ctx.restore();
     }
 }
@@ -321,7 +328,7 @@ function initWaterfall() {
     const canvas = document.getElementById('water-canvas');
     if (!canvas) return;
 
-    _waterfall = new WaterfallSystem(canvas);
+    _waterfall = new WaterfallCurtain(canvas);
     _dust      = new AmbientDustSystem(canvas);
 
     window.addEventListener('resize', () => {

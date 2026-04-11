@@ -466,6 +466,11 @@ body {
   letter-spacing: 0.03em;
 }
 
+/* ── Hero Card min height for waterfall ── */
+.hero-card {
+  min-height: 290px;
+}
+
 /* ── Hero Stats Grid ── */
 .hero-stats-grid {
   display: grid;
