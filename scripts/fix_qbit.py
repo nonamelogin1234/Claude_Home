@@ -1,27 +1,21 @@
-import hashlib, os, re
+import re
 
 path = '/home/sergei/qbittorrent/config/qBittorrent/qBittorrent.conf'
-
-password = '4815'
-salt = os.urandom(16).hex()
-h = hashlib.pbkdf2_hmac('sha512', password.encode(), salt.encode(), 100000)
-password_hash = '@ByteArray(' + h.hex() + ':' + salt + ')'
 
 with open(path, 'r') as f:
     content = f.read()
 
-# Remove old password lines if any
-content = re.sub(r'WebUI\\Password_PBKDF2.*\n', '', content)
-content = re.sub(r'WebUI\\Password_ha1.*\n', '', content)
-
-# Insert after WebUI\Port line
-content = content.replace(
-    'WebUI\\Port=8090',
-    'WebUI\\Password_PBKDF2="' + password_hash + '"\nWebUI\\Port=8090'
-)
+# Убираем забаненные IP
+content = re.sub(r'WebUI\\BanList=.*\n', 'WebUI\\BanList=\n', content)
+# Сбрасываем счётчик неудачных попыток
+content = re.sub(r'WebUI\\LoginFailedBanDuration=.*\n', '', content)
 
 with open(path, 'w') as f:
     f.write(content)
 
-print('Password set OK')
-print('Hash:', password_hash[:40], '...')
+print('Ban cleared')
+print()
+# Показать текущий WebUI блок
+for line in content.split('\n'):
+    if 'WebUI' in line:
+        print(line)
