@@ -48,6 +48,16 @@
 - Сетевой диск, примонтированный в admin PowerShell, НЕ виден в обычном Explorer — `EnableLinkedConnections` не всегда помогает → монтировать через скрипт автозапуска от имени обычного пользователя
 - Скорость SMB упирается в 100Мбит (~11 МБ/с) если роутер/порт не гигабитный
 
+## WireGuard (домашний сервер ↔ VPS)
+
+- **ГЛАВНОЕ:** домашний сервер за NAT — ListenPort в конфиге НЕ влияет на внешний порт. Роутер подменяет порт на случайный. WireGuard обновляет endpoint автоматически по входящим пакетам — это штатное поведение.
+- **Причина потери туннеля после перезагрузки:** PublicKey пира в wg0.conf домашнего сервера указывал на wg-easy (порт 51820), а не на wg1 (порт 51822) — разные ключи, handshake невозможен криптографически.
+- Правильный PublicKey VPS для wg1: `QTSKLBhGyvL+5Sm4EZbnu6m0iL2ufu+8nD3rrIUt00Q=`
+- Правильный Endpoint в wg0.conf домашнего: `147.45.238.120:51822`
+- На VPS в wg1.conf — НЕ прописывать endpoint для домашнего сервера, WireGuard выучит сам
+- `sudo systemctl enable wg-quick@wg1` на VPS — через `ln -s` т.к. `systemctl enable` возвращает stderr и shell-api даёт 500
+- Доступ к домашнему серверу — ТОЛЬКО через `home.ps1`, НЕ через `srv.ps1`. Маршрут: nginx VPS :7724 → 10.8.0.27:7722
+
 ## Nginx конфиги через srv.ps1
 
 - `printf`, `python3 -c`, heredoc — всё ломает `$host`, `$http_upgrade` при передаче через srv.ps1
@@ -79,3 +89,6 @@
 - ZeroSSL (дефолтный CA в acme.sh) отклоняет некоторые поддомены → всегда явно указывать --server letsencrypt
 - Cloudflare Tunnel пересоздаёт DNS CNAME даже если удалить запись вручную → удалять домен из Public Hostnames в Zero Trust
 - acme.sh --nginx не находит конфиг если домен не в sites-enabled → использовать --webroot
+- **"Host validation failed. See logs"** — может приходить от HOMEPAGE, а не Authelia. Homepage требует `HOMEPAGE_ALLOWED_HOSTS=home.myserver-ai.ru` в docker-compose.yml environment, иначе API запросы фронтенда падают с 400
+- Authelia /api/configuration всегда отдаёт 403 при запросе с публичного IP сервера (curl изнутри VPS) — это нормально. Браузер через Docker/VPN (172.x.x.x) получает 200 — приватные IP автоматически trusted proxies
+- `server.trusted_proxies` в Authelia v4.39+ удалён — не использовать, выдаёт "key not expected"
