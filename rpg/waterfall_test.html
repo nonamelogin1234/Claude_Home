@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+body { margin:0; background:#FAF6EF; font-family:Georgia,serif; }
+.hero {
+  position:relative; overflow:hidden;
+  width:100%; height:290px;
+  background:#F5EFE4;
+  display:flex; align-items:center; padding:40px;
+  box-sizing:border-box;
+}
+canvas { position:absolute; inset:0; pointer-events:none; }
+.content { position:relative; z-index:2; color:#2C1F14; }
+.content h1 { font-size:2.2rem; margin:0 0 6px; font-style:italic; }
+.content p  { font-size:.82rem; color:#7A6650; margin:0; letter-spacing:.12em; text-transform:uppercase; }
+.badge { background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); padding:6px 16px;
+  border-radius:2px; display:inline-block; margin-top:14px; font-size:.75rem; letter-spacing:.12em;
+  text-transform:uppercase; color:#B8952E; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <canvas id="wc"></canvas>
+  <div class="content">
+    <h1>СЕРГЕЙ</h1>
+    <p>Путь трансформации</p>
+    <div class="badge">Этап 2 · На ходу</div>
+  </div>
+</div>
+
+<script>
+// Draw just 200 frames worth of state, no rAF loop for preview
+const canvas = document.getElementById('wc');
+const ctx    = canvas.getContext('2d');
+const W = canvas.width  = canvas.parentElement.clientWidth;
+const H = canvas.height = canvas.parentElement.clientHeight;
+const poolY = H * 0.80;
+
+const peaks = [
+  {cx:0.28, sigma:0.14, amp:0.28},
+  {cx:0.62, sigma:0.16, amp:0.32},
+  {cx:0.82, sigma:0.09, amp:0.18},
+];
+
+function density(xNorm){
+  return peaks.reduce((a,p)=>{
+    const d=(xNorm-p.cx)/p.sigma;
+    return a + p.amp*Math.exp(-.5*d*d);
+  }, 0.04);
+}
+
+// Build threads
+const threads = [];
+for(let x=0; x<W; x+=5.5){
+  const xn = x/W, dens = density(xn);
+  threads.push({
+    x: x+(Math.random()-.5)*2,
+    speed: 2+Math.random()*5.5,
+    offset: Math.random()*poolY*2,
+    w: 0.5+Math.random()*1.5,
+    op: Math.min(0.38, dens+Math.random()*.05),
+    dashLen: 10+Math.random()*28,
+    gapLen:  3+Math.random()*20,
+  });
+}
+
+// Simulate 180 frames then draw
+for(let t=0;t<180;t++){
+  threads.forEach(th=>{
+    th.offset=(th.offset+th.speed)%(poolY*2);
+  });
+}
+
+// One draw pass
+ctx.clearRect(0,0,W,H);
+
+// Curtain
+ctx.save(); ctx.lineCap='butt';
+threads.forEach(th=>{
+  const g=ctx.createLinearGradient(0,0,0,poolY);
+  g.addColorStop(0,   `rgba(100,175,238,0)`);
+  g.addColorStop(0.07,`rgba(95,170,235,${th.op*.3})`);
+  g.addColorStop(0.32,`rgba(85,162,232,${th.op})`);
+  g.addColorStop(0.70,`rgba(75,152,228,${th.op*1.4})`);
+  g.addColorStop(0.91,`rgba(155,218,255,${th.op})`);
+  g.addColorStop(1,   `rgba(200,240,255,0)`);
+  ctx.strokeStyle=g; ctx.lineWidth=th.w;
+  ctx.setLineDash([th.dashLen,th.gapLen]);
+  ctx.lineDashOffset=-th.offset;
+  ctx.beginPath(); ctx.moveTo(th.x,0); ctx.lineTo(th.x,poolY); ctx.stroke();
+});
+ctx.setLineDash([]); ctx.restore();
+
+// Sparkles
+ctx.save();
+for(let i=0;i<25;i++){
+  const pk=peaks[Math.floor(Math.random()*peaks.length)];
+  const sx=pk.cx*W+(Math.random()-.5)*W*.3, sy=10+Math.random()*poolY*.88;
+  const sg=ctx.createRadialGradient(sx,sy,0,sx,sy,3.5);
+  sg.addColorStop(0,'rgba(255,255,255,0.65)'); sg.addColorStop(1,'rgba(200,240,255,0)');
+  ctx.fillStyle=sg; ctx.beginPath(); ctx.arc(sx,sy,3.5,0,Math.PI*2); ctx.fill();
+}
+ctx.restore();
+
+// Mist blobs
+ctx.save();
+for(let i=0;i<6;i++){
+  const pk=peaks[Math.floor(Math.random()*peaks.length)];
+  const mx=pk.cx*W+(Math.random()-.5)*W*.4, my=poolY-30-Math.random()*60;
+  const mr=40+Math.random()*70;
+  const g=ctx.createRadialGradient(mx,my,0,mx,my,mr);
+  g.addColorStop(0,'rgba(215,238,255,0.06)'); g.addColorStop(.5,'rgba(190,225,250,0.025)'); g.addColorStop(1,'rgba(170,215,248,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(mx,my,mr,mr*.42,0,0,Math.PI*2); ctx.fill();
+}
+ctx.restore();
+
+// Foam
+ctx.save();
+for(let i=0;i<40;i++){
+  const pk=peaks[Math.floor(Math.random()*peaks.length)];
+  const fx=pk.cx*W+(Math.random()-.5)*W*.35+Math.random()*20-10;
+  const fy=poolY+(Math.random()-.5)*10;
+  const fr=2+Math.random()*6, fa=.2+Math.random()*.45;
+  const g=ctx.createRadialGradient(fx,fy,0,fx,fy,fr);
+  g.addColorStop(0,`rgba(255,255,255,${fa})`); g.addColorStop(.5,`rgba(220,245,255,${fa*.5})`); g.addColorStop(1,'rgba(185,230,255,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(fx,fy,fr,0,Math.PI*2); ctx.fill();
+}
+ctx.restore();
+
+// Pool
+ctx.save(); ctx.beginPath(); ctx.moveTo(0,H);
+for(let x=0;x<=W;x+=2){
+  const xn=x/W, dens=density(xn), amp=1.5+dens*6;
+  const wy=poolY+Math.sin(x*.042+5)*amp+Math.sin(x*.019+3)*amp*.6;
+  ctx.lineTo(x,wy);
+}
+ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+const pg=ctx.createLinearGradient(0,poolY,0,H);
+pg.addColorStop(0,'rgba(78,158,225,0.30)'); pg.addColorStop(.4,'rgba(58,132,205,0.16)'); pg.addColorStop(1,'rgba(46,95,163,0.05)');
+ctx.fillStyle=pg; ctx.fill(); ctx.restore();
+
+// Top fade
+ctx.save();
+const tf=ctx.createLinearGradient(0,0,0,44);
+tf.addColorStop(0,'rgba(245,239,228,1)'); tf.addColorStop(1,'rgba(245,239,228,0)');
+ctx.fillStyle=tf; ctx.fillRect(0,0,W,44); ctx.restore();
+</script>
+</body></html>
