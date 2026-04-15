@@ -1,0 +1,42 @@
+- Основное:
+    - n8n:
+        href: https://myserver-ai.ru
+        description: Автоматизация
+        icon: n8n.png
+        widget:
+          type: n8n
+          url: http://172.18.0.1:5678
+    - Vaultwarden:
+        href: https://vault.myserver-ai.ru
+        description: Пароли
+        icon: bitwarden.png
+
+- Медиа (домашний сервер):
+    - Jellyfin:
+        href: http://192.168.0.103:8096
+        description: Фильмы
+        icon: jellyfin.png
+    - Navidrome:
+        href: https://music.myserver-ai.ru
+        description: Музыка
+        icon: navidrome.png
+    - Immich:
+        href: https://photos.myserver-ai.ru
+        description: Фото
+        icon: immich.png
+
+- Данные:
+    - Nextcloud:
+        href: https://nextcloud.myserver-ai.ru
+        description: Файлы
+        icon: nextcloud.png
+    - Codex RPG:
+        href: https://mcp.myserver-ai.ru:8769
+        description: Трекер здоровья
+        icon: si-databricks
+
+- Инструменты:
+    - qBittorrent:
+        href: http://192.168.0.103:8080
+        description: Торренты
+        icon: qbittorrent.png
