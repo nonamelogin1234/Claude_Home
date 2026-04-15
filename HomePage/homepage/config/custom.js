@@ -370,4 +370,9 @@ function init(main) {
   loadNews(false);
 }
 
-waitFor('main', init);
+// Wait for React to hydrate (#services-list appears only after hydration)
+// Using 'main' fires too early — React wipes injected DOM during hydration
+waitFor('#services-list', function(svc) {
+  var mainEl = svc.parentElement || document.querySelector('main') || document.body;
+  init(mainEl);
+});
