@@ -22,6 +22,7 @@ session:
 storage:
   local:
     path: /config/db.sqlite3
+  encryption_key: CHANGE_ME_ENCRYPTION_KEY
 
 notifier:
   filesystem:
@@ -34,13 +35,13 @@ access_control:
       policy: bypass
     - domain: "nextcloud.myserver-ai.ru"
       policy: bypass
+    - domain: "vault.myserver-ai.ru"
+      policy: bypass
     - domain: "myserver-ai.ru"
       resources:
         - "^/webhook/.*$"
       policy: bypass
     - domain: "home.myserver-ai.ru"
-      policy: two_factor
-    - domain: "vault.myserver-ai.ru"
       policy: two_factor
     - domain: "photos.myserver-ai.ru"
       policy: two_factor
