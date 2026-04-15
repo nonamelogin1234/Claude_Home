@@ -370,4 +370,12 @@ function init(main) {
   loadNews(false);
 }
 
-waitFor('main', init);
+// Boot after window.load — by then React is guaranteed to have hydrated.
+// waitFor('main') fires before hydration and gets wiped; waitFor('#services-list')
+// times out because that ID doesn't exist in Homepage v1.12.3.
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var main = document.querySelector('main') || document.body;
+    init(main);
+  }, 300);
+});
