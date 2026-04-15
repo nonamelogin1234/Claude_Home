@@ -95,4 +95,5 @@
 - SSL для home.myserver-ai.ru выдан через acme.sh, лежит в `/.acme.sh/home.myserver-ai.ru_ecc/` — НЕ в /etc/letsencrypt/
 - `systemctl enable/restart/start` на VPS выдают что-то в stderr → shell-api даёт HTTP 500. Но команда выполняется. Для enable: `ln -sf ... /etc/systemd/system/multi-user.target.wants/`. Для start: игнорировать 500, проверять через `curl health`.
 - body_measurements таблица: колонки `weight` и `measured_at` (НЕ value/date). psql нет на хосте → проверять через `docker exec postgres psql`
-- Authelia v4.39+: auth endpoint в nginx поменялся: `/api/verify` (старый) → `/api/authz/forward-auth` (новый). Заголовки тоже другие: X-Forwarded-Host + X-Forwarded-URI вместо X-Original-URL
+- Authelia v4.39+: `/api/authz/forward-auth` возвращает 400 при nginx auth_request (не передаёт нужные заголовки корректно) → использовать `/api/verify` с `X-Original-URL`, он deprecated но работает стабильно
+- Open-Meteo (api.open-meteo.com) — бесплатная погода без API ключа. СПб: lat=59.9386, lon=30.3141
