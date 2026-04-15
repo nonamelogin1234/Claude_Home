@@ -56,6 +56,67 @@ def get_grok_summary():
     return data['choices'][0]['message']['content']
 
 
+WEATHER_URL = (
+    'https://api.open-meteo.com/v1/forecast'
+    '?latitude=59.9386&longitude=30.3141'
+    '&current_weather=true'
+    '&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum'
+    '&hourly=relativehumidity_2m,apparent_temperature,windspeed_10m'
+    '&timezone=Europe%2FMoscow&forecast_days=3'
+)
+
+WMO_CODES = {
+    0: 'Ясно', 1: 'Преимущественно ясно', 2: 'Переменная облачность', 3: 'Пасмурно',
+    45: 'Туман', 48: 'Туман с инеем',
+    51: 'Лёгкая морось', 53: 'Морось', 55: 'Густая морось',
+    61: 'Небольшой дождь', 63: 'Дождь', 65: 'Сильный дождь',
+    71: 'Небольшой снег', 73: 'Снег', 75: 'Сильный снег',
+    77: 'Снежные зёрна',
+    80: 'Ливень', 81: 'Ливни', 82: 'Сильные ливни',
+    85: 'Снегопад', 86: 'Сильный снегопад',
+    95: 'Гроза', 96: 'Гроза с градом', 99: 'Гроза с сильным градом',
+}
+
+
+def get_weather():
+    try:
+        with urlopen(WEATHER_URL, timeout=10) as resp:
+            d = json.loads(resp.read().decode('utf-8'))
+
+        cw = d['current_weather']
+        daily = d['daily']
+        hourly = d['hourly']
+
+        # Текущий час для humidity/apparent_temp
+        now_hour = datetime.datetime.now().hour
+        h_idx = min(now_hour, len(hourly['relativehumidity_2m']) - 1)
+
+        forecast = []
+        day_names = ['Сегодня', 'Завтра', 'Послезавтра']
+        for i in range(min(3, len(daily['time']))):
+            forecast.append({
+                'day': day_names[i],
+                'date': daily['time'][i],
+                'max': round(daily['temperature_2m_max'][i], 1),
+                'min': round(daily['temperature_2m_min'][i], 1),
+                'condition': WMO_CODES.get(daily['weathercode'][i], 'Неизвестно'),
+                'precipitation': round(daily['precipitation_sum'][i], 1),
+            })
+
+        return {
+            'temp': round(cw['temperature'], 1),
+            'wind': round(cw['windspeed'], 1),
+            'condition': WMO_CODES.get(int(cw['weathercode']), 'Неизвестно'),
+            'humidity': hourly['relativehumidity_2m'][h_idx],
+            'feels_like': round(hourly['apparent_temperature'][h_idx], 1),
+            'forecast': forecast,
+            'city': 'Санкт-Петербург',
+            'updated': datetime.datetime.now().strftime('%H:%M'),
+        }
+    except Exception as e:
+        return {'error': str(e)}
+
+
 def get_health_stats():
     try:
         import psycopg2
@@ -127,6 +188,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({'status': 'ok', 'service': 'grok-news'})
         elif path == '/health-stats':
             self.send_json(get_health_stats())
+        elif path == '/weather':
+            self.send_json(get_weather())
         else:
             self.send_json({'error': 'not found'}, 404)
 

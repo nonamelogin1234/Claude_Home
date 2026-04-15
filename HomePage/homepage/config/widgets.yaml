@@ -11,6 +11,30 @@
     text: "Добро пожаловать"
 
 - customapi:
+    url: http://172.18.0.1:8770/weather
+    refreshInterval: 1800000
+    mappings:
+      - field: temp
+        label: "🌡️ Температура"
+        format: float
+        suffix: " °C"
+      - field: feels_like
+        label: "🤔 Ощущается"
+        format: float
+        suffix: " °C"
+      - field: condition
+        label: "☁️ Погода"
+        format: text
+      - field: humidity
+        label: "💧 Влажность"
+        format: number
+        suffix: "%"
+      - field: wind
+        label: "💨 Ветер"
+        format: float
+        suffix: " км/ч"
+
+- customapi:
     url: http://172.18.0.1:8770/health-stats
     refreshInterval: 1800000
     mappings:
