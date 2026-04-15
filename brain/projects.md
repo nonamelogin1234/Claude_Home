@@ -2,7 +2,7 @@
 
 | Проект | Статус | Следующий шаг | Папка |
 |--------|--------|---------------|-------|
-| 🏡 Homepage + Authelia | 🟢 Редизайн + виджеты | Добавить погоду (нужен OWM ключ), сменить пароль Authelia | HomePage/ |
+| 🏡 Homepage + Authelia | 🟡 JS не работает | Открыть DevTools на home.myserver-ai.ru, найти реальные ID в DOM, починить custom.js | HomePage/ |
 | 🎬 КиноКлод | 🟢 Полная система | Тест сценария «Посоветуй фильм» в Claude Desktop | kinoclaude/ |
 | 🔍 DocAI | 🟡 В процессе | Протестировать на реальном PDF с OpenAI ключом | docai/ |
 | 🏠 Домашний сервер | 🟢 Immich готов | Первый вход https://photos.myserver-ai.ru, настроить мобильное приложение | homeserver/ |

@@ -97,3 +97,12 @@
 - body_measurements таблица: колонки `weight` и `measured_at` (НЕ value/date). psql нет на хосте → проверять через `docker exec postgres psql`
 - Authelia v4.39+: `/api/authz/forward-auth` возвращает 400 при nginx auth_request (не передаёт нужные заголовки корректно) → использовать `/api/verify` с `X-Original-URL`, он deprecated но работает стабильно
 - Open-Meteo (api.open-meteo.com) — бесплатная погода без API ключа. СПб: lat=59.9386, lon=30.3141
+
+## Homepage custom.js (2026-04-15)
+
+- Homepage v1.12.3 **не загружает custom.js автоматически** — только custom.css. Нужен nginx `sub_filter '</head>' '<script defer src="/api/config/custom.js"></script></head>'` + `proxy_set_header Accept-Encoding ""` (иначе gzip сломает sub_filter) + `sub_filter_once on`
+- `waitFor('main', init)` стреляет ДО гидрации React → React при гидрации стирает вставленный DOM. Не использовать.
+- `waitFor('#services-list', ...)` — ID `#services-list` НЕ существует в Homepage v1.12.3. waitFor тихо падает через 6 секунд ничего не вызвав.
+- **Правильный подход:** `window.addEventListener('load', function() { setTimeout(init, 300); })` — к этому моменту React гарантированно завершил гидрацию
+- Для диагностики JS на странице — открывать DevTools → Console, смотреть ошибки и `console.log`. Удалённая диагностика через curl ненадёжна — curl не выполняет JS.
+- Если JS всё равно не работает после window.onload — следующий шаг: открыть DevTools → Elements и проверить реальную структуру DOM (какие ID/классы есть в `<main>` после загрузки)
