@@ -1,0 +1,7 @@
+users:
+  sergei:
+    displayname: Sergei
+    password: "CHANGE_ME_PASSWORD_HASH"
+    email: nonamepogin@gmail.com
+    groups:
+      - admins

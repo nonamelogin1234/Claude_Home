@@ -1,0 +1,50 @@
+server:
+  host: 0.0.0.0
+  port: 9091
+
+log:
+  level: info
+
+jwt_secret: CHANGE_ME_JWT_SECRET
+
+default_redirection_url: https://home.myserver-ai.ru
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+
+session:
+  secret: CHANGE_ME_SESSION_SECRET
+  domain: myserver-ai.ru
+  expiration: 12h
+  inactivity: 2h
+
+storage:
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: "auth.myserver-ai.ru"
+      policy: bypass
+    - domain: "nextcloud.myserver-ai.ru"
+      policy: bypass
+    - domain: "myserver-ai.ru"
+      resources:
+        - "^/webhook/.*$"
+      policy: bypass
+    - domain: "home.myserver-ai.ru"
+      policy: two_factor
+    - domain: "vault.myserver-ai.ru"
+      policy: two_factor
+    - domain: "photos.myserver-ai.ru"
+      policy: two_factor
+    - domain: "myserver-ai.ru"
+      policy: two_factor
+    - domain: "music.myserver-ai.ru"
+      policy: two_factor
