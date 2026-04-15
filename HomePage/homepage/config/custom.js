@@ -341,7 +341,7 @@ function buildWidgets(main) {
   row.appendChild(buildWeather());
   row.appendChild(buildHealth());
 
-  var services = document.getElementById('services-list');
+  var services = main.querySelector('div[class*="service"]') || main.firstChild;
   if (services) {
     main.insertBefore(row, services);
     main.insertBefore(buildNews(), services);
@@ -353,6 +353,9 @@ function buildWidgets(main) {
 
 /* ── boot ────────────────────────────────── */
 function init(main) {
+  // Don't init twice
+  if (document.getElementById('hp-header')) return;
+
   ['information-widgets', 'widgets-list'].forEach(function(id) {
     var node = document.getElementById(id);
     if (node) node.style.display = 'none';
@@ -370,9 +373,12 @@ function init(main) {
   loadNews(false);
 }
 
-// Wait for React to hydrate (#services-list appears only after hydration)
-// Using 'main' fires too early — React wipes injected DOM during hydration
-waitFor('#services-list', function(svc) {
-  var mainEl = svc.parentElement || document.querySelector('main') || document.body;
-  init(mainEl);
+// Boot after window.load — by then React is guaranteed to have hydrated.
+// waitFor('main') fires before hydration and gets wiped; waitFor('#services-list')
+// times out because that ID doesn't exist in Homepage v1.12.3.
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var main = document.querySelector('main') || document.body;
+    init(main);
+  }, 300);
 });
