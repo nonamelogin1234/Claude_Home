@@ -37,6 +37,11 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Inject custom.js since Homepage doesn't load it automatically
+        proxy_set_header Accept-Encoding "";
+        sub_filter '</head>' '<script defer src="/api/config/custom.js"></script></head>';
+        sub_filter_once on;
     }
 }
 
