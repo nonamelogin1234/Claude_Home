@@ -4,6 +4,25 @@
       dateStyle: long
       timeStyle: short
       hourCycle: h23
+      locale: ru-RU
+
 - greeting:
-    text_size: xl
-    text: Добро пожаловать
+    text_size: l
+    text: "Добро пожаловать"
+
+- customapi:
+    url: http://172.18.0.1:8770/health-stats
+    refreshInterval: 1800000
+    mappings:
+      - field: smoke_days
+        label: "🚭 Без сигарет"
+        format: number
+        suffix: " дней"
+      - field: weight
+        label: "⚖️ Вес"
+        format: float
+        suffix: " кг"
+      - field: diff
+        label: "📍 До цели"
+        format: float
+        suffix: " кг"

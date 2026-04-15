@@ -54,6 +54,7 @@ curl -sL "$REPO/nginx/immich" -o /etc/nginx/sites-available/immich
 echo "=== Активируем новые конфиги ==="
 ln -sf /etc/nginx/sites-available/homepage /etc/nginx/sites-enabled/homepage
 ln -sf /etc/nginx/sites-available/authelia /etc/nginx/sites-enabled/authelia
+# Существующие конфиги (vaultwarden, music, immich) уже в sites-enabled через симлинки
 
 echo ""
 echo "=== СЛЕДУЮЩИЕ ШАГИ (выполнить вручную) ==="
@@ -69,9 +70,9 @@ echo ""
 echo "3. Проверить и применить nginx:"
 echo "   nginx -t && systemctl reload nginx"
 echo ""
-echo "4. Зайти на https://auth.myserver-ai.ru и настроить TOTP"
+echo "4. Войти на https://auth.myserver-ai.ru и настроить TOTP"
 echo ""
 echo "ВНИМАНИЕ: Vaultwarden и Navidrome за Authelia сломает мобильные клиенты/расширения."
-echo "          При проблемах: поставить policy: bypass для этих доменов."
+echo "          При необходимости поставить policy: bypass для этих доменов."
 echo ""
 echo "=== Готово! ==="

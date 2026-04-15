@@ -2,15 +2,28 @@ server {
     listen 443 ssl;
     server_name home.myserver-ai.ru;
 
-    ssl_certificate /etc/letsencrypt/live/home.myserver-ai.ru/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/home.myserver-ai.ru/privkey.pem;
+    ssl_certificate /.acme.sh/home.myserver-ai.ru_ecc/fullchain.cer;
+    ssl_certificate_key /.acme.sh/home.myserver-ai.ru_ecc/home.myserver-ai.ru.key;
 
-    location /authelia {
+    location = /authelia {
         internal;
-        proxy_pass http://127.0.0.1:9091/api/verify;
-        proxy_pass_request_body off;
+        proxy_pass http://127.0.0.1:9091/api/authz/forward-auth;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_set_header X-Forwarded-URI $request_uri;
         proxy_set_header Content-Length "";
-        proxy_set_header X-Original-URL $scheme://$http_host$request_uri;
+        proxy_pass_request_body off;
+    }
+
+    location /grok-news/ {
+        auth_request /authelia;
+        auth_request_set $target_url $scheme://$http_host$request_uri;
+        error_page 401 =302 https://auth.myserver-ai.ru/?rd=$target_url;
+
+        proxy_pass http://127.0.0.1:8770/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
@@ -20,7 +33,7 @@ server {
         auth_request_set $target_url $scheme://$http_host$request_uri;
         error_page 401 =302 https://auth.myserver-ai.ru/?rd=$target_url;
 
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3030;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

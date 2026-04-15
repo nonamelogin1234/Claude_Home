@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import PyQt6, pdfminer, fastembed, rank_bm25, anthropic; print\\(''OK''\\)\")",
+      "Bash(start pythonw:*)"
+    ]
+  }
+}

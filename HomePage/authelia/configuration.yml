@@ -1,27 +1,33 @@
 server:
-  host: 0.0.0.0
-  port: 9091
+  address: tcp://0.0.0.0:9091
+  tls:
+    certificate: /config/tls.crt
+    key: /config/tls.key
 
 log:
-  level: info
+  level: debug
 
-jwt_secret: CHANGE_ME_JWT_SECRET
-
-default_redirection_url: https://home.myserver-ai.ru
+identity_validation:
+  reset_password:
+    jwt_secret: 13622181ae11cf6cf3f5e2a325ae024d540bdc0ccf2364984d1ec81cc7887108
 
 authentication_backend:
   file:
     path: /config/users_database.yml
 
 session:
-  secret: CHANGE_ME_SESSION_SECRET
-  domain: myserver-ai.ru
+  secret: e4627b90c1a9f5986a8ed0ffa4501ced74657a47b10ac4d3349170471a8c6f54
   expiration: 12h
   inactivity: 2h
+  cookies:
+    - domain: myserver-ai.ru
+      authelia_url: https://auth.myserver-ai.ru
+      default_redirection_url: https://home.myserver-ai.ru
 
 storage:
   local:
     path: /config/db.sqlite3
+  encryption_key: 52d88a025ee33c459ac098e57abe62697582dbcc3cadba11b28e60bdd6559fc6
 
 notifier:
   filesystem:
@@ -34,13 +40,13 @@ access_control:
       policy: bypass
     - domain: "nextcloud.myserver-ai.ru"
       policy: bypass
+    - domain: "vault.myserver-ai.ru"
+      policy: bypass
     - domain: "myserver-ai.ru"
       resources:
         - "^/webhook/.*$"
       policy: bypass
     - domain: "home.myserver-ai.ru"
-      policy: two_factor
-    - domain: "vault.myserver-ai.ru"
       policy: two_factor
     - domain: "photos.myserver-ai.ru"
       policy: two_factor

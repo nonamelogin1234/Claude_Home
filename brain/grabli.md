@@ -92,3 +92,7 @@
 - **"Host validation failed. See logs"** — может приходить от HOMEPAGE, а не Authelia. Homepage требует `HOMEPAGE_ALLOWED_HOSTS=home.myserver-ai.ru` в docker-compose.yml environment, иначе API запросы фронтенда падают с 400
 - Authelia /api/configuration всегда отдаёт 403 при запросе с публичного IP сервера (curl изнутри VPS) — это нормально. Браузер через Docker/VPN (172.x.x.x) получает 200 — приватные IP автоматически trusted proxies
 - `server.trusted_proxies` в Authelia v4.39+ удалён — не использовать, выдаёт "key not expected"
+- SSL для home.myserver-ai.ru выдан через acme.sh, лежит в `/.acme.sh/home.myserver-ai.ru_ecc/` — НЕ в /etc/letsencrypt/
+- `systemctl enable/restart/start` на VPS выдают что-то в stderr → shell-api даёт HTTP 500. Но команда выполняется. Для enable: `ln -sf ... /etc/systemd/system/multi-user.target.wants/`. Для start: игнорировать 500, проверять через `curl health`.
+- body_measurements таблица: колонки `weight` и `measured_at` (НЕ value/date). psql нет на хосте → проверять через `docker exec postgres psql`
+- Authelia v4.39+: auth endpoint в nginx поменялся: `/api/verify` (старый) → `/api/authz/forward-auth` (новый). Заголовки тоже другие: X-Forwarded-Host + X-Forwarded-URI вместо X-Original-URL
