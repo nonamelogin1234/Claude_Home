@@ -1,8 +1,8 @@
 version: "3"
 services:
-  strongswan:
-    image: philplckthun/strongswan
-    container_name: strongswan
+  ipsec-vpn:
+    image: hwdsl2/ipsec-vpn-server
+    container_name: ipsec-vpn
     restart: unless-stopped
     privileged: true
     network_mode: host
