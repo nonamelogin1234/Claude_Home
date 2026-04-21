@@ -47,6 +47,7 @@
 - При записи nginx конфига через `printf` с `\$host` — слэш остаётся буквально в файле → nginx шлёт `Host: \nextcloud...` → Apache 400 Bad Request. Решение: использовать одинарные кавычки в `printf '...$host...'` — тогда shell не трогает `$`, nginx получает правильную переменную
 - Сетевой диск, примонтированный в admin PowerShell, НЕ виден в обычном Explorer — `EnableLinkedConnections` не всегда помогает → монтировать через скрипт автозапуска от имени обычного пользователя
 - Скорость SMB упирается в 100Мбит (~11 МБ/с) если роутер/порт не гигабитный
+- **qBittorrent съедает до 2.5GB RAM** — при зависаниях Jellyfin проверять `docker stats` и рестартовать qBittorrent
 
 ## WireGuard (домашний сервер ↔ VPS)
 
@@ -74,6 +75,23 @@
 - Единственное рабочее решение: российский relay-сервер (Yandex Cloud, VK Cloud, Selectel) с whitelisted IP как первый прыжок → Netherlands VPS → интернет
 - Схема: `phone → RU relay (whitelisted IP) → VPS NL → internet`
 - Cloudflare не является надёжным whitelisted IP для российского мобильного интернета (2026)
+
+## IKEv2 VPN (strongSwan) на Samsung Android
+
+- Samsung Android 12+ показывает только 4 типа VPN: IKEv2/IPSec MSCHAPv2, PSK, RSA, EAP-TLS — XAuth PSK и L2TP убраны
+- `hwdsl2/ipsec-vpn-server` (Libreswan) использует `ikev2=never` по умолчанию и не поддерживает EAP-MSCHAPv2 — не подходит для Samsung
+- `philplckthun/strongswan` — рабочий образ, поддерживает EAP-MSCHAPv2 для Samsung
+- **IKEv2 EAP-MSCHAPv2 требует сертификат сервера** — без `leftcert` strongSwan говорит `no private key found` и рвёт соединение
+- При пересоздании контейнера (`docker rm + docker run`) сертификаты уничтожаются — их надо генерировать заново И обновлять CA на телефоне
+- Контейнер перезаписывает `/etc/ipsec.secrets` при каждом старте → RSA ключ нужно добавлять ПОСЛЕ запуска через `docker exec` + `ipsec rereadsecrets`
+- `/run.sh` в philplckthun/strongswan создаёт несколько conn-ов — нужно заменить `/etc/ipsec.conf` на чистый, иначе strongSwan выбирает неправильный conn
+- Для рабочего IKEv2 EAP нужен чистый конфиг: только один conn `ikev2-eap-mschapv2` с `leftauth=pubkey`, `leftcert=`, `rightauth=eap-mschapv2`, `eap_identity=%identity`
+- **Главная грабля с нет интернета:** на Ubuntu 24.04 Docker использует nftables, а strongSwan добавляет правила в iptables-legacy. Это разные наборы правил. Нужно добавлять FORWARD и POSTROUTING в **nftables** (`nft insert rule ip filter FORWARD ip saddr 10.0.2.0/24 accept` и т.д.)
+- nftables FORWARD chain имеет `policy drop` + правила Docker. Новые правила `nft add rule` добавляются ПОСЛЕ встроенного `drop` → надо `nft insert rule` (вставить В НАЧАЛО)
+- После добавления правил в nftables FORWARD трафик пойдёт и nftables POSTROUTING MASQUERADE заработает
+- rp_filter на проблему не влияет если уже = 0
+- VPN адрес пула: 10.0.2.0/24, шлюз клиентам: 8.8.8.8 DNS
+- **nftables правила не переживают ребут** — нужно прописывать в `/etc/nftables.conf` или скрипт при старте контейнера
 
 ## Hevy / Health Connect
 
