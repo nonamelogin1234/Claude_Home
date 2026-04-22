@@ -341,7 +341,7 @@ function buildWidgets(main) {
   row.appendChild(buildWeather());
   row.appendChild(buildHealth());
 
-  var services = document.getElementById('services-list');
+  var services = main.querySelector('div[class*="service"]') || main.firstChild;
   if (services) {
     main.insertBefore(row, services);
     main.insertBefore(buildNews(), services);
@@ -353,6 +353,9 @@ function buildWidgets(main) {
 
 /* ── boot ────────────────────────────────── */
 function init(main) {
+  // Don't init twice
+  if (document.getElementById('hp-header')) return;
+
   ['information-widgets', 'widgets-list'].forEach(function(id) {
     var node = document.getElementById(id);
     if (node) node.style.display = 'none';

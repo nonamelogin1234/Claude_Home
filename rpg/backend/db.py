@@ -40,7 +40,6 @@ def fetch_hero_data() -> Optional[dict]:
         strength = row["strength"] if row and row["strength"] is not None else None
 
         if strength is None:
-            # fallback: max weight from last workout date across all exercises
             cur.execute("""
                 SELECT MAX(weight_kg) AS strength
                 FROM hevy_sets
@@ -60,9 +59,9 @@ def fetch_hero_data() -> Optional[dict]:
         row = cur.fetchone()
         endurance = float(row["avg_steps"]) / 100.0 if row else 0.0
 
-        # recovery — avg deep sleep last 7 days
+        # recovery — avg total sleep (min) last 7 days (from Notion manual tracker)
         cur.execute("""
-            SELECT COALESCE(AVG(deep_sleep_min), 0) AS avg_sleep
+            SELECT COALESCE(AVG(sleep_duration_min), 0) AS avg_sleep
             FROM health_daily_summary
             WHERE date >= CURRENT_DATE - INTERVAL '7 days'
         """)
@@ -112,14 +111,14 @@ def fetch_quest_data() -> Optional[dict]:
         cur.execute("SELECT COUNT(*) AS cnt FROM hevy_workouts")
         total_workouts = int(cur.fetchone()["cnt"])
 
-        # recent sleep — extended to 14 rows to cover both 5-night and 7-night streaks
+        # recent sleep — use sleep_duration_min (total sleep, from Notion manual tracker)
         cur.execute("""
-            SELECT date, deep_sleep_min
+            SELECT date, sleep_duration_min
             FROM health_daily_summary
             ORDER BY date DESC
             LIMIT 14
         """)
-        recent_sleep = [(r["date"], r["deep_sleep_min"]) for r in cur.fetchall()]
+        recent_sleep = [(r["date"], r["sleep_duration_min"]) for r in cur.fetchall()]
 
         # current week volume
         cur.execute("""
@@ -239,7 +238,6 @@ def fetch_stats_data() -> Optional[dict]:
         conn = get_conn()
         cur = conn.cursor()
 
-        # current weight & body fat
         cur.execute("""
             SELECT weight, body_fat
             FROM body_measurements
@@ -250,11 +248,9 @@ def fetch_stats_data() -> Optional[dict]:
         current_weight = float(row["weight"]) if row and row["weight"] is not None else None
         current_body_fat = float(row["body_fat"]) if row and row.get("body_fat") is not None else None
 
-        # total workouts
         cur.execute("SELECT COUNT(*) AS cnt FROM hevy_workouts")
         total_workouts = int(cur.fetchone()["cnt"])
 
-        # workouts last 30 days
         cur.execute("""
             SELECT COUNT(*) AS cnt
             FROM hevy_workouts
@@ -262,11 +258,9 @@ def fetch_stats_data() -> Optional[dict]:
         """)
         workouts_30d = int(cur.fetchone()["cnt"])
 
-        # total volume
         cur.execute("SELECT COALESCE(SUM(total_volume_kg), 0) AS vol FROM hevy_workouts")
         total_volume = float(cur.fetchone()["vol"])
 
-        # best workout
         cur.execute("""
             SELECT workout_date, total_volume_kg
             FROM hevy_workouts
@@ -281,7 +275,6 @@ def fetch_stats_data() -> Optional[dict]:
                 "total_volume_kg": float(row["total_volume_kg"]),
             }
 
-        # avg volume last 5 workouts
         cur.execute("""
             SELECT AVG(total_volume_kg) AS avg_vol
             FROM (
@@ -294,7 +287,6 @@ def fetch_stats_data() -> Optional[dict]:
         row = cur.fetchone()
         avg_volume_5 = float(row["avg_vol"]) if row and row["avg_vol"] is not None else None
 
-        # workout dates for streak calculation
         cur.execute("""
             SELECT workout_date
             FROM hevy_workouts
@@ -305,7 +297,6 @@ def fetch_stats_data() -> Optional[dict]:
         cur.close()
         conn.close()
 
-        # compute streak weeks in Python
         current_streak_weeks = _compute_streak_weeks(all_dates)
 
         return {
@@ -324,22 +315,19 @@ def fetch_stats_data() -> Optional[dict]:
 
 
 def _compute_streak_weeks(workout_dates) -> int:
-    """Count consecutive calendar weeks (Mon-Sun) with at least 1 workout, going back from most recent."""
     if not workout_dates:
         return 0
 
     import datetime
 
-    # Get set of ISO calendar weeks that have workouts
     week_set = set()
     for d in workout_dates:
         if hasattr(d, "isocalendar"):
             iso = d.isocalendar()
         else:
             iso = datetime.date.fromisoformat(str(d)).isocalendar()
-        week_set.add((iso[0], iso[1]))  # (year, week_number)
+        week_set.add((iso[0], iso[1]))
 
-    # Start from the most recent workout's week and count backwards
     most_recent = workout_dates[0]
     if hasattr(most_recent, "isocalendar"):
         current = most_recent
@@ -368,7 +356,6 @@ def fetch_events_data() -> Optional[list]:
 
         events = []
 
-        # Workouts with LAG for volume comparison
         cur.execute("""
             SELECT
                 workout_date,
@@ -388,7 +375,6 @@ def fetch_events_data() -> Optional[list]:
                 "prev_vol": float(row["prev_vol"]) if row["prev_vol"] is not None else None,
             })
 
-        # Weight measurements
         cur.execute("""
             SELECT DATE(measured_at) AS date, weight
             FROM body_measurements
@@ -402,11 +388,11 @@ def fetch_events_data() -> Optional[list]:
                 "weight": float(row["weight"]) if row["weight"] is not None else 0.0,
             })
 
-        # Sleep events
+        # Sleep events — sleep_duration_min (total sleep from Notion manual tracker)
         cur.execute("""
-            SELECT date, deep_sleep_min
+            SELECT date, sleep_duration_min
             FROM health_daily_summary
-            WHERE deep_sleep_min > 0
+            WHERE sleep_duration_min > 0
             ORDER BY date DESC
             LIMIT 10
         """)
@@ -414,10 +400,9 @@ def fetch_events_data() -> Optional[list]:
             events.append({
                 "type": "sleep",
                 "date": row["date"],
-                "deep_sleep": int(row["deep_sleep_min"]) if row["deep_sleep_min"] is not None else 0,
+                "sleep_min": int(row["sleep_duration_min"]) if row["sleep_duration_min"] is not None else 0,
             })
 
-        # Exercise records (PRs)
         cur.execute("""
             WITH ranked AS (
                 SELECT

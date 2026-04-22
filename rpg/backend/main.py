@@ -31,7 +31,7 @@ def root():
     return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 
-# ─── Level thresholds ────────────────────────────────────────────────────────
+# ─── Level thresholds ────────────────────────────────────────────────────────────────
 LEVELS = [
     (1, 0, 10, "Начало"),
     (2, 10, 25, "На ходу"),
@@ -48,7 +48,7 @@ def compute_level(workouts: int):
     return 5, "Образ жизни", 100, 999999
 
 
-# ─── /api/hero ───────────────────────────────────────────────────────────────
+# ─── /api/hero ────────────────────────────────────────────────────────────────────
 @app.get("/api/hero", response_model=HeroStats)
 def get_hero():
     cached = cache.get("hero")
@@ -86,7 +86,7 @@ def get_hero():
     return hero
 
 
-# ─── /api/quests ─────────────────────────────────────────────────────────────
+# ─── /api/quests ───────────────────────────────────────────────────────────────────
 @app.get("/api/quests", response_model=List[Quest])
 def get_quests():
     cached = cache.get("quests")
@@ -124,7 +124,7 @@ def get_quests():
 
     quests = []
 
-    # ── Quest 1: Постоянство ─────────────────────────────────────────────────
+    # ── Quest 1: Постоянство ─────────────────────────────────────────────────────────────────────
     days_since_last = None
     if last_workout_date:
         if hasattr(last_workout_date, "toordinal"):
@@ -165,10 +165,11 @@ def get_quests():
         progress_text=f"{days_since_last if days_since_last is not None else '?'} дн. с последней тренировки",
     ))
 
-    # ── Quest 2: Страж сна ───────────────────────────────────────────────────
+    # ── Quest 2: Страж сна ────────────────────────────────────────────────────────────────────────
+    # Порог: сон ≥ 420 мин (7 ч) — хороший общий сон
     sleep_streak = 0
-    for _, deep_sleep in recent_sleep:
-        if deep_sleep is not None and int(deep_sleep) > 120:
+    for _, sleep_min in recent_sleep:
+        if sleep_min is not None and int(sleep_min) >= 420:
             sleep_streak += 1
         else:
             break
@@ -179,13 +180,13 @@ def get_quests():
         id="sleep_guard",
         icon="🌙",
         name="Страж сна",
-        description="5 ночей подряд глубокого сна более 120 мин",
+        description="5 ночей подряд со сном не менее 7 ч",
         status=q2_status,
         progress=round(q2_progress, 3),
         progress_text=f"{sleep_streak}/5 ночей подряд",
     ))
 
-    # ── Quest 3: Рекорд недели ───────────────────────────────────────────────
+    # ── Quest 3: Рекорд недели ───────────────────────────────────────────────────────────────────
     if max_weekly_volume > 0:
         q3_progress = min(1.0, current_week_volume / max_weekly_volume)
         q3_status = "completed" if current_week_volume >= max_weekly_volume else "active"
@@ -203,7 +204,7 @@ def get_quests():
         progress_text=f"{current_week_volume:.0f} / {max_weekly_volume:.0f} кг",
     ))
 
-    # ── Quest 4: Верный путь ─────────────────────────────────────────────────
+    # ── Quest 4: Верный путь ─────────────────────────────────────────────────────────────────────
     last_10 = workout_dates[:10]
 
     def get_week_start(d):
@@ -239,10 +240,10 @@ def get_quests():
         progress_text=f"{min(len(last_10), 10)}/10 тренировок",
     ))
 
-    # ── Quest 5: Первый шаг ──────────────────────────────────────────────────
+    # ── Quest 5: Первый шаг ──────────────────────────────────────────────────────────────────────
     quests.append(Quest(
         id="first_step",
-        icon="🌟",
+        icon="⭐",
         name="Первый шаг",
         description="Первая тренировка завершена",
         status="completed" if total_workouts >= 1 else "locked",
@@ -250,7 +251,7 @@ def get_quests():
         progress_text="достигнуто" if total_workouts >= 1 else "0/1",
     ))
 
-    # ── Quest 6: В ритме ─────────────────────────────────────────────────────
+    # ── Quest 6: В ритме ───────────────────────────────────────────────────────────────────────────
     quests.append(Quest(
         id="veteran",
         icon="🏅",
@@ -261,7 +262,7 @@ def get_quests():
         progress_text=f"{total_workouts}/10 тренировок",
     ))
 
-    # ── Quest 7: Марафон зала ────────────────────────────────────────────────
+    # ── Quest 7: Марафон зала ────────────────────────────────────────────────────────────────────
     quests.append(Quest(
         id="iron_man",
         icon="💪",
@@ -272,7 +273,7 @@ def get_quests():
         progress_text=f"{total_workouts}/25 тренировок",
     ))
 
-    # ── Quest 8: Пятничный ритуал ────────────────────────────────────────────
+    # ── Quest 8: Пятничный ритуал ─────────────────────────────────────────────────────────────────
     workout_dates_set = set()
     for d in workout_dates:
         dd = d if hasattr(d, "toordinal") else datetime.date.fromisoformat(str(d))
@@ -288,7 +289,7 @@ def get_quests():
     friday_count = sum(1 for fd in last_4_fridays if fd in workout_dates_set)
     quests.append(Quest(
         id="friday_ritual",
-        icon="🌆",
+        icon="🏙",
         name="Пятничный ритуал",
         description="Посетить зал в пятницу 4 недели подряд",
         status="completed" if friday_count >= 4 else "active",
@@ -296,12 +297,12 @@ def get_quests():
         progress_text=f"{friday_count}/4 пятниц",
     ))
 
-    # ── Quest 9: Без никотина ─────────────────────────────────────────────────
+    # ── Quest 9: Без никотина ─────────────────────────────────────────────────────────────────────
     quit_date = datetime.date(2025, 2, 13)
     nicotine_days = (today - quit_date).days
     quests.append(Quest(
         id="no_nicotine",
-        icon="🚭",
+        icon="🚶",
         name="Без никотина",
         description="Дней без сигарет с 13 февраля 2025",
         status="active",
@@ -309,7 +310,7 @@ def get_quests():
         progress_text=f"{nicotine_days} дней",
     ))
 
-    # ── Quest 10: Постоянство веса ───────────────────────────────────────────
+    # ── Quest 10: Постоянство веса ───────────────────────────────────────────────────────────────────
     quests.append(Quest(
         id="weight_consistency",
         icon="⚖️",
@@ -320,7 +321,7 @@ def get_quests():
         progress_text=f"{weight_measurements_7d}/5 взвешиваний",
     ))
 
-    # ── Quest 11: Объём месяца ────────────────────────────────────────────────
+    # ── Quest 11: Объём месяца ───────────────────────────────────────────────────────────────────────
     if avg_monthly_volume_3m > 0:
         q11_progress = min(1.0, current_month_volume / avg_monthly_volume_3m)
         q11_status = "completed" if current_month_volume >= avg_monthly_volume_3m else "active"
@@ -338,27 +339,28 @@ def get_quests():
         progress_text=f"{current_month_volume:.0f} / {avg_monthly_volume_3m:.0f} кг",
     ))
 
-    # ── Quest 12: Серия сна ────────────────────────────────────────────────────
-    sleep_streak_90 = 0
-    for _, deep_sleep in recent_sleep:
-        if deep_sleep is not None and int(deep_sleep) > 90:
-            sleep_streak_90 += 1
+    # ── Quest 12: Серия сна ─────────────────────────────────────────────────────────────────────────
+    # Порог: сон ≥ 360 мин (6 ч) — приемлемый минимум
+    sleep_streak_6h = 0
+    for _, sleep_min in recent_sleep:
+        if sleep_min is not None and int(sleep_min) >= 360:
+            sleep_streak_6h += 1
         else:
             break
 
-    q12_progress = min(sleep_streak_90, 7) / 7.0
-    q12_status = "completed" if sleep_streak_90 >= 7 else "active"
+    q12_progress = min(sleep_streak_6h, 7) / 7.0
+    q12_status = "completed" if sleep_streak_6h >= 7 else "active"
     quests.append(Quest(
         id="sleep_quality_streak",
         icon="✨",
         name="Серия сна",
-        description="7 ночей подряд с глубоким сном более 90 мин",
+        description="7 ночей подряд со сном не менее 6 ч",
         status=q12_status,
         progress=round(q12_progress, 3),
-        progress_text=f"{sleep_streak_90}/7 ночей подряд",
+        progress_text=f"{sleep_streak_6h}/7 ночей подряд",
     ))
 
-    # ── Quest 13: Первая сотня ───────────────────────────────────────────────
+    # ── Quest 13: Первая сотня ───────────────────────────────────────────────────────────────────
     quests.append(Quest(
         id="hundred_sessions",
         icon="💯",
@@ -369,7 +371,7 @@ def get_quests():
         progress_text=f"{total_workouts}/100 тренировок",
     ))
 
-    # ── Quest 14: Рекорд жима ─────────────────────────────────────────────────
+    # ── Quest 14: Рекорд жима ─────────────────────────────────────────────────────────────────────
     if leg_press_current > 0 and leg_press_prev > 0:
         if leg_press_current > leg_press_prev:
             lp_status = "completed"
@@ -403,13 +405,13 @@ def get_quests():
     return result
 
 
-# ─── /api/bosses ─────────────────────────────────────────────────────────────
+# ─── /api/bosses ────────────────────────────────────────────────────────────────────
 BOSSES_DEF = [
     ("Первый порог — 110 кг", "⚖️", 110.0),
     ("Хранитель плато — 105 кг", "⚗️", 105.0),
     ("Ниже ста — 99 кг", "🎯", 99.0),
     ("Комфортный вес — 90 кг", "🌿", 90.0),
-    ("Целевой вес — 85 кг", "✦", 85.0),
+    ("Целевой вес — 85 кг", "❆", 85.0),
 ]
 
 START_WEIGHT = 120.0
@@ -457,7 +459,7 @@ def get_bosses():
     return result
 
 
-# ─── /api/stats ──────────────────────────────────────────────────────────────
+# ─── /api/stats ─────────────────────────────────────────────────────────────────────────
 @app.get("/api/stats")
 def get_stats():
     cached = cache.get("stats")
@@ -481,7 +483,7 @@ def get_stats():
     return data
 
 
-# ─── /api/events ─────────────────────────────────────────────────────────────
+# ─── /api/events ──────────────────────────────────────────────────────────────────────
 @app.get("/api/events", response_model=List[Event])
 def get_events():
     cached = cache.get("events")
@@ -532,18 +534,18 @@ def get_events():
                 text=f"Вес зафиксирован: {weight:.1f} кг",
             ))
         elif etype == "sleep":
-            ds = e.get("deep_sleep", 0)
-            if ds > 90:
+            sm = e.get("sleep_min", 0)
+            if sm >= 420:
                 events.append(Event(
                     date_str=date_str,
                     icon="🌙",
-                    text=f"Глубокий сон: {ds} мин",
+                    text=f"Хороший сон: {sm // 60}ч {sm % 60}мин",
                 ))
-            elif ds > 0:
+            elif sm > 0:
                 events.append(Event(
                     date_str=date_str,
                     icon="😴",
-                    text=f"Сон: {ds} мин",
+                    text=f"Сон: {sm // 60}ч {sm % 60}мин",
                 ))
         elif etype == "record":
             exercise = e.get("exercise", "")
@@ -559,7 +561,7 @@ def get_events():
     return result
 
 
-# ─── /api/weight-chart ───────────────────────────────────────────────────────
+# ─── /api/weight-chart ─────────────────────────────────────────────────────────────────────
 @app.get("/api/weight-chart", response_model=List[WeightPoint])
 def get_weight_chart():
     cached = cache.get("weight_chart")

@@ -1,0 +1,12 @@
+version: "3"
+services:
+  ipsec-vpn:
+    image: hwdsl2/ipsec-vpn-server
+    container_name: ipsec-vpn
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      - VPN_IPSEC_PSK=MyServerVpnKey2026
+      - VPN_USER=sergei
+      - VPN_PASSWORD=Vpn2026Spb!
