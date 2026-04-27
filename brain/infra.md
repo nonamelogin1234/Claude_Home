@@ -59,7 +59,7 @@
 |----------|----------|
 | Железо | Maibenben M547, Ryzen 7 4700U, 8GB, NVMe 512GB |
 | ОС | Ubuntu Server 24.04, user: sergei, host: homeserver |
-| IP сеть | 192.168.0.103 |
+| IP сеть | 192.168.0.106 |
 | IP WireGuard | 10.8.0.27 |
 | Shell API | /home/sergei/shell-api.py, порт 7722 |
 
@@ -69,6 +69,8 @@
 |--------|------|------------|
 | Immich | 2283 | Фото (https://photos.myserver-ai.ru) |
 | Nextcloud | 8181 | Облако (https://nextcloud.myserver-ai.ru) |
+| qbittorrent | 18080→8090 | Торрент |
+| Jellyfin | 8096 | Медиасервер |
 
 ## PostgreSQL — таблицы jarvis_memory
 
@@ -94,6 +96,8 @@
 
 ## Как подключаться к серверам
 
+### Shell API (для Клода — запуск команд)
+
 ```powershell
 # VPS — домашний ПК:
 powershell -ExecutionPolicy Bypass -File C:\Users\user\srv.ps1 -cmd "КОМАНДА"
@@ -109,6 +113,26 @@ POST https://mcp.myserver-ai.ru:7723
 X-Secret: shell-api-secret-2026
 {"cmd": "команда"}
 ```
+
+### SSH — терминал для Сергея
+
+**С домашнего ПК** (локальная сеть, прямое подключение):
+```bash
+ssh sergei@192.168.0.106
+```
+
+**С рабочего ПК** (снаружи, через VPS как промежуточную точку):
+```bash
+# Шаг 1 — подключиться на VPS:
+ssh sergei@147.45.238.120
+
+# Шаг 2 — с VPS прыгнуть на домашний сервер:
+ssh sergei@10.8.0.27
+```
+
+> SSH-ключ с рабочего ПК (ed25519) добавлен в authorized_keys на VPS (апрель 2026).
+> SSH-ключ с домашнего ПК уже был там ранее.
+> Прямого SSH-тоннеля через nginx нет (модуль stream не установлен).
 
 ## Proxifier (домашний ПК)
 
