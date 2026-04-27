@@ -26,7 +26,7 @@
 | shell-api | 7722→7723 | Shell API (nginx HTTPS proxy) |
 | docai | 8765 | RAG поиск по PDF |
 | kinoclaude | 8766→8767 | KinoClaude MCP |
-| 3proxy | 8443 | SOCKS5 прокси |
+| 3proxy | 7777 | SOCKS5 прокси |
 | sing-box | 10080/TCP (WS), 2083/TCP (Reality), 443/UDP (Hysteria2) | VPN — 3 протокола, см. VPN_Hide/context.md |
 | zabbix-agent | — | Мониторинг (агент) |
 | nginx | 80/443/7723/7724/8767 | Reverse proxy |
@@ -45,7 +45,7 @@
 | myserver-ai.ru/docs | docai :8765 | |
 | mcp.myserver-ai.ru:443 | :8080 | cadvisor (Docker мониторинг) |
 | mcp.myserver-ai.ru:7723 | shell-api :7722 HTTPS | VPS shell |
-| mcp.myserver-ai.ru:7724 | home shell-api :7722 через wg1 | Домашний сервер |
+| mcp.myserver-ai.ru:7724 | home shell-api :7722 через wg1 | Домашний сервер shell API |
 | mcp.myserver-ai.ru:8767/sse, /messages | kinoclaude :8766 HTTPS | |
 | vault.myserver-ai.ru | vaultwarden :8081 | |
 | photos.myserver-ai.ru | 10.8.0.27:2283 | Immich на домашнем сервере |
@@ -103,11 +103,17 @@
 powershell -ExecutionPolicy Bypass -File C:\Users\user\srv.ps1 -cmd "КОМАНДА"
 # VPS — рабочий ПК:
 powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\srv.ps1 -cmd "КОМАНДА"
-# Домашний сервер:
+# Домашний сервер — только домашний ПК (home.ps1 на рабочем ПК нет):
 powershell -ExecutionPolicy Bypass -File C:\Users\user\home.ps1 -cmd "КОМАНДА"
 ```
 
-Shell API напрямую:
+С рабочего ПК команды на домашнем сервере — только через SSH с VPS:
+```powershell
+powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\srv.ps1 -cmd "ssh -o StrictHostKeyChecking=no sergei@10.8.0.27 'КОМАНДА'"
+```
+> SSH-ключ VPS→домашний сервер настроен (апрель 2026), работает без пароля.
+
+Shell API напрямую (VPS):
 ```
 POST https://mcp.myserver-ai.ru:7723
 X-Secret: shell-api-secret-2026
@@ -120,21 +126,24 @@ X-Secret: shell-api-secret-2026
 ```bash
 ssh sergei@192.168.0.106
 ```
+> Если WireGuard VPN включён — отключи перед подключением.
 
-**С рабочего ПК** (снаружи, через VPS как промежуточную точку):
+**С рабочего ПК** (через VPS как jump-хост):
 ```bash
-# Шаг 1 — подключиться на VPS:
-ssh sergei@147.45.238.120
+# Одной командой через ProxyJump:
+ssh -J sergei@147.45.238.120 sergei@10.8.0.27
 
-# Шаг 2 — с VPS прыгнуть на домашний сервер:
-ssh sergei@10.8.0.27
+# Или в два шага:
+ssh sergei@147.45.238.120   # шаг 1: войти на VPS
+ssh sergei@10.8.0.27        # шаг 2: с VPS на домашний сервер
 ```
 
-> SSH-ключ с рабочего ПК (ed25519) добавлен в authorized_keys на VPS (апрель 2026).
-> SSH-ключ с домашнего ПК уже был там ранее.
+> SSH-ключ с рабочего ПК (ed25519) добавлен в authorized_keys на VPS (апрель 2026) — вход без пароля.
+> SSH-ключ VPS→домашний сервер настроен (апрель 2026) — вход без пароля.
 > Прямого SSH-тоннеля через nginx нет (модуль stream не установлен).
+> Порт 7724 — это shell API домашнего сервера, НЕ SSH.
 
 ## Proxifier (домашний ПК)
 
-- Прокси: 147.45.238.120:8443, SOCKS5, user: socks5user, pass: Pr0xy2026!
+- Прокси: 147.45.238.120:7777, SOCKS5, user: socks5user, pass: Pr0xy2026!
 - Discord.exe → через прокси. Telegram → прокси в настройках. Default → Direct
