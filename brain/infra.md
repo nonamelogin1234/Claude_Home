@@ -99,19 +99,18 @@
 ### Shell API (для Клода — запуск команд)
 
 ```powershell
-# VPS — домашний ПК:
-powershell -ExecutionPolicy Bypass -File C:\Users\user\srv.ps1 -cmd "КОМАНДА"
 # VPS — рабочий ПК:
 powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\srv.ps1 -cmd "КОМАНДА"
-# Домашний сервер — только домашний ПК (home.ps1 на рабочем ПК нет):
+# VPS — домашний ПК:
+powershell -ExecutionPolicy Bypass -File C:\Users\user\srv.ps1 -cmd "КОМАНДА"
+
+# Домашний сервер — рабочий ПК:
+powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\home.ps1 -cmd "КОМАНДА"
+# Домашний сервер — домашний ПК:
 powershell -ExecutionPolicy Bypass -File C:\Users\user\home.ps1 -cmd "КОМАНДА"
 ```
 
-С рабочего ПК команды на домашнем сервере — только через SSH с VPS:
-```powershell
-powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\srv.ps1 -cmd "ssh -o StrictHostKeyChecking=no sergei@10.8.0.27 'КОМАНДА'"
-```
-> SSH-ключ VPS→домашний сервер настроен (апрель 2026), работает без пароля.
+> home.ps1 есть на ОБОИХ ПК (рабочий и домашний). Идёт через порт 7724 → nginx VPS → shell-api домашнего сервера.
 
 Shell API напрямую (VPS):
 ```
@@ -130,15 +129,14 @@ ssh sergei@192.168.0.106
 
 **С рабочего ПК** (через VPS как jump-хост):
 ```bash
-# Одной командой через ProxyJump:
-ssh -J sergei@147.45.238.120 sergei@10.8.0.27
+# VPS:
+ssh -i C:\Users\torganov-a\.ssh\id_ed25519 sergei@147.45.238.120
 
-# Или в два шага:
-ssh sergei@147.45.238.120   # шаг 1: войти на VPS
-ssh sergei@10.8.0.27        # шаг 2: с VPS на домашний сервер
+# Домашний сервер одной командой через ProxyJump:
+ssh -J sergei@147.45.238.120 sergei@10.8.0.27
 ```
 
-> SSH-ключ с рабочего ПК (ed25519) добавлен в authorized_keys на VPS (апрель 2026) — вход без пароля.
+> SSH-ключ с рабочего ПК (ed25519, C:\Users\torganov-a\.ssh\id_ed25519) добавлен в authorized_keys на VPS (апрель 2026) — вход без пароля.
 > SSH-ключ VPS→домашний сервер настроен (апрель 2026) — вход без пароля.
 > Прямого SSH-тоннеля через nginx нет (модуль stream не установлен).
 > Порт 7724 — это shell API домашнего сервера, НЕ SSH.
