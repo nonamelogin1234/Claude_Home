@@ -96,49 +96,78 @@
 
 ## Как подключаться к серверам
 
-### Shell API (для Клода — запуск команд)
+### Для Клода — запуск команд на серверах (апрель 2026, всё протестировано)
 
+**СПОСОБ 1 — curl напрямую (самый быстрый, из Bash tool):**
+```bash
+# VPS:
+curl -sk -X POST "https://mcp.myserver-ai.ru:7723" \
+  -H "X-Secret: shell-api-secret-2026" \
+  -H "Content-Type: application/json" \
+  -d '{"cmd":"КОМАНДА"}'
+
+# Домашний сервер:
+curl -sk -X POST "https://mcp.myserver-ai.ru:7724" \
+  -H "X-Secret: home-shell-secret-2026" \
+  -H "Content-Type: application/json" \
+  -d '{"cmd":"КОМАНДА"}'
+```
+
+**СПОСОБ 2 — SSH напрямую из Bash tool (без PowerShell, ключ gor-r прописан):**
+```bash
+# VPS:
+ssh -o StrictHostKeyChecking=no root@147.45.238.120 "КОМАНДА"
+
+# Домашний сервер через ProxyJump:
+ssh -o StrictHostKeyChecking=no -J root@147.45.238.120 sergei@10.8.0.27 "КОМАНДА"
+```
+
+**СПОСОБ 3 — PowerShell скрипты (тоже работают):**
 ```powershell
 # VPS — рабочий ПК:
 powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\srv.ps1 -cmd "КОМАНДА"
-# VPS — домашний ПК:
-powershell -ExecutionPolicy Bypass -File C:\Users\user\srv.ps1 -cmd "КОМАНДА"
-
 # Домашний сервер — рабочий ПК:
 powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\home.ps1 -cmd "КОМАНДА"
+# VPS — домашний ПК:
+powershell -ExecutionPolicy Bypass -File C:\Users\user\srv.ps1 -cmd "КОМАНДА"
 # Домашний сервер — домашний ПК:
 powershell -ExecutionPolicy Bypass -File C:\Users\user\home.ps1 -cmd "КОМАНДА"
 ```
 
-> home.ps1 есть на ОБОИХ ПК (рабочий и домашний). Идёт через порт 7724 → nginx VPS → shell-api домашнего сервера.
-
-Shell API напрямую (VPS):
-```
-POST https://mcp.myserver-ai.ru:7723
-X-Secret: shell-api-secret-2026
-{"cmd": "команда"}
-```
+> Shell API секреты: VPS = `shell-api-secret-2026`, домашний = `home-shell-secret-2026`
+> Порты: VPS shell-api :7722 → nginx HTTPS :7723, домашний :7722 → nginx HTTPS :7724
+> home.ps1 есть на ОБОИХ ПК (рабочий и домашний).
 
 ### SSH — терминал для Сергея
 
-**С домашнего ПК** (локальная сеть, прямое подключение):
+**SSH конфиг настроен** на рабочем ПК (`C:\Users\torganov-a\.ssh\config`).
+Просто открыть cmd/PowerShell и ввести:
+```
+ssh vps          # → VPS (root), без пароля
+ssh homeserver   # → домашний сервер (sergei), через VPS, без пароля
+```
+
+**С домашнего ПК** (локальная сеть):
 ```bash
-ssh sergei@192.168.0.106
+ssh sergei@192.168.0.106   # прямо, без VPS
 ```
 > Если WireGuard VPN включён — отключи перед подключением.
 
-**С рабочего ПК** (через VPS как jump-хост):
-```bash
-# VPS:
-ssh -i C:\Users\torganov-a\.ssh\id_ed25519 sergei@147.45.238.120
-
-# Домашний сервер одной командой через ProxyJump:
-ssh -J sergei@147.45.238.120 sergei@10.8.0.27
+**С рабочего ПК вручную (если config не работает):**
+```
+ssh -i C:\Users\torganov-a\.ssh\id_ed25519 root@147.45.238.120
+ssh -i C:\Users\torganov-a\.ssh\id_ed25519 -J root@147.45.238.120 sergei@10.8.0.27
 ```
 
-> SSH-ключ с рабочего ПК (ed25519, C:\Users\torganov-a\.ssh\id_ed25519) добавлен в authorized_keys на VPS (апрель 2026) — вход без пароля.
-> SSH-ключ VPS→домашний сервер настроен (апрель 2026) — вход без пароля.
-> Прямого SSH-тоннеля через nginx нет (модуль stream не установлен).
+### SSH ключи (апрель 2026)
+
+| Ключ | Где лежит | Добавлен в |
+|------|-----------|------------|
+| user@Useer | домашний ПК | VPS + домашний сервер |
+| torganov-a@work | `C:\Users\torganov-a\.ssh\id_ed25519` | VPS + домашний сервер |
+| petro-balt\torganov-a@torganov-alexey | gor-r (bash tool, Claude) | VPS + домашний сервер |
+| root@3330663-kd17640 | VPS | домашний сервер |
+
 > Порт 7724 — это shell API домашнего сервера, НЕ SSH.
 
 ## Proxifier (домашний ПК)
