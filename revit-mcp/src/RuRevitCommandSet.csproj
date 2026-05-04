@@ -5,8 +5,9 @@
     <AssemblyName>RuRevitCommandSet</AssemblyName>
     <RootNamespace>RuRevitCommandSet</RootNamespace>
     <LangVersion>9.0</LangVersion>
-    <!-- Собираем прямо в папку Revit — после сборки сразу можно тестировать (с рестартом Revit) -->
-    <OutputPath>C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\Commands\RuRevitCommandSet\2024\</OutputPath>
+    <!-- $(APPDATA) = C:\Users\USERNAME\AppData\Roaming — работает на любом ПК -->
+    <RevitPlugin>$(APPDATA)\Autodesk\Revit\Addins\2024\revit_mcp_plugin</RevitPlugin>
+    <OutputPath>$(RevitPlugin)\Commands\RuRevitCommandSet\2024\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
@@ -24,13 +25,13 @@
 
     <!-- MCP SDK — уже есть в папке плагина, не копировать -->
     <Reference Include="RevitMCPSDK">
-      <HintPath>C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\RevitMCPSDK.dll</HintPath>
+      <HintPath>$(RevitPlugin)\RevitMCPSDK.dll</HintPath>
       <Private>false</Private>
     </Reference>
 
     <!-- JSON — уже есть в папке плагина -->
     <Reference Include="Newtonsoft.Json">
-      <HintPath>C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\Newtonsoft.Json.dll</HintPath>
+      <HintPath>$(RevitPlugin)\Newtonsoft.Json.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
