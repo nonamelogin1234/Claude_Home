@@ -14,4 +14,5 @@
 | 🏃 Health Connect sync | 🟢 Готово | — | — |
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
 | 📊 Мониторинг-дашборд | 🟡 Почти готов | Вписать Telegram bot_token + chat_id в alertmanager | dashboard/ |
-| 🏗️ Revit MCP | 🟢 Работает | Тест create_wall, create_level, разобраться с кириллицей в осях | revit-mcp/ |
+| 🏗️ Revit MCP | 🟢 Работает | Переключились на mcp-servers-for-revit, новый токен GitHub в конфиге | revit-mcp/ |
+| 🏗️ RuRevitMCP | 🟡 Старт | Написать первую команду create_grid_custom, склонировать репо на ПК, собрать DLL | github.com/nonamelogin1234/RuRevitMCP |
