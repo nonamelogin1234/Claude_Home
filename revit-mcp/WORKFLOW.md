@@ -28,8 +28,8 @@
 
 | ПК | Путь проекта |
 |----|--------------|
-| Рабочий (gor-r / torganov-a) | `C:\Users\gor-r\Desktop\Revit\RuRevitMCP\` |
-| Домашний (user) | уточнить |
+| Рабочий (torganov-a) | `C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\` |
+| Домашний (user) | `C:\Users\user\Documents\Claude_Home\revit-mcp\` |
 
 ## Shell доступ
 

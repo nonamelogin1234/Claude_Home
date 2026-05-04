@@ -1,0 +1,47 @@
+# ГРАБЛИ — REVIT MCP ПРОЕКТ
+
+## SDK и архитектура
+
+- Конструктор базового класса: `ExternalEventCommandBase(IWaitableExternalEventHandler handler, UIApplication uiApp)`
+- Команда получает `UIApplication uiApp` в конструкторе — плагин передаёт его при инициализации
+- `Handler` (публичное свойство базового класса) — наш обработчик после вызова `base(...)`
+- Возвращаемый тип `Execute` — `object`, сериализуется в JSON. Используем `CommandResult` из SDK
+- `AIResult<T>` — внутренний тип RevitMCPCommandSet, в нашем проекте не использовать. Только `CommandResult`
+
+## ManualResetEvent
+
+- После `Set()` событие остаётся установленным → при повторном вызове команды нужно сбросить
+- Сбрасывать `_resetEvent.Reset()` в начале `Execute()` обработчика, ДО основной работы
+
+## Регистрация команд
+
+- `commandRegistry.json` — мастер-реестр плагина, нужно добавить нашу команду с путём `RuRevitCommandSet\{VERSION}\RuRevitCommandSet.dll`
+- `command.json` в папке командсета — манифест для MCP сервера (JS сторона)
+- assemblyPath в command.json — только имя DLL без пути: `"RuRevitCommandSet.dll"`
+- assemblyPath в commandRegistry.json — путь с `{VERSION}`: `"RuRevitCommandSet\\{VERSION}\\RuRevitCommandSet.dll"`
+
+## Сборка и деплой
+
+- Целевая платформа: `net48` (Revit 2024 на .NET Framework 4.8)
+- OutputPath в .csproj: `C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\Commands\RuRevitCommandSet\2024\`
+- `AppendTargetFrameworkToOutputPath` = false — иначе создаст подпапку net48/
+- `Private = false` для RevitAPI.dll и RevitMCPSDK.dll — не копировать их в output (они уже есть в Revit)
+- После сборки нужен рестарт Revit — плагин грузит DLL при старте
+
+## Revit API — единицы
+
+- Все размеры внутри Revit в ФУТАХ. Конвертация: `mm / 304.8`
+- XYZ координаты — футы. Никогда не передавать миллиметры напрямую
+
+## Оси по ГОСТ
+
+- Буквы осей ГОСТ 21.101: А Б В Г Д Е Ж И К Л М Н П Р С Т У Ф Х Ц Ч Ш Щ Э Ю Я
+- Пропускаем: Ё З Й О Ъ Ы Ь
+- Буквенные оси (А,Б,В) = горизонтальные линии на плане (Line по оси X)
+- Цифровые оси (1,2,3) = вертикальные линии на плане (Line по оси Y)
+
+## PowerShell / рефлексия
+
+- RevitAPI.dll и RevitAPIUI.dll нельзя загрузить через рефлексию без запущенного Revit — зависимости не резолвятся
+- Для изучения SDK использовать `send_code_to_revit` — выполняется прямо внутри Revit
+- AppDomain.CurrentDomain.GetAssemblies() внутри Revit даёт полный список загруженных сборок

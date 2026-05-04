@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>RuRevitCommandSet</AssemblyName>
+    <RootNamespace>RuRevitCommandSet</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <!-- Собираем прямо в папку Revit — после сборки сразу можно тестировать (с рестартом Revit) -->
+    <OutputPath>C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\Commands\RuRevitCommandSet\2024\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Revit API — не копировать в output, Revit грузит их сам -->
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2024\RevitAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2024\RevitAPIUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- MCP SDK — уже есть в папке плагина, не копировать -->
+    <Reference Include="RevitMCPSDK">
+      <HintPath>C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\RevitMCPSDK.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- JSON — уже есть в папке плагина -->
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

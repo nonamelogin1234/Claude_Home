@@ -1,0 +1,17 @@
+{
+  "name": "RuRevitCommandSet",
+  "description": "Русские команды для Revit MCP",
+  "developer": {
+    "name": "Sergei",
+    "email": "",
+    "website": "",
+    "organization": "RuRevitMCP"
+  },
+  "commands": [
+    {
+      "commandName": "create_grid_ru",
+      "description": "Создать сетку осей по произвольным пролётам. Буквенные оси по ГОСТ (А,Б,В...), цифровые (1,2,3...).",
+      "assemblyPath": "RuRevitCommandSet.dll"
+    }
+  ]
+}
