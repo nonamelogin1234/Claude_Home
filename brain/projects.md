@@ -1,7 +1,7 @@
 # ПРОЕКТЫ — СТАТУСЫ
 
 | Проект | Статус | Следующий шаг | Папка |
-|--------|--------|---------------|---------|
+|--------|--------|---------------|------|
 | 🏡 Homepage + Authelia | 🟢 Редизайн + виджеты | Добавить погоду (нужен OWM ключ), сменить пароль Authelia | HomePage/ |
 | 🎬 КиноКлод | 🟢 Полная система | Тест сценария «Посоветуй фильм» в Claude Desktop | kinoclaude/ |
 | 🔍 DocAI | 🟡 В процессе | Протестировать на реальном PDF с OpenAI ключом | docai/ |
@@ -15,4 +15,4 @@
 | 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
 | 📊 Мониторинг-дашборд | 🟡 Почти готов | Вписать Telegram bot_token + chat_id в alertmanager | dashboard/ |
 | 🏗️ Revit MCP | 🟢 Работает | Переключились на mcp-servers-for-revit, новый токен GitHub в конфиге | revit-mcp/ |
-| 🏗️ RuRevitMCP | 🟡 В процессе | Сделать команду get_model_state_ru (читает модель в мм). Перезапустить Revit для активации create_grid_ru | revit-mcp/ |
+| 🏗️ RuRevitMCP | 🟡 В процессе | Починить "Method not found" для create_wall_ru: проверить _events в ExternalEventManager через send_code_to_revit | revit-mcp/ |
