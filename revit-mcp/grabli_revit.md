@@ -40,6 +40,23 @@
 - Буквенные оси (А,Б,В) = горизонтальные линии на плане (Line по оси X)
 - Цифровые оси (1,2,3) = вертикальные линии на плане (Line по оси Y)
 
+## Регистрация новых команд в MCP
+
+- `commandRegistry.json` генерируется плагином автоматически при старте Revit из `command.json` каждого командсета
+- Редактировать надо `Commands\RuRevitCommandSet\command.json` (задеплоенный), а НЕ `commandRegistry.json` напрямую
+- `command.json` из src/ при сборке **не копировался** → добавлен post-build таргет в .csproj (с 2026-05-05)
+- Порядок деплоя новой команды: 1) добавить в src/command.json, 2) собрать (command.json скопируется автоматически), 3) перезапустить Revit, 4) перезапустить Claude Code
+- **ПРАВИЛЬНЫЙ способ добавить кастомный MCP-инструмент:** создать `.js` файл в `C:\Users\gor-r\AppData\Roaming\npm\node_modules\mcp-server-for-revit\build\tools\` с функцией `registerXxxTool(server)`. Файл подхватывается автоматически при следующем старте Claude Code — Revit перезапускать НЕ нужно.
+- Паттерн файла: импорт z и withRevitConnection, экспорт registerXxxTool, внутри server.tool("name", "desc", {schema}, handler) где handler вызывает revitClient.sendCommand("name", args)
+
+## "Method not found" при вызове команды
+
+- Класс есть в DLL, commandRegistry.json правильный — но команда не вызывается
+- Причина: `RevitCommandRegistry._commands` и `ExternalEventManager._events` — два отдельных словаря. Команда должна попасть в ОБА при старте Revit.
+- Диагностика: через `send_code_to_revit` вывести ключи `_events` словаря ExternalEventManager — если команды нет, она не была зарегистрирована при загрузке плагина
+- Подозрение на timing: если команда добавлена в command.json/DLL, но Revit читал реестр до обновления файлов — команда пропущена
+- Лечение (гипотеза): полный перезапуск Revit с актуальным DLL и command.json, затем проверить _events
+
 ## PowerShell / рефлексия
 
 - RevitAPI.dll и RevitAPIUI.dll нельзя загрузить через рефлексию без запущенного Revit — зависимости не резолвятся
