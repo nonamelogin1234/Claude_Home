@@ -1,0 +1,10 @@
+C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\Commands\RuRevitCommandSet\2024\RuRevitCommandSet.dll
+C:\Users\gor-r\AppData\Roaming\Autodesk\Revit\Addins\2024\revit_mcp_plugin\Commands\RuRevitCommandSet\2024\RuRevitCommandSet.pdb
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.csproj.AssemblyReference.cache
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.AssemblyInfoInputs.cache
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.AssemblyInfo.cs
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.csproj.CoreCompileInputs.cache
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.sourcelink.json
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.dll
+C:\Users\torganov-a\Documents\Claude_Home\revit-mcp\src\obj\Debug\RuRevitCommandSet.pdb

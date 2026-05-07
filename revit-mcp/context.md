@@ -48,7 +48,6 @@ Models/XxxModels.cs            — Request/Result модели с JsonProperty
 Следующий диагностический шаг (уже понятен — нужно выполнить):
 ```csharp
 // Через send_code_to_revit — смотрим что в _events ExternalEventManager
-var pluginAssembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "RevitMCPPlugin");
 var eemType = pluginAssembly.GetType("revit_mcp_plugin.Core.ExternalEventManager");
 var eem = eemType.GetField("_instance", BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);
 var events = (System.Collections.IDictionary)eemType.GetField("_events", BindingFlags.Instance|BindingFlags.NonPublic).GetValue(eem);
