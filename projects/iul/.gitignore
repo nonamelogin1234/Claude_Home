@@ -1,0 +1,13 @@
+# Скомпилированные бинари и артефакты PyInstaller
+_архив/dist_onedir_ИУЛ/
+_архив/build_root/
+dist/
+build/
+*.spec
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Логи генерации
+Журналы/

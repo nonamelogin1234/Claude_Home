@@ -11,6 +11,7 @@
 | 🔍 DocAI | 🟡 В процессе | Вставить OpenAI API ключ в настройки, тест на реальном PDF | projects/docai/ |
 | ⚔️ RPG Трекер | 🟢 Работает | Проверить водопад визуально на https://mcp.myserver-ai.ru:8769/ | projects/rpg-tracker/ |
 | 🏗️ RuRevitMCP | 🟡 В процессе | Починить "Method not found" для create_wall_ru | projects/revit-mcp/ |
+| 📄 ИУЛ | 🟡 В процессе | Ручное тестирование v2 (PySide6) после рефакторинга на поток | projects/iul/ |
 | 📰 Grok-News | 🟢 Работает | Добавить виджет погоды (нужен OWM ключ) | projects/grok-news/ |
 
 ## Инфраструктура (infra/)
