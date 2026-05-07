@@ -1,18 +1,41 @@
 # ПРОЕКТЫ — СТАТУСЫ
 
+> Обновлять после каждой рабочей сессии.
+> Структура: `projects/` — код, `infra/` — конфиги/сервисы, `archive/` — заморожено.
+
+## Код-проекты (projects/)
+
 | Проект | Статус | Следующий шаг | Папка |
-|--------|--------|---------------|------|
-| 🏡 Homepage + Authelia | 🟢 Редизайн + виджеты | Добавить погоду (нужен OWM ключ), сменить пароль Authelia | HomePage/ |
-| 🎬 КиноКлод | 🟢 Полная система | Тест сценария «Посоветуй фильм» в Claude Desktop | kinoclaude/ |
-| 🔍 DocAI | 🟡 В процессе | Протестировать на реальном PDF с OpenAI ключом | docai/ |
-| 🏠 Домашний сервер | 🟢 Immich готов | Настроить мобильное приложение Immich | homeserver/ |
-| 📡 VPN через Cloudflare | 🔴 Заморожен | Нужен российский relay-сервер с whitelisted IP | homeserver/ |
-| 🕵️ VPN Hide (анти-DPI) | 🟢 Готово | Проверить на мобильном интернете | VPN_Hide/ |
-| 📱 IKEv2 VPN (Samsung) | 🟢 Готово | Сделать nftables-правила persistent (сейчас теряются при ребуте) | strongswan/ |
-| ⚔️ RPG Трекер | 🟢 Task2 готов (White Lotus тема) | — | rpg/ |
-| 🎵 Navidrome | 🟢 Готово | Создать admin-пользователя, залить музыку через rsync | navidrome/ |
-| 🏃 Health Connect sync | 🟢 Готово | — | — |
-| 🤖 Claude Code интеграция | 🟡 В процессе | Авторизация claude на VPS через port forwarding | — |
-| 📊 Мониторинг-дашборд | 🟡 Почти готов | Вписать Telegram bot_token + chat_id в alertmanager | dashboard/ |
-| 🏗️ Revit MCP | 🟢 Работает | Переключились на mcp-servers-for-revit, новый токен GitHub в конфиге | revit-mcp/ |
-| 🏗️ RuRevitMCP | 🟡 В процессе | Починить "Method not found" для create_wall_ru: проверить _events в ExternalEventManager через send_code_to_revit | revit-mcp/ |
+|--------|--------|---------------|-------|
+| 🎬 КиноКлод | 🔴 Сервис упал | Поднять kinoclaude.service на VPS (`systemctl start kinoclaude`) | projects/kinoclaude/ |
+| 🔍 DocAI | 🟡 В процессе | Вставить OpenAI API ключ в настройки, тест на реальном PDF | projects/docai/ |
+| ⚔️ RPG Трекер | 🟢 Работает | Проверить водопад визуально на https://mcp.myserver-ai.ru:8769/ | projects/rpg-tracker/ |
+| 🏗️ RuRevitMCP | 🟡 В процессе | Починить "Method not found" для create_wall_ru | projects/revit-mcp/ |
+| 📰 Grok-News | 🟢 Работает | Добавить виджет погоды (нужен OWM ключ) | projects/grok-news/ |
+
+## Инфраструктура (infra/)
+
+| Проект | Статус | Следующий шаг | Папка |
+|--------|--------|---------------|-------|
+| 🏡 Homepage + Authelia | 🟢 Работает | Сменить пароль Authelia (Admin2026! — временный) | infra/homepage/ |
+| 📊 Мониторинг (Grafana) | 🟢 Работает | Вписать Telegram bot_token в alertmanager | infra/dashboard/ |
+| 🕵️ VPN Hide (анти-DPI) | 🟢 Работает | Проверить Hysteria2 на мобильном интернете | infra/vpn-hide/ |
+| 📱 IKEv2 VPN (Samsung) | 🟢 Работает | Сделать nftables-правила persistent (/etc/nftables.conf) | infra/strongswan/ |
+| 🎵 Navidrome | 🟢 Работает | Создать admin-пользователя, залить музыку | infra/navidrome/ |
+| 🏠 Домашний сервер | 🟢 Работает | Настроить мобильное приложение Immich | infra/homeserver/ |
+| 🏃 Health Sync | 🟢 Работает | Проверить cron для ScaleConnect | infra/health-sync/ |
+
+## В архиве (archive/)
+
+| Проект | Почему | Папка |
+|--------|--------|-------|
+| Codex (RPG v1) | Заменён rpg-tracker (White Lotus тема) | archive/codex/ |
+
+## Сервисы без папки в репо
+
+| Сервис | Где | Статус |
+|--------|-----|--------|
+| n8n | VPS Docker :5678 | 🟢 |
+| PostgreSQL (jarvis_memory) | VPS Docker | 🟢 |
+| Vaultwarden | VPS Docker :8081 | 🟢 |
+| Uptime Kuma | Домашний сервер :3001 | 🟢 |

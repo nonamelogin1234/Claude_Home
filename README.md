@@ -1,47 +1,54 @@
 # Claude_Home
 
-Личная рабочая среда Claude — память, проекты, контекст.
+Личная рабочая среда Сергея — инфраструктура, проекты, память системы.
+Управляется совместно с Claude Code.
 
 ## Структура
 
 ```
 Claude_Home/
-├── CLAUDE.md              ← точка входа для Claude Code
-├── .claude/
-│   ├── settings.json      ← разрешения
-│   └── commands/
-│       ├── start.md       ← /project:start — git pull
-│       └── finish.md      ← /project:finish [сообщение] — git push
-├── brain/
-│   ├── CHAT_INIT.md       ← инструкция для claude.ai (что читать при инициализации)
-│   ├── infra.md           ← серверы, порты, VPS, домашний сервер
-│   ├── projects.md        ← статусы всех проектов
-│   ├── grabli.md          ← что не делать и почему
-│   └── rules.md           ← правила ведения файлов + шаблоны
-├── docai/
-│   ├── CLAUDE.md          ← контекст для Claude Code (загружается автоматически)
-│   ├── context.md         ← статус проекта
-│   └── [код проекта]
-├── kinoclaude/
-│   ├── CLAUDE.md          ← контекст для Claude Code
-│   ├── context.md         ← статус проекта
-│   └── [код проекта]
-└── sessions/              ← саммари важных сессий claude.ai
+│
+├── brain/                     ← системные знания (Claude читает при каждом старте)
+│   ├── infra.md               ← серверы, порты, способы подключения
+│   ├── projects.md            ← статусы всех проектов
+│   ├── grabli.md              ← что не делать и почему
+│   ├── rules.md               ← структура репо + правила ведения файлов
+│   ├── coding.md              ← правила написания кода
+│   ├── CHAT_INIT.md           ← инструкция для claude.ai
+│   ├── Learn.md               ← размышления о направлении
+│   └── skills/                ← промпты специализированных ролей Claude
+│
+├── projects/                  ← код-проекты (активная разработка)
+│   ├── kinoclaude/            ← кинорекомендации через MCP + PostgreSQL
+│   ├── docai/                 ← RAG поиск по PDF (PyQt6, pdfminer, fastembed)
+│   ├── rpg-tracker/           ← RPG дашборд прогресса (FastAPI + PostgreSQL)
+│   ├── revit-mcp/             ← Revit автоматизация через MCP (C#)
+│   └── grok-news/             ← новостная сводка + здоровье (Grok API)
+│
+├── infra/                     ← инфраструктура (конфиги и документация сервисов)
+│   ├── homepage/              ← стартовая страница + Authelia SSO
+│   ├── dashboard/             ← мониторинг (Grafana + Prometheus)
+│   ├── vpn-hide/              ← анти-DPI VPN (Hysteria2 + VLESS Reality)
+│   ├── strongswan/            ← IKEv2 VPN для Samsung
+│   ├── navidrome/             ← персональный музыкальный стриминг
+│   ├── homeserver/            ← домашний сервер (Jellyfin, Immich, Nextcloud)
+│   └── health-sync/           ← синхронизация данных здоровья в PostgreSQL
+│
+├── archive/                   ← замороженные/заменённые проекты
+│   └── codex/                 ← RPG трекер v1 (заменён rpg-tracker)
+│
+├── sessions/                  ← саммари важных сессий claude.ai
+│
+├── CLAUDE.md                  ← точка входа для Claude Code
+└── CLAUDE.local.md            ← локальные настройки (не в git)
 ```
 
-## Первый раз на новом компе
+## Инфраструктура
 
-```powershell
-git clone https://github.com/nonamelogin1234/Claude_Home "C:\Users\ИМЯ\Documents\Claude_Home"
-```
-
-Потом создать `CLAUDE.local.md` в корне (он в .gitignore) с машинно-специфичными настройками:
-```markdown
-# Этот комп
-- Имя: [домашний / рабочий]
-- Пользователь: [user / torganov-a]
-- Путь к srv.ps1: C:\Users\ИМЯ\srv.ps1
-```
+| Сервер | Где | Что крутится |
+|--------|-----|-------------|
+| VPS myserver-ai.ru | 147.45.238.120, Нидерланды | n8n, PostgreSQL, nginx, Docker сервисы |
+| Домашний сервер | Maibenben M547, СПб | Jellyfin, Immich, Nextcloud, Navidrome |
 
 ## Запуск Claude Code
 
@@ -50,5 +57,20 @@ cd "C:\Users\ИМЯ\Documents\Claude_Home"
 claude
 ```
 
+## Первый раз на новом компе
+
+```powershell
+git clone https://github.com/nonamelogin1234/Claude_Home "C:\Users\ИМЯ\Documents\Claude_Home"
+```
+
+Создать `CLAUDE.local.md` в корне (он в .gitignore):
+```markdown
+# Этот компьютер
+- Имя: [рабочий / домашний]
+- Пользователь: [torganov-a / user]
+- Путь к srv.ps1: C:\Users\ИМЯ\srv.ps1
+```
+
 ## Claude Chat (claude.ai)
-При инициализации говорить: **«читай контекст»** — читает `brain/CHAT_INIT.md` и следует инструкциям оттуда.
+
+При инициализации: **«читай контекст»** — читает `brain/CHAT_INIT.md` и следует инструкциям.
