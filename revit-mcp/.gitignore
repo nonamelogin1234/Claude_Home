@@ -1,2 +1,6 @@
+src/obj/
+src/bin/
+*.user
+.vs/
 build_*.txt
 sdks*.txt
