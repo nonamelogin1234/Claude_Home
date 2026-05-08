@@ -10,7 +10,7 @@
 | 🎬 КиноКлод | 🔴 Сервис упал | Поднять kinoclaude.service на VPS (`systemctl start kinoclaude`) | projects/kinoclaude/ |
 | 🔍 DocAI | 🟡 В процессе | Вставить OpenAI API ключ в настройки, тест на реальном PDF | projects/docai/ |
 | ⚔️ RPG Трекер | 🟢 Работает | Проверить водопад визуально на https://mcp.myserver-ai.ru:8769/ | projects/rpg-tracker/ |
-| 🏗️ RuRevitMCP | 🟡 В процессе | Разобраться 99 vs 83 м³ (стены 1535577+1535925 — исключать?), потом упаковать в MCP-команду | projects/revit-mcp/ |
+| 🏗️ RuRevitMCP | 🟡 В процессе | PartUtils даёт 92.4 м³, нужно 83. Найдены 3 класса ошибок (верхняя зона, Z<0, двойной счёт). Следующий шаг: Boolean Union солидов + клипирование Z=0..2920мм | projects/revit-mcp/ |
 | 📄 ИУЛ | 🟡 В процессе | Ручное тестирование v2 (PySide6) после рефакторинга на поток | projects/iul/ |
 | 📰 Grok-News | 🟢 Работает | Добавить виджет погоды (нужен OWM ключ) | projects/grok-news/ |
 
