@@ -28,6 +28,8 @@ Models/XxxModels.cs            — Request/Result модели с JsonProperty
 
 🟡 `create_wall_ru` — DLL собрана, класс загружен в Revit, commandRegistry.json правильный, но при вызове возвращает **"Method not found"**. Баг не воспроизводится на `create_grid_ru` и `get_model_state_ru`.
 
+🟡 `get_material_volume` (в разработке) — алгоритм через `PartUtils.CreateParts()` подтверждён на тестовой модели (3.76 м³ = эталон). На реальном проекте: 99 м³ вместо ожидаемых 83 м³ — нужно разобраться с лишними стенами.
+
 ## Что сделано
 
 - [2026-05-04] Создана структура проекта: src/ с .csproj, Models/, Commands/, Services/
@@ -40,12 +42,28 @@ Models/XxxModels.cs            — Request/Result модели с JsonProperty
 - [2026-05-04] Написан `create_wall_ru` — создаёт стены по координатам в мм с поиском типа и уровня по частичному имени
 - [2026-05-05] DLL собрана с тремя командами, commandRegistry.json содержит все три. Рефлексия подтвердила загрузку классов. Но `create_wall_ru` даёт "Method not found".
 - [2026-05-05] Изучены внутренности RevitMCPPlugin через send_code_to_revit: `RevitCommandRegistry._commands: Dictionary`, `ExternalEventManager._events: Dictionary<String, ExternalEventWrapper>`. Подозрение — `create_wall_ru` не попал в один из этих словарей.
+- [2026-05-08] Исследован точный подсчёт объёма материала в составных стенах.
+  - Стандартные методы (`GetMaterialVolume`, `HOST_AREA_COMPUTED × fraction`) дают ~4.57 м³ вместо эталонных 3.76 м³ — официально признанный баг Autodesk на стыках стен
+  - Найдено решение через `PartUtils.CreateParts()` (Jeremy Tammik / The Building Coder)
+  - Подтверждено на тестовой модели: 4 стены [кирпич|штукатурка|бетон250|штукатурка] → бетон = **3.7600 м³** ✓
+  - Протестировано на реальном проекте: ГБ 400мм (material id=9663 `ADSK_Кладка_Блоки_Газобетон 400`) → 99.165 м³, но ожидается 83 м³ — расхождение не разобрано до конца
 
 ## Следующий шаг
 
-**Починить "Method not found" для `create_wall_ru`.**
+**Два параллельных направления:**
 
-Следующий диагностический шаг (уже понятен — нужно выполнить):
+### 1. Разобраться с 99 vs 83 м³ (объём ГБ 400мм в реальной модели)
+
+Гипотеза: в модели **две секции здания** (секция 1: X −265..12750, секция 2: X 12680..25680). Отдельно: стены 1535577 (X=12710, 7.76 м³) и 1535925 (X=25680, 7.79 м³) — `GE_Внутренняя_Газобетон400_Обои` на границах секций. Без них: 99.165 − 7.762 − 7.791 = **83.6 м³** ≈ 83.
+
+Спросить у пользователя:
+- В модели 2 секции — это нормально?
+- Стены 1535577 и 1535925 на осях X=12710 и X=25680 — разделительные между секциями, считать или нет?
+
+Рабочий код для подсчёта уже есть (see grabli_revit.md → раздел PartUtils).
+
+### 2. Починить "Method not found" для `create_wall_ru` (старая задача)
+
 ```csharp
 // Через send_code_to_revit — смотрим что в _events ExternalEventManager
 var eemType = pluginAssembly.GetType("revit_mcp_plugin.Core.ExternalEventManager");
@@ -53,8 +71,6 @@ var eem = eemType.GetField("_instance", BindingFlags.Static|BindingFlags.NonPubl
 var events = (System.Collections.IDictionary)eemType.GetField("_events", BindingFlags.Instance|BindingFlags.NonPublic).GetValue(eem);
 // Вывести events.Keys — есть ли там create_wall_ru?
 ```
-
-Если `create_wall_ru` нет в `_events` — команда не зарегистрирована при инициализации плагина. Причина может быть: `LoadCommandFromAssembly` вызывался до того как DLL обновилась, или есть баг в timing загрузки.
 
 ## Параметры create_grid_ru
 

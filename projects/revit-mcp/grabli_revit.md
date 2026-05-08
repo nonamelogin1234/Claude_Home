@@ -62,3 +62,22 @@
 - RevitAPI.dll и RevitAPIUI.dll нельзя загрузить через рефлексию без запущенного Revit — зависимости не резолвятся
 - Для изучения SDK использовать `send_code_to_revit` — выполняется прямо внутри Revit
 - AppDomain.CurrentDomain.GetAssemblies() внутри Revit даёт полный список загруженных сборок
+
+## Объём материала в составных стенах (PartUtils)
+
+- `GetMaterialVolume()` и `HOST_AREA_COMPUTED × fraction` — официально признанный баг Autodesk на угловых стыках. Дают завышенный результат.
+- **Правильный метод: `PartUtils.CreateParts()`** — разбивает стену на слои с реальной геометрией стыков. Подтверждено: тестовые 4 стены [кирпич|штукатурка|бетон250|штукатурка] = 3.7600 м³ ✓
+- `PartUtils.IsValidForCreateParts(document, id)` и `PartUtils.CreateParts(document, ids)` принимают **`LinkElementId`**, не `ElementId`. Конвертировать: `new LinkElementId(elementId)`
+- `HOST_VOLUME_COMPUTED` на элементе Part возвращает 0 — объём брать через **геометрию солида**: `part.get_Geometry(opts)` → `Solid.Volume`
+- Материал части: `part.get_Parameter(BuiltInParameter.DPART_MATERIAL_ID_PARAM).AsElementId()`
+- `send_code_to_revit` уже обёрнут в транзакцию SDK → `new Transaction()` внутри падает с "not permitted". Использовать **`SubTransaction`** — работает корректно и откатывается через `st.RollBack()`
+- Паттерн (рабочий):
+  ```csharp
+  var linkIds = wallIds.Select(id => new LinkElementId(id)).ToList();
+  var st = new SubTransaction(document);
+  st.Start();
+  PartUtils.CreateParts(document, linkIds);
+  document.Regenerate();
+  // ... читать Part элементы, считать объём через геометрию ...
+  st.RollBack();
+  ```
