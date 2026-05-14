@@ -15,9 +15,8 @@
 | n8n | 5678 | https://myserver-ai.ru |
 | postgres | 5432 | jarvis_memory, user: jarvis, pass: jarvis_pass, IP: 172.18.0.4 |
 | vaultwarden | 8081 | https://vault.myserver-ai.ru |
-| wg-easy | 51820/51821 | WireGuard VPN |
+| wg-easy | 51820/51821 | WireGuard VPN (телефон, прочие клиенты) |
 | tunnel | — | Cloudflare Tunnel |
-
 
 ## Systemd сервисы на VPS
 
@@ -30,6 +29,31 @@
 | sing-box | 10080/TCP (WS), 2083/TCP (Reality), 443/UDP (Hysteria2) | VPN — 3 протокола, см. VPN_Hide/context.md |
 | zabbix-agent | — | Мониторинг (агент) |
 | nginx | 80/443/7723/7724/8767 | Reverse proxy |
+
+## WireGuard
+
+- **wg1** (порт 51822) — для домашнего сервера, на хосте VPS
+- **wg0** (wg-easy контейнер, порт 51820) — телефон и прочие клиенты
+- **wg2** (порт 51823) — ⭐ НОВЫЙ (май 2026), для VM Discord-VPN на домашнем ПК, на хосте VPS напрямую (без Docker, чтобы избежать проблем с Docker NAT и UDP)
+  - Сервер IP: 10.9.0.1/24, конфиг: `/etc/wireguard/wg2.conf`
+  - VM peer public key: `yX1u6fqn0fSOXqfKrawZiw4uv0GL+lLDrX442l+DI3Q=`
+  - VM IP в туннеле: 10.9.0.2
+- ⚠️ wg0 на хосте НЕ должен быть поднят — конфликт с wg-easy
+
+## Nginx маршруты
+
+| Домен / Путь | Куда | Примечание |
+|---|---|---|
+| myserver-ai.ru | n8n (Cloudflare Tunnel) | |
+| myserver-ai.ru/docs | docai :8765 | |
+| mcp.myserver-ai.ru:443 | :8080 | cadvisor (Docker мониторинг) |
+| mcp.myserver-ai.ru:7723 | shell-api :7722 HTTPS | VPS shell |
+| mcp.myserver-ai.ru:7724 | home shell-api :7722 через wg1 | Домашний сервер shell API |
+| mcp.myserver-ai.ru:8767/sse, /messages | kinoclaude :8766 HTTPS | |
+| vault.myserver-ai.ru | vaultwarden :8081 | |
+| photos.myserver-ai.ru | 10.8.0.27:2283 | Immich на домашнем сервере |
+| nextcloud.myserver-ai.ru | 10.8.0.27:8181 | Nextcloud на домашнем сервере |
+| vpn.myserver-ai.ru/vpn/ | :10080 | sing-box VPN (WebSocket) |
 
 ## 3proxy конфиг (актуальный, май 2026)
 
@@ -58,27 +82,69 @@ socks -p7777 -e147.45.238.120
 - `-e147.45.238.120` — флаг на строке socks (дублирует external для UDP)
 - ⚠️ `ulimits too low (1024)` при maxconn 1000 — нужно поднять через systemd override (`LimitNOFILE=65536`)
 
-## WireGuard
+---
 
-- wg1 (порт 51822) — для домашнего сервера, на хосте VPS
-- wg0 (wg-easy контейнер, порт 51820) — телефон и прочие клиенты
-- ⚠️ wg0 на хосте НЕ должен быть поднят — конфликт с wg-easy
+## ⭐ VM Discord-VPN (НОВОЕ, май 2026)
 
-## Nginx маршруты
+Виртуальная машина на домашнем ПК для изолированного VPN-окружения.
+**Смысл:** Discord + браузер + Claude Code работают через VPN (Нидерланды), игры на хосте — без VPN. Полная сетевая изоляция.
 
-| Домен / Путь | Куда | Примечание |
-|---|---|---|
-| myserver-ai.ru | n8n (Cloudflare Tunnel) | |
-| myserver-ai.ru/docs | docai :8765 | |
-| mcp.myserver-ai.ru:443 | :8080 | cadvisor (Docker мониторинг) |
-| mcp.myserver-ai.ru:7723 | shell-api :7722 HTTPS | VPS shell |
-| mcp.myserver-ai.ru:7724 | home shell-api :7722 через wg1 | Домашний сервер shell API |
-| mcp.myserver-ai.ru:8767/sse, /messages | kinoclaude :8766 HTTPS | |
-| vault.myserver-ai.ru | vaultwarden :8081 | |
-| photos.myserver-ai.ru | 10.8.0.27:2283 | Immich на домашнем сервере |
-| nextcloud.myserver-ai.ru | 10.8.0.27:8181 | Nextcloud на домашнем сервере |
-| vpn.myserver-ai.ru/vpn/ | :10080 | sing-box VPN (WebSocket) |
+| Параметр | Значение |
+|----------|----------|
+| Гипервизор | VirtualBox 7.2.8 |
+| ОС | Lubuntu 24.04 LTS (EFI, минимальная установка) |
+| RAM | 2048 MB |
+| CPU | 2 ядра |
+| Диск | 25 GB (C:\Users\no-na\VirtualBox VMs\Discord-VPN\) |
+| Сеть | NAT (VirtualBox) |
+| Пользователь | cthu / 1234 |
+| SSH доступ | localhost:2222 → VM:22 |
+| SSH ключ | `C:\Users\no-na\.ssh\vm_key` (ed25519, claude@host) |
 
+### Установленный софт в VM
+
+| Программа | Версия | Как запустить |
+|-----------|--------|---------------|
+| WireGuard | 1.0 | автозапуск, `/etc/wireguard/wg0.conf` |
+| Discord | 1.0.138 | меню → Internet → Discord |
+| Firefox | встроен | меню → Internet → Firefox |
+| Docker | 29.4.3 | `docker ...` |
+| Git | 2.43.0 | `git ...` |
+| Node.js | v22.22.2 | `node ...` |
+| Claude Code CLI | 2.1.141 | `claude` (нужен API ключ при первом запуске) |
+
+### WireGuard в VM
+
+Конфиг: `/etc/wireguard/wg0.conf`
+- Подключается к **wg2** на VPS (порт 51823), НЕ к wg-easy
+- IP в туннеле: **10.9.0.2**
+- DNS: 1.1.1.1
+- AllowedIPs: 0.0.0.0/0 (весь трафик VM через VPN)
+- PostUp добавляет маршрут к VPS endpoint напрямую (обход петли)
+
+### Управление VM
+
+```powershell
+# Запустить
+& "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" startvm "Discord-VPN"
+
+# Выключить
+& "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" controlvm "Discord-VPN" poweroff
+
+# SSH в VM (из домашнего ПК)
+ssh -i C:\Users\no-na\.ssh\vm_key -p 2222 cthu@localhost
+```
+
+### Важные открытия (май 2026)
+
+- wg-easy (Docker) имеет проблему с UDP NAT — ответы от контейнера не доходят до клиента за двойным NAT
+- Решение: wg2 прямо на хосте VPS (без Docker), порт 51823
+- Lubuntu 24.04 загружается только в режиме **EFI + ISO на SATA** (BIOS + IDE не работает)
+- VirtualBox unattended install не поддерживает Lubuntu (только официальный Ubuntu)
+- sudo в VM по SSH требует `-S` флаг: `echo 'пароль' | sudo -S команда`
+- Claude Desktop для Linux не существует — используй Claude Code CLI или браузер
+
+---
 
 ## Домашний сервер
 
@@ -92,12 +158,25 @@ socks -p7777 -e147.45.238.120
 
 ## Сервисы на домашнем сервере
 
-| Сервис | Порт | Назначение |
-|--------|------|------------|
-| Immich | 2283 | Фото (https://photos.myserver-ai.ru) |
-| Nextcloud | 8181 | Облако (https://nextcloud.myserver-ai.ru) |
-| qbittorrent | 18080→8090 | Торрент |
-| Jellyfin | 8096 | Медиасервер |
+| Сервис | Порт | Назначение | Браузер |
+|--------|------|------------|---------|
+| Immich | 2283 | Фото | https://photos.myserver-ai.ru |
+| Nextcloud | 8181 | Облако | https://nextcloud.myserver-ai.ru |
+| qbittorrent | 18080→8090 | Торрент | http://192.168.0.106:18080 |
+| Jellyfin | 8096 | Медиасервер | http://192.168.0.106:8096 |
+| Uptime Kuma | 3001 | Мониторинг | http://192.168.0.106:3001 |
+
+### Samba (сетевые папки)
+
+| Шара | Путь | Доступ | Подключение |
+|------|------|--------|-------------|
+| Jellyfin | /srv/jellyfin | user: sergei, pass: 7193079a | `\\192.168.0.106\Jellyfin` |
+| media | /srv/jellyfin | user: jellyshare | только для Jellyfin-приложений |
+
+**Подключить в Windows:**
+```
+net use Z: \\192.168.0.106\Jellyfin /user:sergei 7193079a /persistent:yes
+```
 
 ## PostgreSQL — таблицы jarvis_memory
 
@@ -121,9 +200,11 @@ socks -p7777 -e147.45.238.120
 | 01BCs4rVxAKdi01J | Health Connect sync | Drive → Postgres, 7:30 МСК |
 | pWp8TqJNVngiOOVZ | Hevy sync | workout_data.csv → Postgres, /6h |
 
+---
+
 ## Как подключаться к серверам
 
-### Для Клода — запуск команд на серверах (апрель 2026, всё протестировано)
+### Для Клода — запуск команд на серверах
 
 **СПОСОБ 1 — curl напрямую (самый быстрый, из Bash tool):**
 ```bash
@@ -140,118 +221,54 @@ curl -sk -X POST "https://mcp.myserver-ai.ru:7724" \
   -d '{"cmd":"КОМАНДА"}'
 ```
 
-**СПОСОБ 2 — SSH напрямую из Bash tool (без PowerShell, ключ gor-r прописан):**
+**СПОСОБ 2 — SSH из Bash tool:**
 ```bash
 # VPS:
 ssh -o StrictHostKeyChecking=no root@147.45.238.120 "КОМАНДА"
 
 # Домашний сервер через ProxyJump:
 ssh -o StrictHostKeyChecking=no -J root@147.45.238.120 sergei@10.8.0.27 "КОМАНДА"
+
+# VM Discord-VPN (с домашнего ПК):
+ssh -o StrictHostKeyChecking=no -i C:/Users/no-na/.ssh/vm_key -p 2222 cthu@localhost "КОМАНДА"
 ```
 
-**СПОСОБ 3 — PowerShell скрипты (тоже работают):**
-```powershell
-# VPS — рабочий ПК:
-powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\srv.ps1 -cmd "КОМАНДА"
-# Домашний сервер — рабочий ПК:
-powershell -ExecutionPolicy Bypass -File C:\Users\torganov-a\home.ps1 -cmd "КОМАНДА"
-# VPS — домашний ПК:
-powershell -ExecutionPolicy Bypass -File C:\Users\user\srv.ps1 -cmd "КОМАНДА"
-# Домашний сервер — домашний ПК:
-powershell -ExecutionPolicy Bypass -File C:\Users\user\home.ps1 -cmd "КОМАНДА"
-```
-
-> Shell API секреты: VPS = `shell-api-secret-2026`, домашний = `home-shell-secret-2026`
-> Порты: VPS shell-api :7722 → nginx HTTPS :7723, домашний :7722 → nginx HTTPS :7724
-> home.ps1 есть на ОБОИХ ПК (рабочий и домашний).
-
-### SSH — терминал для Сергея
-
-**SSH конфиг настроен** на рабочем ПК (`C:\Users\torganov-a\.ssh\config`).
-Просто открыть cmd/PowerShell и ввести:
-```
-ssh vps          # → VPS (root), без пароля
-ssh homeserver   # → домашний сервер (sergei), через VPS, без пароля
-```
-
-**С домашнего ПК** (локальная сеть):
-```bash
-ssh sergei@192.168.0.106   # прямо, без VPS
-```
-> Если WireGuard VPN включён — отключи перед подключением.
-
-**С рабочего ПК вручную (если config не работает):**
-```
-ssh -i C:\Users\torganov-a\.ssh\id_ed25519 root@147.45.238.120
-ssh -i C:\Users\torganov-a\.ssh\id_ed25519 -J root@147.45.238.120 sergei@10.8.0.27
-```
-
-### SSH ключи (апрель 2026)
+### SSH ключи (май 2026)
 
 | Ключ | Где лежит | Добавлен в |
 |------|-----------|------------|
-| user@Useer | домашний ПК | VPS + домашний сервер |
+| user@Useer | домашний ПК (после переустановки Windows — нужно сгенерировать заново) | VPS + домашний сервер |
 | torganov-a@work | `C:\Users\torganov-a\.ssh\id_ed25519` | VPS + домашний сервер |
 | petro-balt\torganov-a@torganov-alexey | gor-r (bash tool, Claude) | VPS + домашний сервер |
 | root@3330663-kd17640 | VPS | домашний сервер |
+| claude@host (vm_key) | `C:\Users\no-na\.ssh\vm_key` | VM Discord-VPN (/home/cthu/.ssh/authorized_keys) |
 
-> Порт 7724 — это shell API домашнего сервера, НЕ SSH.
+> ⚠️ После переустановки Windows на домашнем ПК — SSH ключ user@Useer утерян, нужно добавить новый в VPS и домашний сервер.
 
-## Proxifier (домашний ПК)
+---
 
-- Прокси: 147.45.238.120:7777, SOCKS5, user: socks5user, pass: Pr0xy2026!
-- Профиль: `C:\Users\no-na\AppData\Roaming\Proxifier4\Profiles\Default.ppx`
-- Discord.exe → через прокси. Telegram → прокси в настройках. Default → Direct
-
-### Важные открытия (май 2026)
-
-- Proxifier **ОБЯЗАТЕЛЬНО запускать от Администратора**, иначе Discord не перехватывается
-- В реестре установлен флаг автоматического повышения прав:
-  `HKCU\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`
-  `"C:\Program Files (x86)\Proxifier\Proxifier.exe" = "~ RUNASADMIN"`
-- После запуска Proxifier (от Admin) — перезапустить Discord, иначе не подхватит
-- Proxifier Standard не поддерживает UDP через прокси (mode_bypass) — это ограничение редакции
-- Формат правила в XML: `<Action type="Proxy">1</Action>` (число в теге, не атрибут)
-- Пароль в профиле шифруется автоматически при сохранении
-
-### Статус (май 2026)
-
-- 3proxy настроен правильно (external IP, -e флаг) ✅
-- Proxifier профиль правильный ✅
-- Proxifier от Admin → проверить голосовой Discord 🟡
-
-## Домашний ПК — инструменты (май 2026)
+## Домашний ПК — инструменты (май 2026, после переустановки Windows)
 
 | Инструмент | Путь / Статус |
 |-----------|---------------|
-| Python 3.13.13 | `C:\Users\no-na\AppData\Local\Programs\Python\Python313\` — **в PATH** ✅ |
-| Node.js | v24 — в PATH ✅ |
+| Python 3.13 | установлен, в PATH ✅ |
+| Node.js | v24, в PATH ✅ |
 | Git | установлен ✅ |
 | Docker | установлен ✅ |
-| WireGuard | установлен, туннель "Allow_all", IP 10.8.0.3, метрика 0 |
+| VirtualBox | 7.2.8, `C:\Program Files\Oracle\VirtualBox\` ✅ |
+| WireGuard | установлен, туннель "Allow_all", IP 10.8.0.3 |
 
 ### MCP серверы Claude Code (домашний ПК)
 
 Конфиг: `C:\Users\no-na\.claude\settings.json`
 
-```json
-{
-  "mcpServers": {
-    "desktop-commander": {
-      "command": "npx",
-      "args": ["-y", "@wonderwhy-er/desktop-commander@latest"]
-    },
-    "windows-mcp": {
-      "command": "uvx",
-      "args": ["windows-mcp"]
-    }
-  }
-}
-```
-
 | Сервер | Статус | Зависимость |
 |--------|--------|-------------|
 | desktop-commander | 🟡 Не проверен | Node.js v24 ✅ |
-| windows-mcp | 🔴 uvx не установлен | нужен `pip install uv`, потом `uvx windows-mcp` |
+| windows-mcp | 🔴 uvx не установлен | `python -m pip install uv` → `uvx windows-mcp` |
 
-Чтобы установить uv: `python -m pip install uv`
+### Proxifier (домашний ПК) — статус: заменён VM-решением
+
+- Прокси: 147.45.238.120:7777, SOCKS5, user: socks5user, pass: Pr0xy2026!
+- ⚠️ Proxifier Standard не поддерживает UDP — Discord voice не работает
+- ✅ **Актуальное решение:** VM Discord-VPN (VirtualBox) с WireGuard внутри
