@@ -25,9 +25,11 @@
 | 🎵 Navidrome | 🟢 Работает | Создать admin-пользователя, залить музыку | infra/navidrome/ |
 | 🏠 Домашний сервер | 🟢 Работает | Настроить мобильное приложение Immich | infra/homeserver/ |
 | 🏃 Health Sync | 🟢 Работает | Проверить cron для ScaleConnect | infra/health-sync/ |
-| 🧦 Proxifier + Discord | 🟡 В процессе | Запустить Proxifier от Admin (UAC → Да), перезапустить Discord, проверить голос | — |
+| 🖥️ VM Discord-VPN | ✅ Завершено (май 2026) | — | — |
 | 🖥️ MCP серверы (домашний ПК) | 🟡 В процессе | `pip install uv` → `uvx windows-mcp` → перезапустить Claude Code | — |
 | ⚙️ 3proxy ulimit | 🟡 В процессе | systemd override: `LimitNOFILE=65536` в `/etc/systemd/system/3proxy.service.d/override.conf` | — |
+| 🧦 Proxifier + Discord | 🚫 Закрыто | Заменено VM Discord-VPN. Proxifier Standard не поддерживает UDP, голос не работал | — |
+| 🔑 SSH ключ домашнего ПК | 🔴 Нужно сделать | После переустановки Windows — сгенерировать новый ключ и добавить в VPS + домашний сервер | — |
 
 ## В архиве (archive/)
 
@@ -37,9 +39,13 @@
 
 ## Сервисы без папки в репо
 
-| Сервис | Где | Статус |
-|--------|-----|--------|
-| n8n | VPS Docker :5678 | 🟢 |
-| PostgreSQL (jarvis_memory) | VPS Docker | 🟢 |
-| Vaultwarden | VPS Docker :8081 | 🟢 |
-| Uptime Kuma | Домашний сервер :3001 | 🟢 |
+| Сервис | Где | Статус | Адрес |
+|--------|-----|--------|-------|
+| n8n | VPS Docker :5678 | 🟢 | https://myserver-ai.ru |
+| PostgreSQL (jarvis_memory) | VPS Docker | 🟢 | — |
+| Vaultwarden | VPS Docker :8081 | 🟢 | https://vault.myserver-ai.ru |
+| Uptime Kuma | Домашний сервер :3001 | 🟢 | http://192.168.0.106:3001 |
+| qbittorrent | Домашний сервер :18080 | 🟢 | http://192.168.0.106:18080 |
+| Jellyfin | Домашний сервер :8096 | 🟢 | http://192.168.0.106:8096 |
+| Samba | Домашний сервер | 🟢 | \\192.168.0.106\Jellyfin (user: sergei) |
+| VM Discord-VPN | Домашний ПК (VirtualBox) | 🟢 | SSH: localhost:2222, user: cthu |
