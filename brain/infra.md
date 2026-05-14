@@ -31,6 +31,33 @@
 | zabbix-agent | — | Мониторинг (агент) |
 | nginx | 80/443/7723/7724/8767 | Reverse proxy |
 
+## 3proxy конфиг (актуальный, май 2026)
+
+Файл: `/etc/3proxy/3proxy.cfg`
+
+```
+nscache 65536
+timeouts 1 5 30 60 180 1800 15 60
+log /var/log/3proxy/3proxy.log D
+rotate 30
+
+external 147.45.238.120
+internal 0.0.0.0
+
+auth strong
+users socks5user:CL:Pr0xy2026!
+allow socks5user * * 0-65535
+maxconn 1000
+
+socks -p7777 -e147.45.238.120
+```
+
+Ключевые настройки:
+- `external 147.45.238.120` — реальный IP для UDP ASSOCIATE ответов (без этого Discord голос не работает)
+- `internal 0.0.0.0` — слушать на всех интерфейсах
+- `-e147.45.238.120` — флаг на строке socks (дублирует external для UDP)
+- ⚠️ `ulimits too low (1024)` при maxconn 1000 — нужно поднять через systemd override (`LimitNOFILE=65536`)
+
 ## WireGuard
 
 - wg1 (порт 51822) — для домашнего сервера, на хосте VPS
@@ -173,4 +200,58 @@ ssh -i C:\Users\torganov-a\.ssh\id_ed25519 -J root@147.45.238.120 sergei@10.8.0.
 ## Proxifier (домашний ПК)
 
 - Прокси: 147.45.238.120:7777, SOCKS5, user: socks5user, pass: Pr0xy2026!
+- Профиль: `C:\Users\no-na\AppData\Roaming\Proxifier4\Profiles\Default.ppx`
 - Discord.exe → через прокси. Telegram → прокси в настройках. Default → Direct
+
+### Важные открытия (май 2026)
+
+- Proxifier **ОБЯЗАТЕЛЬНО запускать от Администратора**, иначе Discord не перехватывается
+- В реестре установлен флаг автоматического повышения прав:
+  `HKCU\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers`
+  `"C:\Program Files (x86)\Proxifier\Proxifier.exe" = "~ RUNASADMIN"`
+- После запуска Proxifier (от Admin) — перезапустить Discord, иначе не подхватит
+- Proxifier Standard не поддерживает UDP через прокси (mode_bypass) — это ограничение редакции
+- Формат правила в XML: `<Action type="Proxy">1</Action>` (число в теге, не атрибут)
+- Пароль в профиле шифруется автоматически при сохранении
+
+### Статус (май 2026)
+
+- 3proxy настроен правильно (external IP, -e флаг) ✅
+- Proxifier профиль правильный ✅
+- Proxifier от Admin → проверить голосовой Discord 🟡
+
+## Домашний ПК — инструменты (май 2026)
+
+| Инструмент | Путь / Статус |
+|-----------|---------------|
+| Python 3.13.13 | `C:\Users\no-na\AppData\Local\Programs\Python\Python313\` — **в PATH** ✅ |
+| Node.js | v24 — в PATH ✅ |
+| Git | установлен ✅ |
+| Docker | установлен ✅ |
+| WireGuard | установлен, туннель "Allow_all", IP 10.8.0.3, метрика 0 |
+
+### MCP серверы Claude Code (домашний ПК)
+
+Конфиг: `C:\Users\no-na\.claude\settings.json`
+
+```json
+{
+  "mcpServers": {
+    "desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "@wonderwhy-er/desktop-commander@latest"]
+    },
+    "windows-mcp": {
+      "command": "uvx",
+      "args": ["windows-mcp"]
+    }
+  }
+}
+```
+
+| Сервер | Статус | Зависимость |
+|--------|--------|-------------|
+| desktop-commander | 🟡 Не проверен | Node.js v24 ✅ |
+| windows-mcp | 🔴 uvx не установлен | нужен `pip install uv`, потом `uvx windows-mcp` |
+
+Чтобы установить uv: `python -m pip install uv`
