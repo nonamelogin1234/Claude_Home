@@ -25,6 +25,9 @@
 | 🎵 Navidrome | 🟢 Работает | Создать admin-пользователя, залить музыку | infra/navidrome/ |
 | 🏠 Домашний сервер | 🟢 Работает | Настроить мобильное приложение Immich | infra/homeserver/ |
 | 🏃 Health Sync | 🟢 Работает | Проверить cron для ScaleConnect | infra/health-sync/ |
+| 🧦 Proxifier + Discord | 🟡 В процессе | Запустить Proxifier от Admin (UAC → Да), перезапустить Discord, проверить голос | — |
+| 🖥️ MCP серверы (домашний ПК) | 🟡 В процессе | `pip install uv` → `uvx windows-mcp` → перезапустить Claude Code | — |
+| ⚙️ 3proxy ulimit | 🟡 В процессе | systemd override: `LimitNOFILE=65536` в `/etc/systemd/system/3proxy.service.d/override.conf` | — |
 
 ## В архиве (archive/)
 
