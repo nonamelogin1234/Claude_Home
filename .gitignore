@@ -1,5 +1,6 @@
 # Машинно-специфичные файлы — не коммитить
 CLAUDE.local.md
+.claude/worktrees/
 
 # Python
 __pycache__/
