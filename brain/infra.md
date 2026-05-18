@@ -272,3 +272,33 @@ ssh -o StrictHostKeyChecking=no -i C:/Users/no-na/.ssh/vm_key -p 2222 cthu@local
 - Прокси: 147.45.238.120:7777, SOCKS5, user: socks5user, pass: Pr0xy2026!
 - ⚠️ Proxifier Standard не поддерживает UDP — Discord voice не работает
 - ✅ **Актуальное решение:** VM Discord-VPN (VirtualBox) с WireGuard внутри
+
+## Windows zapret / DNS Geohide (май 2026)
+
+Локальное решение на домашнем Windows-ПК для YouTube + Discord без полного VPN:
+
+- Flowseal zapret: `C:\zapret-flowseal\current`
+- Служба Windows: `zapret` / display name `zapret Flowseal`
+- Автозапуск: `Automatic`
+- Выбранная стратегия: `general (ALT).bat`
+- Файл выбора стратегии: `C:\zapret-flowseal\current\selected_strategy.txt`
+- Проверка здоровья: `C:\zapret-flowseal\current\health_check.cmd`
+- Старые no-UAC кнопки управления остались в `C:\Users\no-na\Desktop\tools\zapret-win-bundle\zapret-winws\` и теперь управляют службой `zapret`:
+  - `zapret_install_no_uac.cmd`
+  - `zapret_start_no_uac.cmd`
+  - `zapret_stop_no_uac.cmd`
+
+DNS Geohide `hosts`:
+
+- `C:\Windows\System32\drivers\etc\hosts` скачан из DNS Geohide и нужен для Codex/ChatGPT/OpenAI.
+- Этот файл НЕ заменять и НЕ чистить без прямой команды пользователя.
+- OpenAI/ChatGPT/Codex домены должны оставаться в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, чтобы zapret не мешал DNS Geohide.
+- Ключевые домены исключений: `chatgpt.com`, `chat.openai.com`, `api.openai.com`, `cdn.oaistatic.com`, `files.oaiusercontent.com`, `codex.openai.com`.
+
+Целевая проверка:
+
+- `zapret` = Running, Automatic
+- DNS `chatgpt.com`, `api.openai.com`, `cdn.oaistatic.com` резолвится в DNS Geohide IP (`45.155.204.190` / `37.230.192.51`)
+- Discord updater manifest с `updates.discord.com` отвечает JSON
+- Discord CDN byte-range отвечает `206`
+- YouTube HEAD отвечает `200 OK`
