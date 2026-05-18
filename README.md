@@ -20,9 +20,9 @@ Claude_Home/
 │
 ├── projects/                  ← код-проекты (активная разработка)
 │   ├── kinoclaude/            ← кинорекомендации через MCP + PostgreSQL
-│   ├── docai/                 ← RAG поиск по PDF (PyQt6, pdfminer, fastembed)
 │   ├── rpg-tracker/           ← RPG дашборд прогресса (FastAPI + PostgreSQL)
 │   ├── revit-mcp/             ← Revit автоматизация через MCP (C#)
+│   ├── iul/                   ← генератор ИУЛ, в приоритете v1 Tkinter
 │   └── grok-news/             ← новостная сводка + здоровье (Grok API)
 │
 ├── infra/                     ← инфраструктура (конфиги и документация сервисов)
@@ -35,7 +35,8 @@ Claude_Home/
 │   └── health-sync/           ← синхронизация данных здоровья в PostgreSQL
 │
 ├── archive/                   ← замороженные/заменённые проекты
-│   └── codex/                 ← RPG трекер v1 (заменён rpg-tracker)
+│   ├── codex/                 ← RPG трекер v1 (заменён rpg-tracker)
+│   └── docai/                 ← RAG поиск по PDF, заморожен
 │
 ├── sessions/                  ← саммари важных сессий claude.ai
 │

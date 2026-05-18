@@ -5,7 +5,7 @@
 PDF → JSON → RAG поиск → ответы через Claude API.
 
 ## СТАТУС
-🟡 В процессе — LLM переключён на OpenAI (gpt-4o), требует тестирования на реальном PDF
+🔴 Заморожен — перенесён в archive/docai, RAG по PDF сейчас не в приоритете
 
 ## ЧТО СДЕЛАНО
 - [2026-03-xx] v1: docai.py — PDF → JSON через pdfminer.six (решает Identity encoding для кириллицы)
@@ -16,7 +16,7 @@ PDF → JSON → RAG поиск → ответы через Claude API.
 - [2026-03-27] LLM переключён с Anthropic Claude на OpenAI gpt-4o (ask.py + app.py + requirements.txt)
 
 ## СЛЕДУЮЩИЙ ШАГ
-Протестировать app.py на реальном PDF: вставить OpenAI API ключ в Файл → Настройки, загрузить PDF.
+Если проект размораживать: сначала протестировать app.py на реальном PDF, затем решить нужна ли переработка OCR/RAG пайплайна.
 
 ## ГРАБЛИ
 - PyMuPDF даёт кракозябры для кириллицы (Identity encoding) — использовать pdfminer.six

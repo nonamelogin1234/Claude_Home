@@ -8,10 +8,9 @@
 | Проект | Статус | Следующий шаг | Папка |
 |--------|--------|---------------|-------|
 | 🎬 КиноКлод | 🔴 Сервис упал | Поднять kinoclaude.service на VPS (`systemctl start kinoclaude`) | projects/kinoclaude/ |
-| 🔍 DocAI | 🟡 В процессе | Вставить OpenAI API ключ в настройки, тест на реальном PDF | projects/docai/ |
 | ⚔️ RPG Трекер | 🟢 Работает | Проверить водопад визуально на https://mcp.myserver-ai.ru:8769/ | projects/rpg-tracker/ |
 | 🏗️ RuRevitMCP | 🟡 В процессе | PartUtils даёт 92.4 м³, нужно 83. Найдены 3 класса ошибок (верхняя зона, Z<0, двойной счёт). Следующий шаг: Boolean Union солидов + клипирование Z=0..2920мм | projects/revit-mcp/ |
-| 📄 ИУЛ | 🟡 В процессе | Ручное тестирование v2 (PySide6) после рефакторинга на поток | projects/iul/ |
+| 📄 ИУЛ | 🟡 В процессе | Вернуться к v1 Tkinter как приоритетной версии; v2 PySide6 отменена | projects/iul/ |
 | 📰 Grok-News | 🟢 Работает | Добавить виджет погоды (нужен OWM ключ) | projects/grok-news/ |
 
 ## Инфраструктура (infra/)
@@ -36,6 +35,7 @@
 | Проект | Почему | Папка |
 |--------|--------|-------|
 | Codex (RPG v1) | Заменён rpg-tracker (White Lotus тема) | archive/codex/ |
+| DocAI | Заморожен: RAG по PDF не в приоритете | archive/docai/ |
 
 ## Сервисы без папки в репо
 
