@@ -27,7 +27,7 @@
 | 🖥️ VM Discord-VPN | ✅ Завершено (май 2026) | — | — |
 | 🖥️ MCP серверы (домашний ПК) | 🟡 В процессе | `pip install uv` → `uvx windows-mcp` → перезапустить Claude Code | — |
 | ⚙️ 3proxy ulimit | 🟡 В процессе | systemd override: `LimitNOFILE=65536` в `/etc/systemd/system/3proxy.service.d/override.conf` | — |
-| 📲 Telegram Desktop без VPN | 🟡 Запланировано | Поднять приватный MTProto proxy на VPS и подключить только в Telegram Desktop | — |
+| 📲 Telegram Desktop без VPN | 🟢 Работает, ждёт проверки в клиенте | Подключить MTProto proxy в Telegram Desktop: `147.45.238.120:9443` | — |
 | 🧦 Proxifier + Discord | 🚫 Закрыто | Заменено VM Discord-VPN. Proxifier Standard не поддерживает UDP, голос не работал | — |
 | 🔑 SSH ключ домашнего ПК | 🔴 Нужно сделать | После переустановки Windows — сгенерировать новый ключ и добавить в VPS + домашний сервер | — |
 

@@ -303,22 +303,43 @@ DNS Geohide `hosts`:
 - Discord CDN byte-range отвечает `206`
 - YouTube HEAD отвечает `200 OK`
 
-## Telegram Desktop без системного VPN (план)
+## Telegram Desktop без системного VPN
 
 Цель: Telegram Desktop на Windows должен работать без включения WireGuard и без системных прокси/туннелей, чтобы не ломать браузеры, Codex, Discord, YouTube, DNS Geohide `hosts` и маршруты Windows.
 
-Выбранное направление для следующей сессии:
+Решение (май 2026):
 
-- Поднять приватный MTProto proxy на VPS `147.45.238.120`.
-- Использовать официальный Docker-образ Telegram MTProxy, если он доступен и актуален: `telegrammessenger/proxy`.
+- Поднят приватный MTProto proxy на VPS `147.45.238.120`.
+- Docker-образ: `telegrammessenger/proxy:latest`.
+- Контейнер: `mtproto-proxy`.
+- Порт: `9443/tcp` на VPS -> `443/tcp` в контейнере.
+- Volume с секретом: `mtproto-proxy-config:/data`.
+- Автозапуск: Docker `--restart=always`.
+- Ежедневный рестарт для обновления Telegram core IP: `/etc/cron.d/mtproto-proxy-restart`, 04:17 каждый день.
 - Подключать proxy только внутри Telegram Desktop через `tg://proxy?...` или настройки Telegram.
 - Не менять системный proxy Windows.
 - Не менять WireGuard.
 - Не трогать `C:\Windows\System32\drivers\etc\hosts`.
 - Не расширять zapret под Telegram, пока не проверен MTProto-вариант.
 
-Предварительные соображения:
+Подключение:
 
-- Порт `443` на VPS уже занят nginx, поэтому стартовый вариант — отдельный порт, например `9443`.
+- Telegram Desktop -> Settings -> Advanced -> Connection type -> Use custom proxy -> MTProto.
+- Server: `147.45.238.120`
+- Port: `9443`
+- Secret хранится в Docker volume и виден через `docker logs mtproto-proxy`.
+- В auto-link из логов порт будет `443`; его нужно вручную заменить на `9443`.
+- Для random padding можно пробовать клиентский secret с префиксом `dd` перед основным secret.
+
+Проверки:
+
+- `docker ps --filter name=mtproto-proxy`
+- `docker logs mtproto-proxy`
+- `docker exec mtproto-proxy curl http://localhost:2398/stats`
+- С Windows: `Test-NetConnection 147.45.238.120 -Port 9443`
+
+Соображения:
+
+- Порт `443/tcp` на VPS занят nginx, `443/udp` занят sing-box, поэтому proxy вынесен на `9443/tcp`.
 - Если отдельный порт будет блокироваться провайдером, следующий вариант — отдельный IP/VPS под Telegram или аккуратное TCP-проксирование на `443` только после отдельного обсуждения.
 - Публичные бесплатные MTProto proxy не использовать как основное решение: нестабильно и неизвестно кто владелец.
