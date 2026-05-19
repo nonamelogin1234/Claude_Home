@@ -283,6 +283,7 @@ ssh -o StrictHostKeyChecking=no -i C:/Users/no-na/.ssh/vm_key -p 2222 cthu@local
 - Выбранная стратегия: `general (ALT).bat`
 - Файл выбора стратегии: `C:\zapret-flowseal\current\selected_strategy.txt`
 - Проверка здоровья: `C:\zapret-flowseal\current\health_check.cmd`
+- Самостоятельно добавить сайт в zapret: ярлык `zapret - добавить сайт` на рабочем столе, скрипт `C:\zapret-flowseal\current\add_site_to_zapret.cmd`
 - Старые no-UAC кнопки управления остались в `C:\Users\no-na\Desktop\tools\zapret-win-bundle\zapret-winws\` и теперь управляют службой `zapret`:
   - `zapret_install_no_uac.cmd`
   - `zapret_start_no_uac.cmd`
@@ -302,6 +303,13 @@ DNS Geohide `hosts`:
 - Discord updater manifest с `updates.discord.com` отвечает JSON
 - Discord CDN byte-range отвечает `206`
 - YouTube HEAD отвечает `200 OK`
+
+Пользовательский список zapret:
+
+- Домены добавляются в `C:\zapret-flowseal\current\lists\list-general-user.txt`.
+- Для обычных сайтов можно добавлять домен или полный URL, скрипт сам приведёт к домену.
+- OpenAI/ChatGPT/Codex домены скрипт не добавляет в общий список, чтобы не ломать DNS Geohide.
+- Для приложений с IP-сетями/UDP одной строки домена может быть недостаточно.
 
 ## Telegram Desktop без системного VPN
 
