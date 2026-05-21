@@ -187,6 +187,8 @@ ssh -i C:\Users\no-na\.ssh\vm_key -p 2222 cthu@localhost
 - Модель: `xai/grok-4.3`, reasoning `low`.
 - Telegram API с домашнего сервера напрямую таймаутится, поэтому OpenClaw ходит через HTTP proxy VPS `http://10.8.0.1:7779` (3proxy через WireGuard).
 - Windows OpenClaw Gateway выключен, чтобы не было двух polling-клиентов одного Telegram-бота.
+- Продуктовая рамка: OpenClaw — личный секретарь Сергея в Telegram, а не девопс-бот. Главные функции: память, поиск по личному контексту, разбор мыслей, напоминания, документы, черновики и аккуратные действия с подтверждением.
+- Рабочая документация: `infra/openclaw/`.
 
 ### Samba (сетевые папки)
 
