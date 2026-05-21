@@ -83,6 +83,7 @@
 ## Windows zapret / DNS Geohide
 
 - `C:\Windows\System32\drivers\etc\hosts` может быть файлом DNS Geohide и нужен для Codex/ChatGPT/OpenAI. Не заменять, не чистить Google/OpenAI-записи и не делать `ipconfig /flushdns` как универсальный фикс без причины.
+- Если DNS Geohide `hosts` прибивает ChatGPT/OpenAI к своим IP, VPN может не помочь: Windows всё равно использует IP из `hosts`. Для режима “OpenAI через VPN” Geohide-hosts нужно временно убирать/отключать.
 - При настройке zapret для Discord/YouTube обязательно держать OpenAI/ChatGPT/Codex домены в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, иначе можно сломать работу Codex даже при включённом VPN.
 - Для Flowseal zapret на Windows текущая рабочая служба одна: `zapret`. Старые `winws1/winws2` считать мусором и не использовать как целевое состояние.
 - Проверять не только YouTube, но и Discord updater: `updates.discord.com` должен отдавать manifest JSON, а Discord CDN byte-range должен отвечать `206`.

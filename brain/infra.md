@@ -315,15 +315,17 @@ ssh -o StrictHostKeyChecking=no -i C:/Users/no-na/.ssh/vm_key -p 2222 cthu@local
 
 DNS Geohide `hosts`:
 
-- `C:\Windows\System32\drivers\etc\hosts` скачан из DNS Geohide и нужен для Codex/ChatGPT/OpenAI.
-- Этот файл НЕ заменять и НЕ чистить без прямой команды пользователя.
+- `C:\Windows\System32\drivers\etc\hosts` ранее скачивался из DNS Geohide для Codex/ChatGPT/OpenAI.
+- 2026-05-21: пользователь временно вынул DNS Geohide `hosts`, потому что он прибивал ChatGPT/OpenAI к Geohide IP и ломал доступ даже при включённом VPN.
+- Этот файл НЕ возвращать, НЕ заменять и НЕ чистить без прямой команды пользователя.
 - OpenAI/ChatGPT/Codex домены должны оставаться в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, чтобы zapret не мешал DNS Geohide.
 - Ключевые домены исключений: `chatgpt.com`, `chat.openai.com`, `api.openai.com`, `cdn.oaistatic.com`, `files.oaiusercontent.com`, `codex.openai.com`.
 
 Целевая проверка:
 
 - `zapret` = Running, Automatic
-- DNS `chatgpt.com`, `api.openai.com`, `cdn.oaistatic.com` резолвится в DNS Geohide IP (`45.155.204.190` / `37.230.192.51`)
+- Если работаем через DNS Geohide без VPN: DNS `chatgpt.com`, `api.openai.com`, `cdn.oaistatic.com` резолвится в DNS Geohide IP (`45.155.204.190` / `37.230.192.51`)
+- Если работаем через VPN: DNS Geohide `hosts` должен быть отключён/убран, иначе VPN не помогает — Windows всё равно идёт на IP из `hosts`
 - Discord updater manifest с `updates.discord.com` отвечает JSON
 - Discord CDN byte-range отвечает `206`
 - YouTube HEAD отвечает `200 OK`
