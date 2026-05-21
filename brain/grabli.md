@@ -92,6 +92,7 @@
 - Проверять не только YouTube, но и Discord updater: `updates.discord.com` должен отдавать manifest JSON, а Discord CDN byte-range должен отвечать `206`.
 - Если HTTPS сайта после добавления домена даёт `Recv failure: Connection was reset`, проблема может быть не в списке, а в стратегии. 2026-05-21 для Pornhub сработала `general (ALT11).bat`; `general (ALT).bat` сбрасывал TLS.
 - Не срезать `www.` автоматически в zapret hostlist: для некоторых сайтов нужны явные `www.*` и redirect-домены (`rt.pornhub.org`), иначе основной домен может пройти, а редирект/браузер — нет.
+- Google Flow: `labs.google` должен быть в DNS Geohide `hosts`, а `flow.google` НЕ добавлять в hosts. `flow.google` на GeoHide IP даёт TLS reset; рабочая схема — обычный DNS для `flow.google` → редирект на `https://labs.google/fx/tools/flow`, где `labs.google` уже идёт через GeoHide.
 
 ## IKEv2 VPN (strongSwan) на Samsung Android
 
