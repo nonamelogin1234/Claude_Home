@@ -304,7 +304,7 @@ ssh -o StrictHostKeyChecking=no -i C:/Users/no-na/.ssh/vm_key -p 2222 cthu@local
 - Flowseal zapret: `C:\zapret-flowseal\current`
 - Служба Windows: `zapret` / display name `zapret Flowseal`
 - Автозапуск: `Automatic`
-- Выбранная стратегия: `general (ALT).bat`
+- Выбранная стратегия: `general (ALT11).bat` (с 2026-05-21, подобрана для HTTPS-сбросов на отдельных сайтах вроде Pornhub)
 - Файл выбора стратегии: `C:\zapret-flowseal\current\selected_strategy.txt`
 - Проверка здоровья: `C:\zapret-flowseal\current\health_check.cmd`
 - Самостоятельно добавить сайт в zapret: скрипт `C:\zapret-flowseal\current\add_site_to_zapret.cmd` (ярлык с рабочего стола убран, чтобы не плодить кнопки)
@@ -325,6 +325,7 @@ DNS Geohide `hosts`:
 - `Включить обход`: скачивает свежий GeoHide hosts с GitHub `Internet-Helper/GeoHideDNS`, ставит его целиком, обновляет OpenAI/ChatGPT/Codex исключения zapret, запускает службу `zapret`, чистит DNS-кэш.
 - `Выключить обход`: останавливает службу `zapret`, переводит её в Manual, ставит минимальный hosts, чистит DNS-кэш.
 - `Добавить сайт в обход`: интерактивно добавляет домен в `C:\zapret-flowseal\current\lists\list-general-user.txt`, защищённые OpenAI/ChatGPT/Codex домены не добавляет.
+- 2026-05-21: `add_site_to_zapret.ps1` больше не срезает `www.` с доменов, потому что для некоторых сайтов hostlist должен содержать явные `www.*` записи.
 - Иконки ярлыков лежат в `C:\zapret-flowseal\current\icons\`: зелёный щит `enable_bypass.ico`, красный щит `disable_bypass.ico`, синий глобус с плюсом `add_site_bypass.ico`. Исходники скачаны как SVG из open-source набора Lucide через Iconify.
 - OpenAI/ChatGPT/Codex домены должны оставаться в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, чтобы zapret не мешал DNS Geohide.
 - Ключевые домены исключений: `chatgpt.com`, `chat.openai.com`, `api.openai.com`, `cdn.oaistatic.com`, `files.oaiusercontent.com`, `codex.openai.com`.
@@ -339,6 +340,7 @@ DNS Geohide `hosts`:
 - Discord CDN byte-range отвечает `206`
 - YouTube HEAD отвечает `200 OK`
 - Codex web: использовать `https://chatgpt.com/codex`; `codex.openai.com` не считать обязательным доменом.
+- Pornhub test: `www.pornhub.com` отвечает `301` на `https://rt.pornhub.org/`, `rt.pornhub.org` отвечает `200 OK` на стратегии `general (ALT11).bat`. В user list добавлены `pornhub.com`, `www.pornhub.com`, `pornhub.org`, `www.pornhub.org`, `rt.pornhub.org`, `phncdn.com`, `ei.phncdn.com`, `ew.phncdn.com`, `trafficjunky.net`, `www.trafficjunky.net`.
 
 Пользовательский список zapret:
 

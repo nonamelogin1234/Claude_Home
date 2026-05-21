@@ -90,6 +90,8 @@
 - При настройке zapret для Discord/YouTube обязательно держать OpenAI/ChatGPT/Codex домены в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, иначе можно сломать работу Codex даже при включённом VPN.
 - Для Flowseal zapret на Windows текущая рабочая служба одна: `zapret`. Старые `winws1/winws2` считать мусором и не использовать как целевое состояние.
 - Проверять не только YouTube, но и Discord updater: `updates.discord.com` должен отдавать manifest JSON, а Discord CDN byte-range должен отвечать `206`.
+- Если HTTPS сайта после добавления домена даёт `Recv failure: Connection was reset`, проблема может быть не в списке, а в стратегии. 2026-05-21 для Pornhub сработала `general (ALT11).bat`; `general (ALT).bat` сбрасывал TLS.
+- Не срезать `www.` автоматически в zapret hostlist: для некоторых сайтов нужны явные `www.*` и redirect-домены (`rt.pornhub.org`), иначе основной домен может пройти, а редирект/браузер — нет.
 
 ## IKEv2 VPN (strongSwan) на Samsung Android
 
