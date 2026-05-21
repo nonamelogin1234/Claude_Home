@@ -25,7 +25,7 @@
 | shell-api | 7722→7723 | Shell API (nginx HTTPS proxy) |
 | docai | 8765 | RAG поиск по PDF |
 | kinoclaude | 8766→8767 | KinoClaude MCP |
-| 3proxy | 7777 | SOCKS5 прокси |
+| 3proxy | 7777, 10.8.0.1:7779 | SOCKS5 прокси + HTTP proxy для OpenClaw через WireGuard |
 | sing-box | 10080/TCP (WS), 2083/TCP (Reality), 443/UDP (Hysteria2) | VPN — 3 протокола, см. VPN_Hide/context.md |
 | zabbix-agent | — | Мониторинг (агент) |
 | nginx | 80/443/7723/7724/8767 | Reverse proxy |
@@ -74,6 +74,9 @@ allow socks5user * * 0-65535
 maxconn 1000
 
 socks -p7777 -e147.45.238.120
+
+# OpenClaw homeserver HTTP proxy over WireGuard only
+proxy -p7779 -i10.8.0.1 -e147.45.238.120
 ```
 
 Ключевые настройки:
@@ -81,6 +84,7 @@ socks -p7777 -e147.45.238.120
 - `internal 0.0.0.0` — слушать на всех интерфейсах
 - `-e147.45.238.120` — флаг на строке socks (дублирует external для UDP)
 - ⚠️ `ulimits too low (1024)` при maxconn 1000 — нужно поднять через systemd override (`LimitNOFILE=65536`)
+- `proxy -p7779 -i10.8.0.1` — HTTP proxy только на WireGuard IP VPS, нужен OpenClaw на домашнем сервере для доступа к Telegram API
 
 ---
 
@@ -160,11 +164,31 @@ ssh -i C:\Users\no-na\.ssh\vm_key -p 2222 cthu@localhost
 
 | Сервис | Порт | Назначение | Браузер |
 |--------|------|------------|---------|
+| OpenClaw Gateway | 18789 (loopback) | Telegram-агент 24/7, модель xAI/Grok | локально на сервере |
 | Immich | 2283 | Фото | https://photos.myserver-ai.ru |
 | Nextcloud | 8181 | Облако | https://nextcloud.myserver-ai.ru |
 | qbittorrent | 18080→8090 | Торрент | http://192.168.0.106:18080 |
 | Jellyfin | 8096 | Медиасервер | http://192.168.0.106:8096 |
 | Uptime Kuma | 3001 | Мониторинг | http://192.168.0.106:3001 |
+
+### OpenClaw на домашнем сервере (май 2026)
+
+- Установлен на `homeserver` под пользователем `sergei`.
+- Версия: `OpenClaw 2026.5.19`.
+- Команда: `/home/sergei/.npm-global/bin/openclaw`.
+- Конфиг: `/home/sergei/.openclaw/openclaw.json`.
+- Env/secrets: `/home/sergei/.openclaw/openclaw.env` (`chmod 600`).
+- Workspace: `/home/sergei/.openclaw/workspace`.
+- Systemd service: `/etc/systemd/system/openclaw-gateway.service`.
+- Сервис включён в автозапуск: `systemctl enable openclaw-gateway.service`.
+- Запуск: `sudo systemctl restart openclaw-gateway.service`.
+- Проверка: `sudo systemctl status openclaw-gateway.service` и `openclaw channels status`.
+- Telegram: бот `@Codex_777_bot`, owner `telegram:240962808`, режим `polling`.
+- Модель: `xai/grok-4.3`, reasoning `low`.
+- Telegram API с домашнего сервера напрямую таймаутится, поэтому OpenClaw ходит через HTTP proxy VPS `http://10.8.0.1:7779` (3proxy через WireGuard).
+- Windows OpenClaw Gateway выключен, чтобы не было двух polling-клиентов одного Telegram-бота.
+- Продуктовая рамка: OpenClaw — личный секретарь Сергея в Telegram, а не девопс-бот. Главные функции: память, поиск по личному контексту, разбор мыслей, напоминания, документы, черновики и аккуратные действия с подтверждением.
+- Рабочая документация: `infra/openclaw/`.
 
 ### Samba (сетевые папки)
 

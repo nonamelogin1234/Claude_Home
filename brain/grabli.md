@@ -41,6 +41,9 @@
 ## Домашний сервер
 
 - AdGuard Home УДАЛЁН (2026-03-22) — не пытаться переподключать
+- OpenClaw на homeserver: Telegram API напрямую с домашнего сервера таймаутится. Решение: HTTP proxy на VPS через WireGuard `10.8.0.1:7779` (3proxy `proxy -p7779 -i10.8.0.1 -e147.45.238.120`) + `OPENCLAW_PROXY_URL` в `/home/sergei/.openclaw/openclaw.env`.
+- OpenClaw Telegram polling: должен работать только один gateway на одного Telegram-бота. После переноса на homeserver выключить Windows gateway, иначе polling/статусы могут конфликтовать.
+- OpenClaw не должен развиваться как ежедневный девопс-мониторинг. Главная продуктовая рамка: личный секретарь Сергея в Telegram; серверные проверки — только один из инструментов и в основном по запросу.
 - SSH с домашнего ПК не работает при включённом WireGuard VPN → отключать WireGuard перед SSH
 - SMB шара на русской Windows: "Everyone" не работает → использовать `$env:USERNAME` или "Все"
 - Windows локальные пользователи не могут войти по сети из-за политики ForceGuest → фикс: `Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "ForceGuest" -Value 0`
