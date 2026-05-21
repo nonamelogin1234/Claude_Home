@@ -307,7 +307,7 @@ ssh -o StrictHostKeyChecking=no -i C:/Users/no-na/.ssh/vm_key -p 2222 cthu@local
 - Выбранная стратегия: `general (ALT).bat`
 - Файл выбора стратегии: `C:\zapret-flowseal\current\selected_strategy.txt`
 - Проверка здоровья: `C:\zapret-flowseal\current\health_check.cmd`
-- Самостоятельно добавить сайт в zapret: ярлык `zapret - добавить сайт` на рабочем столе, скрипт `C:\zapret-flowseal\current\add_site_to_zapret.cmd`
+- Самостоятельно добавить сайт в zapret: скрипт `C:\zapret-flowseal\current\add_site_to_zapret.cmd` (ярлык с рабочего стола убран, чтобы не плодить кнопки)
 - Старые no-UAC кнопки управления остались в `C:\Users\no-na\Desktop\tools\zapret-win-bundle\zapret-winws\` и теперь управляют службой `zapret`:
   - `zapret_install_no_uac.cmd`
   - `zapret_start_no_uac.cmd`
@@ -318,9 +318,11 @@ DNS Geohide `hosts`:
 - `C:\Windows\System32\drivers\etc\hosts` ранее скачивался из DNS Geohide для Codex/ChatGPT/OpenAI.
 - 2026-05-21: пользователь временно вынул DNS Geohide `hosts`, потому что он прибивал ChatGPT/OpenAI к Geohide IP и ломал доступ даже при включённом VPN.
 - Этот файл НЕ возвращать, НЕ заменять и НЕ чистить без прямой команды пользователя.
-- 2026-05-21: основной режим для цели "ChatGPT/Codex без VPN" — `C:\zapret-flowseal\current\geohide_full_openai.cmd`, ярлык `DNS Geohide FULL OpenAI` на рабочем столе. Скрипт скачивает свежий GeoHide hosts с GitHub `Internet-Helper/GeoHideDNS` и ставит его целиком, включая OpenAI.
-- 2026-05-21: добавлен запасной переключатель `C:\zapret-flowseal\current\geohide_without_openai.cmd` и ярлык `DNS Geohide без OpenAI` на рабочем столе. Он ставит скачанный `Downloads\hosts`, но вырезает все OpenAI/ChatGPT/Codex записи, чтобы они шли через VPN.
-- Для полного отключения hosts-режима есть `C:\zapret-flowseal\current\disable_geohide_hosts.cmd` и ярлык `Отключить DNS Geohide hosts`.
+- 2026-05-21: на рабочем столе оставлены только два ярлыка:
+  - `Включить обход` -> `C:\zapret-flowseal\current\enable_bypass.cmd`
+  - `Выключить обход` -> `C:\zapret-flowseal\current\disable_bypass.cmd`
+- `Включить обход`: скачивает свежий GeoHide hosts с GitHub `Internet-Helper/GeoHideDNS`, ставит его целиком, обновляет OpenAI/ChatGPT/Codex исключения zapret, запускает службу `zapret`, чистит DNS-кэш.
+- `Выключить обход`: останавливает службу `zapret`, переводит её в Manual, ставит минимальный hosts, чистит DNS-кэш.
 - OpenAI/ChatGPT/Codex домены должны оставаться в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, чтобы zapret не мешал DNS Geohide.
 - Ключевые домены исключений: `chatgpt.com`, `chat.openai.com`, `api.openai.com`, `cdn.oaistatic.com`, `files.oaiusercontent.com`, `codex.openai.com`.
 
@@ -329,7 +331,7 @@ DNS Geohide `hosts`:
 - `zapret` = Running, Automatic
 - Если работаем через DNS Geohide без VPN: DNS `chatgpt.com`, `api.openai.com`, `cdn.oaistatic.com` резолвится в актуальные DNS Geohide IP из свежего hosts (`45.144.176.208`, `89.169.39.185`, `31.25.239.132` на 2026-05-21)
 - Если работаем через VPN: DNS Geohide `hosts` должен быть отключён/убран, иначе VPN не помогает — Windows всё равно идёт на IP из `hosts`
-- Для проверки OpenAI/ChatGPT/Codex есть ярлык `Проверить OpenAI Geohide`, скрипт `C:\zapret-flowseal\current\check_openai_geohide.cmd`.
+- Для ручной проверки OpenAI/ChatGPT/Codex есть скрипт `C:\zapret-flowseal\current\check_openai_geohide.cmd` (без ярлыка).
 - Discord updater manifest с `updates.discord.com` отвечает JSON
 - Discord CDN byte-range отвечает `206`
 - YouTube HEAD отвечает `200 OK`

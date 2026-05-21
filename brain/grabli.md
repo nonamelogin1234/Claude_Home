@@ -84,7 +84,8 @@
 
 - `C:\Windows\System32\drivers\etc\hosts` может быть файлом DNS Geohide и нужен для Codex/ChatGPT/OpenAI. Не заменять, не чистить Google/OpenAI-записи и не делать `ipconfig /flushdns` как универсальный фикс без причины.
 - Если DNS Geohide `hosts` прибивает ChatGPT/OpenAI к своим IP, VPN может не помочь: Windows всё равно использует IP из `hosts`. Для режима “OpenAI через VPN” Geohide-hosts нужно временно убирать/отключать.
-- Скачанный вручную `Downloads\hosts` DNS Geohide может устаревать. Для режима "ChatGPT/Codex без VPN" использовать `geohide_full_openai.cmd`, он скачивает свежий hosts с GitHub `Internet-Helper/GeoHideDNS`. Старый OpenAI-блок (`45.155.204.190` / `37.230.192.51`) ломал ChatGPT/Codex.
+- Скачанный вручную `Downloads\hosts` DNS Geohide может устаревать. Для режима "ChatGPT/Codex без VPN" использовать только ярлык `Включить обход` (`enable_bypass.cmd`), он скачивает свежий hosts с GitHub `Internet-Helper/GeoHideDNS`, обновляет zapret и чистит DNS. Старый OpenAI-блок (`45.155.204.190` / `37.230.192.51`) ломал ChatGPT/Codex.
+- Не плодить ярлыки управления zapret/GeoHide. На рабочем столе должны быть только `Включить обход` и `Выключить обход`; остальные проверки запускать из `C:\zapret-flowseal\current` при необходимости.
 - `codex.openai.com` не резолвится и не является основной точкой входа. Codex web живёт на `chatgpt.com/codex`; для него важны `chatgpt.com` и WebSocket на `chatgpt.com`, а не отдельный `codex.openai.com`.
 - При настройке zapret для Discord/YouTube обязательно держать OpenAI/ChatGPT/Codex домены в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, иначе можно сломать работу Codex даже при включённом VPN.
 - Для Flowseal zapret на Windows текущая рабочая служба одна: `zapret`. Старые `winws1/winws2` считать мусором и не использовать как целевое состояние.
