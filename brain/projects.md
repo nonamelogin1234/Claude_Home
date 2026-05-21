@@ -23,7 +23,7 @@
 | 📱 IKEv2 VPN (Samsung) | 🟢 Работает | Сделать nftables-правила persistent (/etc/nftables.conf) | infra/strongswan/ |
 | 🎵 Navidrome | 🟢 Работает | Создать admin-пользователя, залить музыку | infra/navidrome/ |
 | 🏠 Домашний сервер | 🟢 Работает | Настроить мобильное приложение Immich | infra/homeserver/ |
-| 🦞 OpenClaw personal secretary | 🟡 В процессе | Развернуть личность секретаря в workspace: память, поиск, разбор мыслей, напоминания; серверный мониторинг оставить вторичной функцией по запросу | infra/openclaw/ |
+| 🦞 OpenClaw personal secretary | 🟡 В процессе | Слой 1: подключить память и контекст — поиск по brain/projects/infra/sessions и запись заметок/задач/решений в assistant_* | infra/openclaw/ |
 | 🏃 Health Sync | 🟢 Работает | Проверить cron для ScaleConnect | infra/health-sync/ |
 | 🖥️ VM Discord-VPN | ✅ Завершено (май 2026) | — | — |
 | 🖥️ MCP серверы (домашний ПК) | 🟡 В процессе | `pip install uv` → `uvx windows-mcp` → перезапустить Claude Code | — |

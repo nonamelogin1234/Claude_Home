@@ -6,7 +6,7 @@
 Сервер `homeserver` — только место, где секретарь живет 24/7. Инфраструктурные проверки остаются вторичной функцией по запросу.
 
 ## СТАТУС
-🟡 В процессе — OpenClaw перенесен на `homeserver`, Telegram подключен, модель `xai/grok-4.3` работает. Начата перепрошивка роли в личного секретаря.
+🟡 В процессе — слой 0 завершен: OpenClaw перенесен на `homeserver`, Telegram подключен, личность секретаря развернута, таблицы памяти созданы, MVP cost footer работает отдельно. Следующий слой: память и контекст.
 
 ## ЧТО СДЕЛАНО
 - [2026-05-21] OpenClaw установлен на `homeserver` под пользователем `sergei`.
@@ -21,7 +21,7 @@
 - [2026-05-21] Добавлен MVP cost footer: `scripts/openclaw-cost-footer.py` считает рублевую стоимость из реального OpenClaw session JSONL usage.
 
 ## СЛЕДУЮЩИЙ ШАГ
-Встроить cost footer в реальный Telegram delivery: через OpenClaw plugin/hook после финализации ответа или через отдельный post-processor. Следом подключить read-only поиск по `brain/`, `projects/`, `infra/`, `sessions/`.
+Начать слой 1: память и контекст. Подключить `Claude_Home` на `homeserver` read-only или синхронизировать через git, сделать точечный поиск по `brain/`, `projects/`, `infra/`, `sessions/`, реализовать сохранение простых заметок/задач/решений в `assistant_*`.
 
 ## ГРАБЛИ
 - Telegram API с `homeserver` напрямую таймаутится: OpenClaw должен ходить через `OPENCLAW_PROXY_URL` на VPS HTTP proxy `10.8.0.1:7779`.
@@ -57,4 +57,3 @@ Cost footer:
 USD_RUB_RATE=90 /home/sergei/.openclaw/workspace/scripts/openclaw-cost-footer.py \
   /home/sergei/.openclaw/agents/main/sessions/SESSION.jsonl
 ```
-
