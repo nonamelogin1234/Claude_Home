@@ -318,12 +318,14 @@ DNS Geohide `hosts`:
 - `C:\Windows\System32\drivers\etc\hosts` ранее скачивался из DNS Geohide для Codex/ChatGPT/OpenAI.
 - 2026-05-21: пользователь временно вынул DNS Geohide `hosts`, потому что он прибивал ChatGPT/OpenAI к Geohide IP и ломал доступ даже при включённом VPN.
 - Этот файл НЕ возвращать, НЕ заменять и НЕ чистить без прямой команды пользователя.
-- 2026-05-21: на рабочем столе оставлены только два ярлыка:
+- 2026-05-21: на рабочем столе оставлены только три ярлыка управления обходом:
   - `Включить обход` -> `C:\zapret-flowseal\current\enable_bypass.cmd`
   - `Выключить обход` -> `C:\zapret-flowseal\current\disable_bypass.cmd`
+  - `Добавить сайт в обход` -> `C:\zapret-flowseal\current\add_site_bypass.cmd`
 - `Включить обход`: скачивает свежий GeoHide hosts с GitHub `Internet-Helper/GeoHideDNS`, ставит его целиком, обновляет OpenAI/ChatGPT/Codex исключения zapret, запускает службу `zapret`, чистит DNS-кэш.
 - `Выключить обход`: останавливает службу `zapret`, переводит её в Manual, ставит минимальный hosts, чистит DNS-кэш.
-- Иконки двух ярлыков лежат в `C:\zapret-flowseal\current\icons\`: зелёный щит `enable_bypass.ico`, красный щит `disable_bypass.ico`. Исходники скачаны как SVG из open-source набора Lucide через Iconify.
+- `Добавить сайт в обход`: интерактивно добавляет домен в `C:\zapret-flowseal\current\lists\list-general-user.txt`, защищённые OpenAI/ChatGPT/Codex домены не добавляет.
+- Иконки ярлыков лежат в `C:\zapret-flowseal\current\icons\`: зелёный щит `enable_bypass.ico`, красный щит `disable_bypass.ico`, синий глобус с плюсом `add_site_bypass.ico`. Исходники скачаны как SVG из open-source набора Lucide через Iconify.
 - OpenAI/ChatGPT/Codex домены должны оставаться в `C:\zapret-flowseal\current\lists\list-exclude-user.txt`, чтобы zapret не мешал DNS Geohide.
 - Ключевые домены исключений: `chatgpt.com`, `chat.openai.com`, `api.openai.com`, `cdn.oaistatic.com`, `files.oaiusercontent.com`, `codex.openai.com`.
 
