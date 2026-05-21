@@ -345,6 +345,7 @@ DNS Geohide `hosts`:
 Пользовательский список zapret:
 
 - Домены добавляются в `C:\zapret-flowseal\current\lists\list-general-user.txt`.
+- 2026-05-21: для Google Gemini / AI Studio / Flow добавлены `gemini.google.com`, `bard.google.com`, `aistudio.google.com`, `ai.google.dev`, `labs.google`, `flow.google`; после добавления стратегия zapret переустановлена, служба `zapret` осталась Running/Automatic.
 - Для обычных сайтов можно добавлять домен или полный URL, скрипт сам приведёт к домену.
 - OpenAI/ChatGPT/Codex домены скрипт не добавляет в общий список, чтобы не ломать DNS Geohide.
 - Для приложений с IP-сетями/UDP одной строки домена может быть недостаточно.
