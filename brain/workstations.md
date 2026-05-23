@@ -130,3 +130,20 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 4. Выполни только нужные шаги.
 5. Обнови этот файл, если появились отличия.
 6. Не проси заново объяснять контекст, если он уже здесь записан.
+
+## Домашний ПК — доступ к VPS (2026-05-23)
+
+- Локальные обертки восстановлены:
+  - `C:\Users\no-na\srv.ps1` → VPS shell-api `https://mcp.myserver-ai.ru:7723`
+  - `C:\Users\no-na\home.ps1` → homeserver shell-api через VPS `https://mcp.myserver-ai.ru:7724`
+  - `C:\Users\no-na\timeweb-vps.ps1` → аварийное управление VPS через Timeweb Cloud API
+- `CLAUDE.local.md` создан локально в корне репозитория и не коммитится.
+- `srv.ps1/home.ps1` зависят от живого VPS/nginx/shell-api. При полной недоступности IP `147.45.238.120` они таймаутятся.
+- `timeweb-vps.ps1` не хранит токен. Перед использованием нужно установить переменную только в текущей сессии PowerShell: `Set-Item Env:TIMEWEB_CLOUD_TOKEN "..."`.
+- Timeweb API использует официальные endpoints:
+  - `GET https://api.timeweb.cloud/api/v1/servers`
+  - `POST https://api.timeweb.cloud/api/v1/servers/{server_id}/start`
+  - `POST https://api.timeweb.cloud/api/v1/servers/{server_id}/reboot`
+  - `POST https://api.timeweb.cloud/api/v1/servers/{server_id}/shutdown`
+  - `POST https://api.timeweb.cloud/api/v1/servers/{server_id}/hard-shutdown`
+- Для поиска нужного сервера скрипт по умолчанию ищет IP `147.45.238.120`; если API-ответ не содержит IP в ожидаемом поле, можно передать `-serverId` вручную.
