@@ -337,7 +337,7 @@ DNS Geohide `hosts`:
 - Если работаем через DNS Geohide без VPN: DNS `chatgpt.com`, `api.openai.com`, `cdn.oaistatic.com` резолвится в актуальные DNS Geohide IP из свежего hosts (`45.144.176.208`, `89.169.39.185`, `31.25.239.132` на 2026-05-21)
 - Если работаем через VPN: DNS Geohide `hosts` должен быть отключён/убран, иначе VPN не помогает — Windows всё равно идёт на IP из `hosts`
 - Для ручной проверки OpenAI/ChatGPT/Codex есть скрипт `C:\zapret-flowseal\current\check_openai_geohide.cmd` (без ярлыка).
-- Для постоянного наблюдения есть GUI-скрипт `C:\zapret-flowseal\current\access_monitor.ps1`: обновление каждые 60 секунд, зелёная/красная точка, шкала качества ответа, сводные карточки и ручная кнопка проверки. Критичные цели: `https://chatgpt.com/codex`, `https://chatgpt.com`, `https://api.openai.com/v1/models`; остальные цели читаются динамически из `C:\zapret-flowseal\current\lists\list-general-user.txt` и `C:\zapret-flowseal\current\lists\list-google.txt`. `list-general.txt` не мониторится как “сайты”, потому что там много служебных доменов Cloudflare/Discord, которые не обязаны открываться браузерной страницей.
+- Для постоянного наблюдения есть GUI-скрипт `C:\zapret-flowseal\current\access_monitor.ps1`: обновление каждые 30 секунд, зелёная/красная точка, шкала качества ответа и ручная кнопка проверки. Проверяет только главное: Codex (`https://chatgpt.com/codex`), Discord updater manifest, YouTube. Длинные списки обхода не мониторить в этом окне: они тормозят и дают много ложной красноты на служебных CDN-доменах.
 - Discord updater manifest с `updates.discord.com` отвечает JSON
 - Discord CDN byte-range отвечает `206`
 - YouTube HEAD отвечает `200 OK`
