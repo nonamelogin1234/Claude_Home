@@ -322,6 +322,7 @@ DNS Geohide `hosts`:
   - `Включить обход` -> `C:\zapret-flowseal\current\enable_bypass.cmd`
   - `Выключить обход` -> `C:\zapret-flowseal\current\disable_bypass.cmd`
   - `Добавить сайт в обход` -> `C:\zapret-flowseal\current\add_site_bypass.cmd`
+- 2026-05-23: добавлен отдельный ярлык наблюдения `Монитор доступа` -> `C:\zapret-flowseal\current\access_monitor.cmd`. Он ничего не меняет в hosts/zapret, только показывает живой статус доступности сервисов.
 - `Включить обход`: скачивает свежий GeoHide hosts с GitHub `Internet-Helper/GeoHideDNS`, ставит его целиком, обновляет OpenAI/ChatGPT/Codex исключения zapret, запускает службу `zapret`, чистит DNS-кэш.
 - `Выключить обход`: останавливает службу `zapret`, переводит её в Manual, ставит минимальный hosts, чистит DNS-кэш.
 - `Добавить сайт в обход`: интерактивно добавляет домен в `C:\zapret-flowseal\current\lists\list-general-user.txt`, защищённые OpenAI/ChatGPT/Codex домены не добавляет.
@@ -336,6 +337,7 @@ DNS Geohide `hosts`:
 - Если работаем через DNS Geohide без VPN: DNS `chatgpt.com`, `api.openai.com`, `cdn.oaistatic.com` резолвится в актуальные DNS Geohide IP из свежего hosts (`45.144.176.208`, `89.169.39.185`, `31.25.239.132` на 2026-05-21)
 - Если работаем через VPN: DNS Geohide `hosts` должен быть отключён/убран, иначе VPN не помогает — Windows всё равно идёт на IP из `hosts`
 - Для ручной проверки OpenAI/ChatGPT/Codex есть скрипт `C:\zapret-flowseal\current\check_openai_geohide.cmd` (без ярлыка).
+- Для постоянного наблюдения есть GUI-скрипт `C:\zapret-flowseal\current\access_monitor.ps1`: обновление каждые 30 секунд, зелёная/красная точка, шкала качества ответа и ручная кнопка проверки. Критичные цели: `https://chatgpt.com/codex`, `https://chatgpt.com`, `https://api.openai.com/v1/models`; дополнительные: `https://cdn.oaistatic.com`, YouTube, Discord updater manifest.
 - Discord updater manifest с `updates.discord.com` отвечает JSON
 - Discord CDN byte-range отвечает `206`
 - YouTube HEAD отвечает `200 OK`
