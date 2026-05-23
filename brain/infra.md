@@ -323,6 +323,7 @@ DNS Geohide `hosts`:
   - `Выключить обход` -> `C:\zapret-flowseal\current\disable_bypass.cmd`
   - `Добавить сайт в обход` -> `C:\zapret-flowseal\current\add_site_bypass.cmd`
 - 2026-05-23: добавлен отдельный ярлык наблюдения `Монитор доступа` -> `C:\zapret-flowseal\current\access_monitor.cmd`. Он ничего не меняет в hosts/zapret, только показывает живой статус доступности сервисов.
+- 2026-05-23: добавлен аварийный ярлык `Починить Edge Google` -> `C:\zapret-flowseal\current\fix_edge_google.cmd`. Он закрывает Edge, делает бэкап `Local State`/`Preferences` на рабочий стол, чистит только сетевые/рендер-кэши Edge, делает `ipconfig /flushdns` и открывает `https://www.google.com` заново.
 - `Включить обход`: скачивает свежий GeoHide hosts с GitHub `Internet-Helper/GeoHideDNS`, ставит его целиком, обновляет OpenAI/ChatGPT/Codex исключения zapret, запускает службу `zapret`, чистит DNS-кэш.
 - `Выключить обход`: останавливает службу `zapret`, переводит её в Manual, ставит минимальный hosts, чистит DNS-кэш.
 - `Добавить сайт в обход`: интерактивно добавляет домен в `C:\zapret-flowseal\current\lists\list-general-user.txt`, защищённые OpenAI/ChatGPT/Codex домены не добавляет.
