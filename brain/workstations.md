@@ -140,6 +140,7 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 - `CLAUDE.local.md` создан локально в корне репозитория и не коммитится.
 - `srv.ps1/home.ps1` зависят от живого VPS/nginx/shell-api. При полной недоступности IP `147.45.238.120` они таймаутятся.
 - `timeweb-vps.ps1` не хранит токен. Перед использованием нужно установить переменную только в текущей сессии PowerShell: `Set-Item Env:TIMEWEB_CLOUD_TOKEN "..."`.
+- Timeweb API ключ хранится в Vaultwarden item `API-timeweb.cloud`, поле `token`.
 - Timeweb API использует официальные endpoints:
   - `GET https://api.timeweb.cloud/api/v1/servers`
   - `POST https://api.timeweb.cloud/api/v1/servers/{server_id}/start`
