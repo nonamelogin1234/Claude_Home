@@ -147,3 +147,6 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
   - `POST https://api.timeweb.cloud/api/v1/servers/{server_id}/shutdown`
   - `POST https://api.timeweb.cloud/api/v1/servers/{server_id}/hard-shutdown`
 - Для поиска нужного сервера скрипт по умолчанию ищет IP `147.45.238.120`; если API-ответ не содержит IP в ожидаемом поле, можно передать `-serverId` вручную.
+- Timeweb server id VPS `Diligent Sagittarius`: `3330663`.
+- 2026-05-23: после аварии питания Timeweb `ams-1` VPS был выключен. Запуск через API `POST /servers/3330663/start` вернул HTTP timeout, но команда фактически сработала и сервер поднялся.
+- После запуска обнаружен конфликт: `wg-quick@wg0` на хосте VPS был `active/enabled`, хотя `wg0` должен принадлежать только контейнеру `wg-easy`. Исправлено: `wg-quick@wg0` остановлен и отключен из автозапуска, `wg1` перезапущен через systemd и стал `active`.
