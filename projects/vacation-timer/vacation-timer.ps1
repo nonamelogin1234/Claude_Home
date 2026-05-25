@@ -104,7 +104,7 @@ if (-not $createdNew) {
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="До отпуска"
-        Width="430" Height="600"
+        Width="215" Height="300"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
         UseLayoutRounding="True" SnapsToDevicePixels="True">
@@ -139,6 +139,8 @@ if (-not $createdNew) {
             </Setter>
         </Style>
     </Window.Resources>
+    <Viewbox Stretch="Fill">
+    <Grid Width="430" Height="600">
     <Grid Margin="14">
         <Border CornerRadius="30" BorderThickness="1.5" BorderBrush="#41597576">
             <Border.Effect>
@@ -258,6 +260,8 @@ if (-not $createdNew) {
             </Grid>
         </Border>
     </Grid>
+    </Grid>
+    </Viewbox>
 </Window>
 '@
 
