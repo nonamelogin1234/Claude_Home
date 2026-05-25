@@ -160,7 +160,7 @@ if (-not $createdNew) {
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid x:Name="DragArea" Grid.Row="0" Margin="27,12,15,0">
+                <Grid x:Name="DragArea" Grid.Row="0" Margin="27,12,15,0" Background="Transparent">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button x:Name="PinButton" Style="{StaticResource ChromeButton}" ToolTip="Поверх всех окон">
                             <Viewbox Width="18" Height="18">
@@ -307,10 +307,21 @@ function Update-Widget {
     $arcProgress.Data = $geometry
 }
 
-$dragArea.Add_MouseLeftButtonDown({
-    if ($_.ChangedButton -eq [Windows.Input.MouseButton]::Left) {
-        $window.DragMove()
+# Lets the user move the widget from any non-button area of its surface.
+$window.Add_MouseLeftButtonDown({
+    if ($_.ChangedButton -ne [Windows.Input.MouseButton]::Left) {
+        return
     }
+
+    $element = $_.OriginalSource
+    while ($null -ne $element -and $element -ne $window) {
+        if ($element -is [Windows.Controls.Button]) {
+            return
+        }
+        $element = [Windows.Media.VisualTreeHelper]::GetParent($element)
+    }
+
+    $window.DragMove()
 })
 $closeButton.Add_Click({ $window.Close() })
 $pinButton.Add_Click({
