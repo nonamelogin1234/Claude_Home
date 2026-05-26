@@ -29,6 +29,7 @@
 - Если Docker на VPS не может скачать образ и пишет `lookup registry-1.docker.io on [::1]:53: connection refused` — проверить `/etc/resolv.conf`. В мае 2026 он оказался пустым symlink на resolvconf при выключенном `systemd-resolved`; исправлено статическим `/etc/resolv.conf` с `8.8.8.8` и `1.1.1.1`.
 - `executeCommand` в n8n выполняется ВНУТРИ Docker → всегда HTTP Request → Shell API `http://172.18.0.1:7722`
 - wg0 на хосте VPS конфликтует с wg-easy → `sudo wg-quick down wg0 && sudo docker start wg-easy`
+- Chrome/Chromium не подключается к SOCKS5 с логином и паролем (`ERR_SOCKS_CONNECTION_FAILED`) → для браузера использовать отдельный `3proxy-chrome.service` на `:7778` без авторизации, но с allowlist домашнего внешнего IP.
 
 ## Claude Code
 

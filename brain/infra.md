@@ -32,7 +32,8 @@
 | shell-api | 7722→7723 | Shell API (nginx HTTPS proxy) |
 | docai | 8765 | RAG поиск по PDF |
 | kinoclaude | 8766→8767 | KinoClaude MCP |
-| 3proxy | 7777, 10.8.0.1:7779 | SOCKS5 прокси + HTTP proxy для OpenClaw через WireGuard |
+| 3proxy | 7777, 10.8.0.1:7779 | SOCKS5 прокси с авторизацией + HTTP proxy для OpenClaw через WireGuard |
+| 3proxy-chrome | 7778 | SOCKS5 без авторизации для Chrome, доступ только с домашнего IP |
 | sing-box | 10080/TCP (WS), 2083/TCP (Reality), 443/UDP (Hysteria2) | VPN — 3 протокола, см. VPN_Hide/context.md |
 | zabbix-agent | — | Мониторинг (агент) |
 | nginx | 80/443/7723/7724/8767 | Reverse proxy |
@@ -92,6 +93,21 @@ proxy -p7779 -i10.8.0.1 -e147.45.238.120
 - `-e147.45.238.120` — флаг на строке socks (дублирует external для UDP)
 - ⚠️ `ulimits too low (1024)` при maxconn 1000 — нужно поднять через systemd override (`LimitNOFILE=65536`)
 - `proxy -p7779 -i10.8.0.1` — HTTP proxy только на WireGuard IP VPS, нужен OpenClaw на домашнем сервере для доступа к Telegram API
+
+### 3proxy для Chrome (настроен 2026-05-26)
+
+Chrome не поддерживает логин/пароль для SOCKS5, поэтому поднят отдельный IP-restricted сервис:
+
+| Параметр | Значение |
+|---|---|
+| Systemd service | `3proxy-chrome.service` |
+| Конфиг VPS | `/etc/3proxy/chrome.cfg` |
+| Тип | SOCKS5 без авторизации |
+| Адрес | `147.45.238.120:7778` |
+| Разрешённый источник | `149.255.116.76` (домашний внешний IP на момент настройки) |
+
+- Основной защищённый SOCKS5 `:7777` не менялся.
+- Если домашний внешний IP изменится, Chrome получит `ERR_SOCKS_CONNECTION_FAILED`; обновить IP в `/etc/3proxy/chrome.cfg` и перезапустить `3proxy-chrome.service`.
 
 ---
 
