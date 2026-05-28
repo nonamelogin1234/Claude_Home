@@ -246,6 +246,7 @@ net use Z: \\192.168.0.106\Jellyfin /user:sergei 7193079a /persistent:yes
 | CUZeNQIDJRD9ldxy | Alice→Claude | Алиса → n8n → Claude |
 | 01BCs4rVxAKdi01J | Health Connect sync | Drive → Postgres, 7:30 МСК |
 | pWp8TqJNVngiOOVZ | Hevy sync | workout_data.csv → Postgres, /6h |
+| LDvZi8x7YlVRFMmi | Call Recordings → Notion summaries | Свежие записи звонков из Nextcloud `/Call` → OpenAI transcription/summary → Notion `Рабочие звонки`, каждые 3 мин |
 
 ---
 

@@ -24,6 +24,7 @@
 - [2026-03-28] Подключён HDD 1TB USB → /srv/hdd, ext4, UUID в fstab (nofail)
 - [2026-03-28] Установлен Immich (Docker Compose) → порт 2283, хранилище /srv/hdd/immich
 - [2026-03-28] SSL + nginx на VPS → Immich доступен на https://photos.myserver-ai.ru
+- [2026-05-28] Настроена автоматизация рабочих звонков: Samsung пишет `.m4a` в Nextcloud `/Call`, n8n на VPS обрабатывает только свежие записи из whitelist контактов, делает расшифровку/конспект через OpenAI и создаёт страницы в Notion `Рабочие звонки`.
 
 ## СЛЕДУЮЩИЙ ШАГ
 - Первый вход: https://photos.myserver-ai.ru — создать admin аккаунт
@@ -43,6 +44,7 @@
   - DB: MariaDB 10.11, user: nextcloud, pass: ncdb2026
   - Redis: включён
   - Env: OVERWRITEPROTOCOL=https, OVERWRITECLIURL=https://nextcloud.myserver-ai.ru
+  - Записи звонков Samsung: пользователь `nonamelogin1234`, WebDAV `/Call`, файловый путь `/srv/nextcloud/data/data/nonamelogin1234/files/Call`
 - Nginx домашний: порт 80 → Jellyfin :8096
 - VPS nginx: nextcloud.myserver-ai.ru → http://10.8.0.27:8181 (файл: /etc/nginx/sites-enabled/nextcloud)
 - acme.sh: установлен в /.acme.sh/, сертификаты в /.acme.sh/*_ecc/, установлены в /etc/nginx/ssl/
