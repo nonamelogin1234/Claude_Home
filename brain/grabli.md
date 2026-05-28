@@ -31,6 +31,7 @@
 - wg0 на хосте VPS конфликтует с wg-easy → `sudo wg-quick down wg0 && sudo docker start wg-easy`
 - Chrome/Chromium не подключается к SOCKS5 с логином и паролем (`ERR_SOCKS_CONNECTION_FAILED`) → для браузера использовать отдельный `3proxy-chrome.service` на `:7778` без авторизации, но с allowlist домашнего внешнего IP.
 - n8n 2.7.5: workflow с `@n8n/n8n-nodes-langchain.openAi` может валидироваться, но не активироваться с ошибкой `Cannot read properties of undefined (reading 'execute')`. Для production-сценариев с OpenAI использовать обычный `HTTP Request` + credential `openAiApi`.
+- n8n HTTP Request multipart binary может отправлять файл в OpenAI transcription без исходного имени файла; OpenAI тогда отвечает `Invalid file format` даже на валидный `.m4a`. Проверять, что multipart part `file` имеет filename с расширением, либо делать вызов через shell/curl helper.
 
 ## Claude Code
 
