@@ -31,7 +31,9 @@
 - wg0 на хосте VPS конфликтует с wg-easy → `sudo wg-quick down wg0 && sudo docker start wg-easy`
 - Chrome/Chromium не подключается к SOCKS5 с логином и паролем (`ERR_SOCKS_CONNECTION_FAILED`) → для браузера использовать отдельный `3proxy-chrome.service` на `:7778` без авторизации, но с allowlist домашнего внешнего IP.
 - n8n 2.7.5: workflow с `@n8n/n8n-nodes-langchain.openAi` может валидироваться, но не активироваться с ошибкой `Cannot read properties of undefined (reading 'execute')`. Для production-сценариев с OpenAI использовать обычный `HTTP Request` + credential `openAiApi`.
-- n8n HTTP Request multipart binary может отправлять файл в OpenAI transcription без исходного имени файла; OpenAI тогда отвечает `Invalid file format` даже на валидный `.m4a`. Проверять, что multipart part `file` имеет filename с расширением, либо делать вызов через shell/curl helper.
+- n8n HTTP Request multipart binary может отправлять файл в OpenAI transcription без исходного имени файла; OpenAI тогда отвечает `Invalid file format` даже на валидный `.m4a`. Но если файл пришёл с телефона как контейнер `ftyp3gp4` под расширением `.m4a`, одной правки filename недостаточно: OpenAI всё равно отвергает файл по содержимому. Рабочий обход в `Call Recordings → Notion summaries`: конвертировать запись через `ffmpeg` в MP3 (`/home/node/.n8n/bin/ffmpeg`, output в `/home/node/.n8n-files/`) и уже MP3 отправлять в OpenAI.
+- n8n 2.7.5: родной `@n8n/n8n-nodes-langchain.openAi` для audio transcribe может валидироваться, но при сохранении/активации workflow падать с `Cannot read properties of undefined (reading 'execute')`. Для production не использовать этот node, пока версия n8n не обновлена; вместо него HTTP Request + предварительная конвертация аудио.
+- Notion DB, созданные через сломанный encoding/скрипт, могут иметь реальные имена колонок из `????`, хотя в голове ожидаются русские названия. Notion API в этом случае пишет `Название is not a property that exists`. Проверять schema через retrieve database и использовать фактические property names/ids либо руками переименовать колонки в Notion.
 
 ## Claude Code
 
