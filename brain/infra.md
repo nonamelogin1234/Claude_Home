@@ -25,6 +25,14 @@
 | wg-easy | 51820/51821 | WireGuard VPN (телефон, прочие клиенты) |
 | tunnel | — | Cloudflare Tunnel |
 
+### Vaultwarden
+
+- [2026-06-01] Обновлён `vaultwarden/server:latest`: `Vaultwarden 1.35.4 / Web-Vault 2026.1.1` → `Vaultwarden 1.36.0 / Web-Vault 2026.4.1`.
+- Причина обновления: новые расширения Bitwarden в Firefox/Vivaldi/Chrome используют `POST /identity/accounts/prelogin/password`; старая версия Vaultwarden отвечала `404`, из-за чего расширения показывали «Произошла непредвиденная ошибка».
+- Данные: bind mount `/opt/vaultwarden:/data`.
+- Бэкап перед обновлением: `/opt/backups/vaultwarden/vaultwarden-20260601-005534.tar.gz`.
+- Проверка после обновления: `https://vault.myserver-ai.ru/api/config` и `/identity/accounts/prelogin/password` отвечают `200 OK`.
+
 ## Systemd сервисы на VPS
 
 | Сервис | Порт | Назначение |
