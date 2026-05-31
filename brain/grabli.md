@@ -122,6 +122,10 @@
 - VPN адрес пула: 10.0.2.0/24, шлюз клиентам: 8.8.8.8 DNS
 - **nftables правила не переживают ребут** — нужно прописывать в `/etc/nftables.conf` или скрипт при старте контейнера
 
+## Vivaldi / VK Video
+
+- 2026-06-01: если в Vivaldi не грузится VK Video, а VPN/Proton уже выключены, сначала ловить DevTools/NetLog. В рабочем кейсе причина была `net::ERR_BLOCKED_BY_CLIENT` от встроенного Vivaldi Tracker and Ad Blocker, а не zapret/hosts/VPN. Фикс: добавить VK-домены в исключения Vivaldi AdBlockState для ads и tracking (`vkvideo.ru`, `vk.com`, `login.vk.com`, `vk-portal.net`, `akashi.vk-portal.net`, `userapi.com`, `vkuserlive.net`, `vkcdnservice.com`) или в UI поставить для `vkvideo.ru` режим без блокировки. После фикса обычный ролик отдавал `video/mp4`, live — `application/dash+xml`; оставшиеся блокировки метрики не мешали видео.
+
 ## Hevy / Health Connect
 
 - `hevy_sets` — новая таблица (25.03.2026), каждый подход отдельной строкой
