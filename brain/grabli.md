@@ -127,6 +127,10 @@
 - 2026-06-01: если в Vivaldi не грузится VK Video, а VPN/Proton уже выключены, сначала ловить DevTools/NetLog. В рабочем кейсе причина была `net::ERR_BLOCKED_BY_CLIENT` от встроенного Vivaldi Tracker and Ad Blocker, а не zapret/hosts/VPN. Фикс: добавить VK-домены в исключения Vivaldi AdBlockState для ads и tracking (`vkvideo.ru`, `vk.com`, `login.vk.com`, `vk-portal.net`, `akashi.vk-portal.net`, `userapi.com`, `vkuserlive.net`, `vkcdnservice.com`) или в UI поставить для `vkvideo.ru` режим без блокировки. После фикса обычный ролик отдавал `video/mp4`, live — `application/dash+xml`; оставшиеся блокировки метрики не мешали видео.
 - 2026-06-02: если RSS-виджет на стартовой странице Vivaldi пустой, проверить не только наличие `vivaldi.rss.settings`, но и `vivaldi.dashboard.widgets[].feedId`. В рабочем кейсе виджет `feed` ссылался на несуществующий `feedId`, поэтому лента была подписана, но виджет ничего не показывал. Фикс: закрыть Vivaldi, сделать бэкап `%LOCALAPPDATA%/Vivaldi/User Data/Default/Preferences`, добавить/найти рабочую RSS-ленту и записать её `feedId` в виджет Dashboard.
 
+## Mafia III
+
+- 2026-06-02: `profile_videosettings.pf` нельзя переписывать как простой XML. Последние 4 байта — CRC32 payload в little-endian; если после ручной правки не пересчитать CRC, игра может считать профиль повреждённым и сбросить настройки. Безопасный порядок: бэкап → изменить XML payload без последних 4 байт → пересчитать CRC32 → записать payload + CRC. Для 60 fps в текущем профиле используется `m_FPS=1`; `m_FPS=2` был нецелевым режимом для стабильных 60.
+
 ## Hevy / Health Connect
 
 - `hevy_sets` — новая таблица (25.03.2026), каждый подход отдельной строкой

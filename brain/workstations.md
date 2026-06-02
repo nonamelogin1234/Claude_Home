@@ -174,3 +174,15 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 - Виджет Dashboard типа `feed` привязан к `feedId` этой ленты и показывает список (`feedDisplay=list`).
 - Уведомления сайтов внутри Vivaldi заблокированы глобально: `profile.default_content_setting_values.notifications=2`.
 - Перед ручной правкой профиля Vivaldi нужно закрыть браузер. Резервная копия текущей правки: `%LOCALAPPDATA%/Vivaldi/User Data/Default/Preferences.codex-backup-20260602-103027`.
+
+## Домашний ПК — железо и игры (2026-06-02)
+
+- CPU: AMD Ryzen 5 5600H, 6 ядер / 12 потоков.
+- GPU: NVIDIA GeForce RTX 3060 Laptop GPU, 6 GB VRAM, driver `596.36`; также есть встроенная AMD Radeon(TM) Graphics.
+- RAM: 16 GB.
+- Экраны: основной для игр `2560x1080 @ 200 Hz`; встроенный/второй `1920x1080 @ 144 Hz`.
+- Mafia III (GOG): установлена в `C:/Install/Mafia III/`, exe `Mafia3.exe`, профиль в `%LOCALAPPDATA%/2K Games/Mafia III/`.
+- Mafia III оптимизирована под качество + стабильные 60 fps: `videoconfig.cfg` = `0 0 2560 1080 1 0 0 1`; `profile_videosettings.pf`: high для SSAO/shadows/geometry/reflections/volumetric, AA = `1`, VSync = `true`, FPS = `1`, Motion Blur = `false`, Gameplay DOF = `false`.
+- Windows Graphics Preference для `C:/Install/Mafia III/Mafia3.exe`: `GpuPreference=2` (high performance / RTX).
+- Compatibility flags для `Mafia3.exe`: `HIGHDPIAWARE DISABLEDXMAXIMIZEDWINDOWEDMODE`.
+- Бэкапы текущей правки Mafia III: `%LOCALAPPDATA%/2K Games/Mafia III/Saves/videoconfig.cfg.codex-backup-20260602-115509` и `%LOCALAPPDATA%/2K Games/Mafia III/Data/profiles/temporaryprofile/profile_videosettings.pf.codex-backup-20260602-115509`.
