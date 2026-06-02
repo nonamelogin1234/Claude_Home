@@ -165,3 +165,12 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 - Timeweb server id VPS `Diligent Sagittarius`: `3330663`.
 - 2026-05-23: после аварии питания Timeweb `ams-1` VPS был выключен. Запуск через API `POST /servers/3330663/start` вернул HTTP timeout, но команда фактически сработала и сервер поднялся.
 - После запуска обнаружен конфликт: `wg-quick@wg0` на хосте VPS был `active/enabled`, хотя `wg0` должен принадлежать только контейнеру `wg-easy`. Исправлено: `wg-quick@wg0` остановлен и отключен из автозапуска, `wg1` перезапущен через systemd и стал `active`.
+
+## Домашний ПК — Vivaldi (2026-06-02)
+
+- Профиль Vivaldi: `%LOCALAPPDATA%/Vivaldi/User Data/Default/Preferences`.
+- RSS-лента для Dashboard настроена через `vivaldi.rss.settings` + `vivaldi.dashboard.widgets[].feedId`.
+- Рабочая зарубежная лента: `The Guardian - World News`, URL `https://www.theguardian.com/world/rss`, `refreshInterval=120`.
+- Виджет Dashboard типа `feed` привязан к `feedId` этой ленты и показывает список (`feedDisplay=list`).
+- Уведомления сайтов внутри Vivaldi заблокированы глобально: `profile.default_content_setting_values.notifications=2`.
+- Перед ручной правкой профиля Vivaldi нужно закрыть браузер. Резервная копия текущей правки: `%LOCALAPPDATA%/Vivaldi/User Data/Default/Preferences.codex-backup-20260602-103027`.
