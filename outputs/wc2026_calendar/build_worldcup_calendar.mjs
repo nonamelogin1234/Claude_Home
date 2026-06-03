@@ -209,8 +209,8 @@ const matches = parseCsv(csv).map((m) => {
 }).sort((a, b) => a.kickoffUtc - b.kickoffUtc || a.match_no - b.match_no);
 
 const wb = Workbook.create();
-const sheets = ["Календарь МСК", "Мой выбор", "Все матчи", "Группы", "Стадионы", "Источник"].map((name) => wb.worksheets.add(name));
-const [cal, pick, all, groups, venues, source] = sheets;
+const sheets = ["Календарь", "Список МСК", "Мой выбор", "Все матчи", "Группы", "Стадионы", "Источник"].map((name) => wb.worksheets.add(name));
+const [grid, cal, pick, all, groups, venues, source] = sheets;
 for (const sheet of sheets) sheet.showGridLines = false;
 
 const colors = {
@@ -271,7 +271,121 @@ function setWidths(sheet, widths) {
   });
 }
 
-title(cal, "A1:K1", "Календарь матчей ЧМ-2026: время по Москве", "Отмечай матчи в колонке A: выбранные автоматически появятся на листе «Мой выбор».");
+function isoDate(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d;
+}
+
+function mondayOf(date) {
+  const d = new Date(date);
+  const day = d.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setUTCDate(d.getUTCDate() + diff);
+  return d;
+}
+
+function ruDate(date) {
+  return new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" }).format(date);
+}
+
+function buildCalendarGrid() {
+  title(grid, "A1:H1", "ЧМ-2026: календарь матчей по московскому времени", "Недельная сетка: время МСК слева, дни недели сверху, матчи внутри ячеек.");
+  grid.getRange("A3:H3").values = [["Как читать", "Найди дату сверху, время слева, матч в пересечении. Если в одно время несколько матчей, они записаны в одной ячейке.", "", "", "", "", "", ""]];
+  grid.mergeCells("B3:H3");
+  grid.getRange("A3:H3").format.fill.color = colors.paleBlue;
+  grid.getRange("A3:H3").format.font.color = colors.text;
+  grid.getRange("A3:H3").format.font.bold = true;
+  grid.getRange("B3:H3").format.font.bold = false;
+
+  const weekdays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+  const minDate = matches[0].mskDate;
+  const maxDate = matches.at(-1).mskDate;
+  let weekStart = mondayOf(minDate);
+  let row = 5;
+
+  while (weekStart <= maxDate) {
+    const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+    const dayKeys = new Set(days.map(isoDate));
+    const weekMatches = matches.filter((m) => dayKeys.has(isoDate(m.mskDate)));
+    const times = Array.from(new Set(weekMatches.map((m) => m.mskTime))).sort();
+    const rowCount = Math.max(times.length, 1);
+    const weekEnd = addDays(weekStart, 6);
+    const titleRow = row;
+    const weekdayRow = row + 1;
+    const dateRow = row + 2;
+    const bodyStart = row + 3;
+    const bodyEnd = bodyStart + rowCount - 1;
+
+    grid.mergeCells(`A${titleRow}:H${titleRow}`);
+    const weekTitle = grid.getRange(`A${titleRow}:H${titleRow}`);
+    weekTitle.values = [[`Неделя ${ruDate(weekStart)} - ${ruDate(weekEnd)}`]];
+    weekTitle.format.fill.color = colors.navy;
+    weekTitle.format.font.color = colors.white;
+    weekTitle.format.font.bold = true;
+    weekTitle.format.font.size = 13;
+    weekTitle.format.horizontalAlignment = "center";
+    weekTitle.format.rowHeightPx = 28;
+
+    grid.getRange(`A${weekdayRow}:H${weekdayRow}`).values = [["Время МСК", ...weekdays]];
+    grid.getRange(`A${dateRow}:H${dateRow}`).values = [["", ...days.map(ruDate)]];
+    styleHeader(grid.getRange(`A${weekdayRow}:H${weekdayRow}`));
+    const dateHeader = grid.getRange(`A${dateRow}:H${dateRow}`);
+    dateHeader.format.fill.color = colors.paleGold;
+    dateHeader.format.font.bold = true;
+    dateHeader.format.horizontalAlignment = "center";
+    dateHeader.format.borders = { preset: "all", style: "thin", color: colors.border };
+
+    const bodyValues = times.length ? times.map((t) => [t, "", "", "", "", "", "", ""]) : [["", "", "", "", "", "", "", ""]];
+    grid.getRangeByIndexes(bodyStart - 1, 0, rowCount, 8).values = bodyValues;
+    const bodyRange = grid.getRange(`A${bodyStart}:H${bodyEnd}`);
+    styleBody(bodyRange);
+    bodyRange.format.wrapText = true;
+    bodyRange.format.verticalAlignment = "top";
+    bodyRange.format.rowHeightPx = 58;
+    grid.getRange(`A${bodyStart}:A${bodyEnd}`).format.fill.color = colors.paleBlue;
+    grid.getRange(`A${bodyStart}:A${bodyEnd}`).format.font.bold = true;
+    grid.getRange(`A${bodyStart}:A${bodyEnd}`).format.horizontalAlignment = "center";
+    grid.getRange(`G${weekdayRow}:H${bodyEnd}`).format.fill.color = "#F1F5F9";
+
+    const bySlot = new Map();
+    for (const m of weekMatches) {
+      const key = `${isoDate(m.mskDate)}|${m.mskTime}`;
+      if (!bySlot.has(key)) bySlot.set(key, []);
+      bySlot.get(key).push(m);
+    }
+    for (const day of days) {
+      const col = 1 + days.indexOf(day);
+      for (const time of times) {
+        const slotMatches = bySlot.get(`${isoDate(day)}|${time}`) || [];
+        if (!slotMatches.length) continue;
+        const r = bodyStart - 1 + times.indexOf(time);
+        const cell = grid.getCell(r, col);
+        cell.values = [[slotMatches.map((m) => `${m.match}\n${m.stage} · #${m.match_no}`).join("\n\n")]];
+        cell.format.fill.color = slotMatches.some((m) => m.group.length > 1) ? colors.paleGold : colors.paleGreen;
+        cell.format.font.bold = true;
+        cell.format.font.size = slotMatches.length > 1 ? 9 : 10;
+        cell.format.wrapText = true;
+        cell.format.verticalAlignment = "top";
+        if (slotMatches.length > 1) grid.getRangeByIndexes(r, 0, 1, 8).format.rowHeightPx = 92;
+      }
+    }
+
+    row = bodyEnd + 3;
+    weekStart = addDays(weekStart, 7);
+  }
+
+  setWidths(grid, [78, 182, 182, 182, 182, 182, 182, 182]);
+  grid.freezePanes.freezeRows(3);
+}
+
+buildCalendarGrid();
+
+title(cal, "A1:K1", "Список матчей ЧМ-2026: время по Москве", "Отмечай матчи в колонке A: выбранные автоматически появятся на листе «Мой выбор».");
 cal.getRange("A3:K3").values = [["Всего матчей", matches.length, "Групповой этап", 72, "Плей-офф", 32, "Первый матч", matches[0].mskDate, "Финал", matches.at(-1).mskDate, "MSK UTC+3"]];
 cal.getRange("A3:K3").format.fill.color = colors.paleBlue;
 cal.getRange("A3:K3").format.font.bold = true;
@@ -295,10 +409,10 @@ cal.freezePanes.freezeRows(5);
 cal.tables.add(`A5:K${5 + calRows.length}`, true, "CalendarMSK");
 setWidths(cal, [92, 82, 92, 82, 260, 120, 52, 190, 120, 150, 190]);
 
-title(pick, "A1:K1", "Мой список матчей", "Сюда подтягиваются строки, где на листе «Календарь МСК» в колонке A стоит «Да».");
+title(pick, "A1:K1", "Мой список матчей", "Сюда подтягиваются строки, где на листе «Список МСК» в колонке A стоит «Да».");
 pick.getRange("A4:K4").values = [calHeaders];
 styleHeader(pick.getRange("A4:K4"));
-pick.getRange("A5").formulas = [[`=FILTER('Календарь МСК'!A6:K109,'Календарь МСК'!A6:A109="Да","Пока ничего не отмечено")`]];
+pick.getRange("A5").formulas = [[`=FILTER('Список МСК'!A6:K109,'Список МСК'!A6:A109="Да","Пока ничего не отмечено")`]];
 pick.freezePanes.freezeRows(4);
 setWidths(pick, [92, 82, 92, 82, 260, 120, 52, 190, 120, 150, 190]);
 
@@ -381,10 +495,10 @@ await fs.mkdir(outputDir, { recursive: true });
 
 const check = await wb.inspect({
   kind: "table",
-  range: "Календарь МСК!A1:K14",
+  range: "Календарь!A1:H18",
   include: "values,formulas",
-  tableMaxRows: 14,
-  tableMaxCols: 11,
+  tableMaxRows: 18,
+  tableMaxCols: 8,
 });
 console.log(check.ndjson);
 
@@ -396,7 +510,8 @@ const errors = await wb.inspect({
 });
 console.log(errors.ndjson);
 
-await wb.render({ sheetName: "Календарь МСК", range: "A1:K24", scale: 1.3 });
+await wb.render({ sheetName: "Календарь", range: "A1:H28", scale: 1.3 });
+await wb.render({ sheetName: "Список МСК", range: "A1:K24", scale: 1.3 });
 await wb.render({ sheetName: "Мой выбор", range: "A1:K14", scale: 1.3 });
 await wb.render({ sheetName: "Группы", range: "A1:F23", scale: 1.3 });
 await wb.render({ sheetName: "Стадионы", range: "A1:E22", scale: 1.3 });
