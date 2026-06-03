@@ -186,3 +186,11 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 - Windows Graphics Preference для `C:/Install/Mafia III/Mafia3.exe`: `GpuPreference=2` (high performance / RTX).
 - Compatibility flags для `Mafia3.exe`: `HIGHDPIAWARE DISABLEDXMAXIMIZEDWINDOWEDMODE`.
 - Бэкапы текущей правки Mafia III: `%LOCALAPPDATA%/2K Games/Mafia III/Saves/videoconfig.cfg.codex-backup-20260602-115509` и `%LOCALAPPDATA%/2K Games/Mafia III/Data/profiles/temporaryprofile/profile_videosettings.pf.codex-backup-20260602-115509`.
+
+## Домашний ПК — Sony WH-1000XM4 audio toggle (2026-06-03)
+
+- Создан переключатель Bluetooth-профиля Sony WH-1000XM4: `scripts/windows-audio/sony-wh1000xm4-mic-toggle.ps1`.
+- Ярлыки на рабочем столе: `C:\Users\no-na\Desktop\Sony - подключить как микрофон.lnk` и `C:\Users\no-na\Desktop\Sony - только наушники.lnk`.
+- Режим `Off` отключает `WH-1000XM4 Hands-Free`, оставляет системный вывод на `Наушники (WH-1000XM4)` и системный микрофон на `Микрофон (NVIDIA Broadcast)`.
+- Режим `On` включает `WH-1000XM4 Hands-Free` и назначает вход `Головной телефон (WH-1000XM4)` системным микрофоном; при использовании Bluetooth-микрофона качество звука может перейти в hands-free режим.
+- Переключатель сам запрашивает права администратора, потому что `pnputil /enable-device|/disable-device` для Bluetooth hands-free профиля требует UAC.
