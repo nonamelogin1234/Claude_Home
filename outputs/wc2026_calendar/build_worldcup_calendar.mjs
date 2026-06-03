@@ -180,6 +180,71 @@ function stageLabel(group) {
   })[group] || `Группа ${group}`;
 }
 
+const ruTeams = {
+  "Mexico": "Мексика",
+  "South Africa": "ЮАР",
+  "South Korea": "Южная Корея",
+  "Czechia": "Чехия",
+  "Canada": "Канада",
+  "Bosnia & Herzegovina": "Босния и Герцеговина",
+  "USA": "США",
+  "Paraguay": "Парагвай",
+  "Qatar": "Катар",
+  "Switzerland": "Швейцария",
+  "Brazil": "Бразилия",
+  "Morocco": "Марокко",
+  "Haiti": "Гаити",
+  "Scotland": "Шотландия",
+  "Australia": "Австралия",
+  "Türkiye": "Турция",
+  "Germany": "Германия",
+  "Curaçao": "Кюрасао",
+  "Netherlands": "Нидерланды",
+  "Japan": "Япония",
+  "Ivory Coast": "Кот-д’Ивуар",
+  "Ecuador": "Эквадор",
+  "Sweden": "Швеция",
+  "Tunisia": "Тунис",
+  "Spain": "Испания",
+  "Cape Verde": "Кабо-Верде",
+  "Belgium": "Бельгия",
+  "Egypt": "Египет",
+  "Saudi Arabia": "Саудовская Аравия",
+  "Uruguay": "Уругвай",
+  "Iran": "Иран",
+  "New Zealand": "Новая Зеландия",
+  "France": "Франция",
+  "Senegal": "Сенегал",
+  "Iraq": "Ирак",
+  "Norway": "Норвегия",
+  "Argentina": "Аргентина",
+  "Algeria": "Алжир",
+  "Austria": "Австрия",
+  "Jordan": "Иордания",
+  "Portugal": "Португалия",
+  "DR Congo": "ДР Конго",
+  "England": "Англия",
+  "Croatia": "Хорватия",
+  "Ghana": "Гана",
+  "Panama": "Панама",
+  "Uzbekistan": "Узбекистан",
+  "Colombia": "Колумбия",
+};
+
+function ruSide(name) {
+  if (ruTeams[name]) return ruTeams[name];
+  return name
+    .replace(/^Runner-up ([A-L])$/, "2-е место группы $1")
+    .replace(/^Winner ([A-L])$/, "Победитель группы $1")
+    .replace(/^Best 3rd \((.+)\)$/, "Лучшая 3-я команда ($1)")
+    .replace(/^W(\d+)$/, "Победитель матча $1")
+    .replace(/^L(\d+)$/, "Проигравший матча $1");
+}
+
+function ruMatch(m) {
+  return `${ruSide(m.team_a)} - ${ruSide(m.team_b)}`;
+}
+
 function stageSort(group) {
   const order = ["A","B","C","D","E","F","G","H","I","J","K","L","RO32","RO16","QF","SF","3RD","FIN"];
   return order.indexOf(group);
@@ -365,7 +430,7 @@ function buildCalendarGrid() {
         if (!slotMatches.length) continue;
         const r = bodyStart - 1 + times.indexOf(time);
         const cell = grid.getCell(r, col);
-        cell.values = [[slotMatches.map((m) => `${m.match}\n${m.stage} · #${m.match_no}`).join("\n\n")]];
+        cell.values = [[slotMatches.map((m) => ruMatch(m)).join("\n\n")]];
         cell.format.fill.color = slotMatches.some((m) => m.group.length > 1) ? colors.paleGold : colors.paleGreen;
         cell.format.font.bold = true;
         cell.format.font.size = slotMatches.length > 1 ? 9 : 10;
