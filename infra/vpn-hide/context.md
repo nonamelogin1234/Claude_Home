@@ -99,6 +99,7 @@ vless://6406c688-4887-4bbd-aa77-5a79062f58bc@147.45.238.120:2083?encryption=none
 
 ## ЧТО СДЕЛАНО
 - [2026-03-31] Настроены Hysteria2+Salamander (UDP 443) + VLESS+Reality (TCP 2083) → sing-box 1.13.4 запущен, все существующие сервисы не тронуты
+- [2026-06-08] На домашнем Windows-ПК добавлен `rutracker.org` в `C:\zapret-flowseal\current\lists\list-general-user.txt`, переустановлена текущая стратегия zapret `general (ALT11).bat`; `https://rutracker.org/forum/index.php` отвечает `200 OK`
 
 ## СЛЕДУЮЩИЙ ШАГ
 Протестировать подключение с телефона через мобильный интернет:
@@ -110,3 +111,4 @@ vless://6406c688-4887-4bbd-aa77-5a79062f58bc@147.45.238.120:2083?encryption=none
 - Конфиг sing-box: `/etc/sing-box/config.json`
 - Бэкап старого конфига: `/etc/sing-box/config.json.bak`
 - Сертификат Hysteria2: `/etc/letsencrypt/live/mcp.myserver-ai.ru/`
+- Локальный пользовательский список zapret на домашнем Windows-ПК: `C:\zapret-flowseal\current\lists\list-general-user.txt`
