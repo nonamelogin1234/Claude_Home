@@ -207,6 +207,8 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 - Скрипты лежат в `scripts/vaultwarden-cleanup/`:
   - `unlock-bw-session.ps1` открывать в отдельном PowerShell; пользователь вводит master password сам, скрипт сохраняет временный `BW_SESSION` в `%USERPROFILE%\.codex-secrets\bw-session.dpapi` через Windows DPAPI.
   - `cleanup-vaultwarden.ps1` делает аудит и безопасные правки: переименовывает импортированные `--` по домену URI, переносит точные дубли в `00-review-duplicates`, записи с логином/паролем без сайта в `00-review-no-site`, пустышки в `00-review-trash`.
+  - `archive-review-items.ps1` делает soft-delete записей из review-папок, чтобы они исчезли из обычного списка, но оставались восстановимыми через Trash. Permanent delete включать только явным `-Permanent`.
 - Перед массовыми правками сделан серверный бэкап Vaultwarden: `/opt/backups/vaultwarden/vaultwarden-20260609-104210-before-cleanup.tar.gz`.
 - Отчёты лежат в `outputs/vaultwarden-cleanup/` и добавлены в `.gitignore`; не коммитить, потому что там есть имена записей/домены/маскированные логины.
 - После уборки 2026-06-09: 359 записей, финальный аудит `audit-20260609-115049` показал `actionCount=0`. Временный `bw-session.dpapi` удалён, `bw lock` выполнен.
+- После требования убрать мусор из общего списка 2026-06-09: soft-deleted 24 review-записи (`00-review-trash`: 1, `00-review-duplicates`: 12, `00-review-no-site`: 11). Контрольный аудит `audit-20260609-120446`: 335 обычных записей, `actionCount=0`, review-папки пустые.
