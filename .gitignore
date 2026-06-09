@@ -11,3 +11,4 @@ __pycache__/
 # Временные файлы
 *.tmp
 *.log
+outputs/vaultwarden-cleanup/

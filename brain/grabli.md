@@ -170,3 +170,9 @@
 - 2026-06-06: qBittorrent может реально качать, даже если UI кажется "зависшим": проверять `docker stats` и свежие файлы в `/srv/jellyfin`. В кейсе счётчик `NET I/O` быстро рос, а свежие файлы появлялись в `/srv/jellyfin`, при этом qBittorrent ел около 4 GiB RAM и >100% CPU.
 - 2026-06-06: если на домашнем ПК "странный интернет", проверять активную загрузку qBittorrent на homeserver до копания в zapret. В кейсе `docker stats qbittorrent` вырос примерно с `69.7GB` до `70.2GB` входящего NET I/O за 10 секунд, то есть qBittorrent забирал значительную часть канала; на домашнем ПК при этом Wi-Fi был слабоват (`RSSI -74 dBm`, линк 195/234 Mbps).
 - 2026-06-06: на домашнем ПК `hosts` снова содержал GeoHide-записи для OpenAI/ChatGPT (`chatgpt.com`, `api.openai.com`, `cdn.oaistatic.com` -> `45.155.204.190`/`37.230.192.51`), и `https://chatgpt.com/` отдавал `403`. Если ChatGPT/Codex/OpenAI ведут себя странно, первым делом проверять `C:\Windows\System32\drivers\etc\hosts`, а не только zapret.
+
+## Vaultwarden / Bitwarden CLI
+
+- 2026-06-09: для массового `bw edit item` нельзя полагаться только на объект из `bw list items`: после частичных правок CLI может отвечать `The client copy of this cipher is out of date`. Надёжный порядок: `bw sync` перед пачкой и `bw get item <id>` прямо перед каждым `bw edit item`.
+- `bw edit item` очень медленный на больших пачках (примерно несколько записей в минуту), поэтому длинные уборки запускать пакетами или в фоне с progress-файлом. Не считать таймаут команды откатом: часть записей уже могла быть изменена, после таймаута всегда делать новый аудит.
+- Для временного доступа Codex к Vaultwarden не передавать master password в чат. Безопасный вариант на домашнем Windows: пользователь вводит пароль в отдельном PowerShell, `BW_SESSION` сохраняется в `%USERPROFILE%\.codex-secrets\bw-session.dpapi` через DPAPI; после задачи удалить файл и выполнить `bw lock`.

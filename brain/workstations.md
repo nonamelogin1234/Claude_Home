@@ -200,3 +200,13 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 - Рабочий стол разобран: временное, бэкапы, debug-папки, разовые фиксы, игровые/торрентные ярлыки и старые конфиги перенесены в `C:\Users\no-na\Desktop\Редко используемое`.
 - На рабочем столе оставлены: `2027`, Telegram, Discord, Docker Desktop, Photoshop 2026, Sony-переключатели, `Включить обход`, `Выключить обход`, `Добавить сайт в обход`, `Монитор доступа`.
 - В меню «Пуск» создана папка ярлыков `Важное` (`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Важное`) с копиями важных ярлыков. Автоматическое закрепление на начальном экране Windows 11 через shell verb блокирует для большинства ярлыков (`E_ACCESSDENIED`); Discord уже был закреплён.
+
+## Домашний ПК — Vaultwarden cleanup (2026-06-09)
+
+- Для массовой уборки Vaultwarden используется Bitwarden CLI `bw` (`Bitwarden.CLI` из WinGet), сервер `https://vault.myserver-ai.ru`.
+- Скрипты лежат в `scripts/vaultwarden-cleanup/`:
+  - `unlock-bw-session.ps1` открывать в отдельном PowerShell; пользователь вводит master password сам, скрипт сохраняет временный `BW_SESSION` в `%USERPROFILE%\.codex-secrets\bw-session.dpapi` через Windows DPAPI.
+  - `cleanup-vaultwarden.ps1` делает аудит и безопасные правки: переименовывает импортированные `--` по домену URI, переносит точные дубли в `00-review-duplicates`, записи с логином/паролем без сайта в `00-review-no-site`, пустышки в `00-review-trash`.
+- Перед массовыми правками сделан серверный бэкап Vaultwarden: `/opt/backups/vaultwarden/vaultwarden-20260609-104210-before-cleanup.tar.gz`.
+- Отчёты лежат в `outputs/vaultwarden-cleanup/` и добавлены в `.gitignore`; не коммитить, потому что там есть имена записей/домены/маскированные логины.
+- После уборки 2026-06-09: 359 записей, финальный аудит `audit-20260609-115049` показал `actionCount=0`. Временный `bw-session.dpapi` удалён, `bw lock` выполнен.
