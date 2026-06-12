@@ -12,6 +12,9 @@
 - Telegram MCP: `my.telegram.org/apps` может отдавать безликий `ERROR` при создании app, даже если форма заполнена корректно. Рабочий обход на домашнем ПК: публичные credentials Telegram Desktop + импорт локальной Telegram Desktop `tdata` в `mcp-telegram`.
 - Telegram MCP / GramJS на Windows: `StoreSession` ломается на абсолютных путях и на forward slash (`.telegram-agent/sessions/...`) — появляются нерабочие файлы с `%2F`. Запускать из `%USERPROFILE%`, задавать `TELEGRAM_AGENT_HOME=.telegram-agent`, рабочая session name должна идти через backslash: `.telegram-agent\sessions\<account_id>`.
 - Telegram MCP stdio: `.cmd`-обёртка может зависать в smoke-тестах MCP SDK. Надёжнее прямой `node.exe scripts/telegram-mcp/mcp-telegram-wrapper.mjs`; wrapper сам делает `chdir(%USERPROFILE%)` и импортирует установленный `mcp-telegram`.
+- Telegram массовые подписки через GramJS: после нескольких десятков `channels.JoinChannel` Telegram начинает отдавать `FLOOD`/`FLOOD_WAIT`. Не давить цикл подряд; подписывать партиями с паузами и `--baseline-new`, чтобы новые каналы не залили старую историю в дайджест.
+- Runtime JSON, записанный PowerShell 5 через `Set-Content -Encoding UTF8`, может получить BOM и ломать `JSON.parse`. В Node-скриптах, которые читают такие файлы, срезать начальный `\uFEFF`.
+- 2026-06-13 Telegram Feed отменён пользователем: если снова вернёмся к идее, начинать заново и сначала согласовать список источников. Прошлая попытка: 50 каналов были подключены и затем все 50 отписаны; automation удалена.
 
 ## GitHub
 
