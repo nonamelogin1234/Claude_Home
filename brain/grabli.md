@@ -9,6 +9,9 @@
 - `srv.ps1` ломает сложные команды с кавычками и кириллицей → большие файлы через GitHub → curl
 - heredoc через PowerShell не записывается в файл → использовать `python3 -c "open(...).write(...)"`
 - **Кириллица в выводе srv.ps1 — кракозябры, это НОРМАЛЬНО. Не пытаться чинить.**
+- Telegram MCP: `my.telegram.org/apps` может отдавать безликий `ERROR` при создании app, даже если форма заполнена корректно. Рабочий обход на домашнем ПК: публичные credentials Telegram Desktop + импорт локальной Telegram Desktop `tdata` в `mcp-telegram`.
+- Telegram MCP / GramJS на Windows: `StoreSession` ломается на абсолютных путях и на forward slash (`.telegram-agent/sessions/...`) — появляются нерабочие файлы с `%2F`. Запускать из `%USERPROFILE%`, задавать `TELEGRAM_AGENT_HOME=.telegram-agent`, рабочая session name должна идти через backslash: `.telegram-agent\sessions\<account_id>`.
+- Telegram MCP stdio: `.cmd`-обёртка может зависать в smoke-тестах MCP SDK. Надёжнее прямой `node.exe scripts/telegram-mcp/mcp-telegram-wrapper.mjs`; wrapper сам делает `chdir(%USERPROFILE%)` и импортирует установленный `mcp-telegram`.
 
 ## GitHub
 

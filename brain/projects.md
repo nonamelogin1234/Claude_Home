@@ -27,7 +27,7 @@
 | 🦞 OpenClaw personal secretary | 🟡 В процессе | Слой 1 базово развернут: память assistant_*, поиск по контексту, личность Когтя-робота и команда «Переходим в новый чат». Следующий шаг: улучшить UX классификации “запомни” и убрать тестовые записи при необходимости | infra/openclaw/ |
 | 🏃 Health Sync | 🟢 Работает | Проверить cron для ScaleConnect | infra/health-sync/ |
 | 🖥️ VM Discord-VPN | ✅ Завершено (май 2026) | — | — |
-| 🖥️ MCP серверы (домашний ПК) | 🟡 В процессе | `pip install uv` → `uvx windows-mcp` → перезапустить Claude Code | — |
+| 🖥️ MCP серверы (домашний ПК) | 🟡 В процессе | Telegram MCP работает и проверен; осталось отдельно поставить/проверить `windows-mcp` (`pip install uv` → `uvx windows-mcp`) | — |
 | ⚙️ 3proxy ulimit | 🟡 В процессе | systemd override: `LimitNOFILE=65536` в `/etc/systemd/system/3proxy.service.d/override.conf` | — |
 | 📲 Telegram Desktop без VPN | 🟡 Частично работает | Свой MTProxy `147.45.238.120:9443` подключается с `dd`, но медиа качает нестабильно; тему пока закрыли | — |
 | 🧦 Proxifier + Discord | 🚫 Закрыто | Заменено VM Discord-VPN. Proxifier Standard не поддерживает UDP, голос не работал | — |
