@@ -225,3 +225,14 @@ python3 secretary_memory.py search-memory --json '{"query":"OpenClaw","limit":5}
 - После уборки 2026-06-09: 359 записей, финальный аудит `audit-20260609-115049` показал `actionCount=0`. Временный `bw-session.dpapi` удалён, `bw lock` выполнен.
 - После требования убрать мусор из общего списка 2026-06-09: soft-deleted 24 review-записи (`00-review-trash`: 1, `00-review-duplicates`: 12, `00-review-no-site`: 11). Контрольный аудит `audit-20260609-120446`: 335 обычных записей, `actionCount=0`, review-папки пустые.
 - Аудит паролей 2026-06-09: `password-rotation-audit-20260609-121142` нашёл 299 кандидатов на замену из 335 активных записей; временный доступ после аудита закрыт (`bw lock`, `bw-session.dpapi` удалён).
+
+## Домашний ПК — GTA V Enhanced mods (2026-06-14)
+
+- GTA V Enhanced установлена в `C:\Download\Grand.Theft.Auto.V.Enhanced-InsaneRamZes\`, основной exe `PlayGTAV.exe`, игра фактически `GTA5_Enhanced.exe` версии `1.0.1013.34`.
+- Моддинг-папка Codex: `C:\Download\Grand.Theft.Auto.V.Enhanced-InsaneRamZes\_codex_modding\`.
+- Поставлена рабочая single-player modding-база: ScriptHookV `3788.0/1013.34`, официальный Enhanced ASI loader `xinput1_4.dll`, `dinput8.dll`, `args.txt` с `-nobattleye -noBE`, NativeTrainer, Menyoo 2.0, Add-On Vehicle Spawner, ScriptHookVDotNet Enhanced, All MP Vehicles in SP, RageOpenV, HeapAdjuster Enhanced, Packfile Limit Adjuster Enhanced, Modkit Limit Adjuster Enhanced.
+- Для уверенной работы модов BattlEye exe отключен обратимо: `GTA5_Enhanced_BE.exe` переименован в `GTA5_Enhanced_BE.exe.codex-disabled`; вернуть можно обратным переименованием.
+- Windows `Zone.Identifier` снят со всей папки игры, чтобы DLL/ASI не блокировались.
+- Графический профиль без RT применен в `%USERPROFILE%\Documents\Rockstar Games\GTAV Enhanced\settings.xml`: RT/RTAO выключены, refresh `200`, VSync `0`, motion blur `0`. Профили лежат в `_codex_modding\settings-profile-stable-no-rt.xml` и `_codex_modding\settings-profile-rt-lite-experiment.xml`.
+- Пользователь подтвердил, что моды работают. Проверочные клавиши: `F4` NativeTrainer, `F8` Menyoo, `F5` Add-On Vehicle Spawner, чит `addonspawner`.
+- Следующая задача для нового чата: предложить список модов для дальнейшей установки согласно запросам пользователя. Приоритеты пользователя: родной/качественный контент в story mode из GTA Online и DLC, нормальные машины с корректными повреждениями/handling, оружие, прически, одежда, звуки и мелкие immersive-детали; графика и визуал только после контента, желательно без тяжелого RT из-за RTX 3060 Laptop 6 GB VRAM.
