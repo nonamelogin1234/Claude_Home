@@ -12,3 +12,6 @@ __pycache__/
 *.tmp
 *.log
 outputs/vaultwarden-cleanup/
+
+# Brain search index (пересобирается локально)
+brain/.knowledge.db
