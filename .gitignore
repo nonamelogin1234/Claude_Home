@@ -16,7 +16,8 @@ outputs/vaultwarden-cleanup/
 # Brain search index (пересобирается локально)
 brain/.knowledge.db
 
-# Telegram MCP — секреты сессии/логина
+# Telegram MCP — локальная установка пакета (не коммитить node_modules) и секреты сессии/логина
+scripts/telegram-mcp/node_modules/
 scripts/telegram-mcp/.login-state.json
 scripts/telegram-mcp/qr-login-url.txt
 scripts/telegram-mcp/qr-login-dataurl.txt
