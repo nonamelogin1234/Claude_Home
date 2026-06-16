@@ -28,6 +28,8 @@
 | 🏃 Health Sync | 🟢 Работает | Проверить cron для ScaleConnect | infra/health-sync/ |
 | 🖥️ VM Discord-VPN | ✅ Завершено (май 2026) | — | — |
 | 🖥️ MCP серверы (домашний ПК) | 🟡 В процессе | Telegram MCP работает и проверен; осталось отдельно поставить/проверить `windows-mcp` (`pip install uv` → `uvx windows-mcp`) | — |
+| 🖥️ MCP серверы (рабочий ПК, Claude Desktop) | 🟡 В процессе | После переустановки восстановлены через `C:\Users\gor-r\AppData\Roaming\Claude\claude_desktop_config.json`: desktop-commander, fetch, puppeteer, memory, sequential-thinking, n8n-mcp, shell, github, postgres, telegram, revit-mcp. Осталось: проверить что `revit-mcp` (пакет `mcp-servers-for-revit`) реально стартует; postgres блокируется DPI на 22 порту (нужен VPN); telegram не залогинен (нужна сессия). См. `brain/workstations.md` | — |
+| 🔑 ClaudeAdminExec (рабочий ПК) | 🟢 Готово | Scheduled task для выполнения команд от админа без UAC: `C:\Users\torganov-a\admin-exec\` (cmd_in.ps1 → schtasks /run /tn ClaudeAdminExec → cmd_out.txt). См. `brain/grabli.md` | — |
 | ⚙️ 3proxy ulimit | 🟡 В процессе | systemd override: `LimitNOFILE=65536` в `/etc/systemd/system/3proxy.service.d/override.conf` | — |
 | 📲 Telegram Desktop без VPN | 🟡 Частично работает | Свой MTProxy `147.45.238.120:9443` подключается с `dd`, но медиа качает нестабильно; тему пока закрыли | — |
 | 🧦 Proxifier + Discord | 🚫 Закрыто | Заменено VM Discord-VPN. Proxifier Standard не поддерживает UDP, голос не работал | — |
