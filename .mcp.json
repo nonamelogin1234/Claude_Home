@@ -35,9 +35,11 @@
       }
     },
     "telegram": {
-      "command": "${CLAUDE_PROJECT_DIR}/scripts/telegram-mcp/mcp-telegram.cmd",
+      "command": "npx",
+      "args": ["-y", "@overpod/mcp-telegram"],
       "env": {
-        "MCP_TELEGRAM_READONLY": "1"
+        "TELEGRAM_API_ID": "2040",
+        "TELEGRAM_API_HASH": "b18441a1ff607e10a989891a5462e627"
       }
     }
   }

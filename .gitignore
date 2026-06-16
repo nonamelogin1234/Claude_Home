@@ -15,3 +15,10 @@ outputs/vaultwarden-cleanup/
 
 # Brain search index (пересобирается локально)
 brain/.knowledge.db
+
+# Telegram MCP — секреты сессии/логина
+scripts/telegram-mcp/.login-state.json
+scripts/telegram-mcp/qr-login-url.txt
+scripts/telegram-mcp/qr-login-dataurl.txt
+scripts/telegram-mcp/*.session
+scripts/telegram-mcp/telethon-session.txt
