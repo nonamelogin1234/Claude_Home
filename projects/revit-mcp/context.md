@@ -7,7 +7,7 @@
 
 ## Архитектура
 
-Использует `mcp-servers-for-revit` (npm пакет) как MCP сервер + плагин в Revit.
+Использует `mcp-server-for-revit` (npm пакет, `cmd /c npx -y mcp-server-for-revit`) как MCP сервер + плагин в Revit. Пакет `mcp-servers-for-revit` (с "s") — неправильный, на npm не существует.
 Пользовательский CommandSet подключается через `command.json`.
 
 Паттерн каждой команды:
