@@ -210,10 +210,12 @@ $shaderDir = Join-Path $shaderRoot "Shaders"
 $textureDir = Join-Path $shaderRoot "Textures"
 New-Item -ItemType Directory -Force -Path $shaderDir, $textureDir | Out-Null
 $shaderUrls = @{
-    "CAS.fx" = "https://raw.githubusercontent.com/crosire/reshade-shaders/slim/Shaders/CAS.fx"
-    "Curves.fx" = "https://raw.githubusercontent.com/crosire/reshade-shaders/slim/Shaders/Curves.fx"
-    "Vibrance.fx" = "https://raw.githubusercontent.com/crosire/reshade-shaders/slim/Shaders/Vibrance.fx"
-    "Tonemap.fx" = "https://raw.githubusercontent.com/crosire/reshade-shaders/slim/Shaders/Tonemap.fx"
+    "CAS.fx" = "https://raw.githubusercontent.com/CeeJayDK/SweetFX/master/Shaders/SweetFX/CAS.fx"
+    "Curves.fx" = "https://raw.githubusercontent.com/CeeJayDK/SweetFX/master/Shaders/SweetFX/Curves.fx"
+    "Vibrance.fx" = "https://raw.githubusercontent.com/CeeJayDK/SweetFX/master/Shaders/SweetFX/Vibrance.fx"
+    "Tonemap.fx" = "https://raw.githubusercontent.com/CeeJayDK/SweetFX/master/Shaders/SweetFX/Tonemap.fx"
+    "ReShade.fxh" = "https://raw.githubusercontent.com/crosire/reshade-shaders/slim/Shaders/ReShade.fxh"
+    "ReShadeUI.fxh" = "https://raw.githubusercontent.com/crosire/reshade-shaders/slim/Shaders/ReShadeUI.fxh"
 }
 foreach ($pair in $shaderUrls.GetEnumerator()) {
     $target = Join-Path $shaderDir $pair.Key
