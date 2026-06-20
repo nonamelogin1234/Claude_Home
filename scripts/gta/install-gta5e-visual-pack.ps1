@@ -234,9 +234,9 @@ ShowFPS=0
 TutorialProgress=4
 
 [INPUT]
-KeyEffects=118,0,0,0
-KeyMenu=36,0,1,0
-KeyReload=119,0,0,0
+KeyEffects=121,0,0,0
+KeyMenu=36,0,0,0
+KeyReload=0,0,0,0
 "@
 $reshadeIni | Set-Content -LiteralPath (Join-Path $GameDir "ReShade.ini") -Encoding ASCII
 $reshadeIni | Set-Content -LiteralPath (Join-Path $GameDir "dxgi.ini") -Encoding ASCII
