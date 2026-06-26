@@ -23,3 +23,9 @@ scripts/telegram-mcp/qr-login-url.txt
 scripts/telegram-mcp/qr-login-dataurl.txt
 scripts/telegram-mcp/*.session
 scripts/telegram-mcp/telethon-session.txt
+*.etl
+*.pcap
+wfpdiag.*
+wfpstate.xml
+filters.xml
+PktMon.*
