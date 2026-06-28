@@ -41,3 +41,4 @@
 - /tmp/claude_home не существует при первом деплое → сначала git clone, потом git pull
 - Canvas-анимация (requestAnimationFrame) зависает preview-рендерер Claude Code → нельзя скриншотить живую анимацию через preview_screenshot
 - `bash_tool` при вызове `powershell` — команда не найдена (запускается в WSL) → использовать `mcp__Desktop_Commander__start_process` с `shell: powershell.exe`
+- Контейнер монтирует `/tmp/claude_home/rpg/frontend` (bind mount ro). Если /tmp/claude_home удалён и пересоздан → папку `rpg/frontend` нужно воссоздать вручную: `mkdir -p /tmp/claude_home/rpg && cp -r /tmp/claude_home/projects/rpg-tracker/frontend /tmp/claude_home/rpg/`, затем `docker restart rpg-tracker`
