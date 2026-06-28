@@ -42,6 +42,12 @@
         "TELEGRAM_API_ID": "2040",
         "TELEGRAM_API_HASH": "b18441a1ff607e10a989891a5462e627"
       }
+    },
+    "powershell": {
+      "command": "C:\\Users\\no-na\\ps-modules\\PowerShell.MCP\\1.10.0\\bin\\win-x64\\PowerShell.MCP.Proxy.exe"
+    },
+    "spotify": {
+      "command": "C:\\Users\\no-na\\AppData\\Roaming\\npm\\spotify-mcp-server.cmd"
     }
   }
 }
