@@ -49,6 +49,54 @@
 - PowerShell MCP: найти путь к `PowerShell.MCP.Proxy.exe` на рабочем ПК, добавить в `.mcp.json`.
 - RPG MCP: `uv tool install --from git+https://github.com/narrowstacks/text-adventure-handler-mcp text-adventure-handler-mcp`, добавить в Desktop конфиг.
 
+### 5. Telegram MCP — установлен ранее (прошлый чат, ~2026-06-12)
+
+**Проблема:** `my.telegram.org/apps` отказывал создавать app (безликий ERROR).  
+**Решение:** использованы публичные credentials Telegram Desktop (`api_id=2040`, `api_hash=b18441a1ff607e10a989891a5462e627`) + импорт реальной сессии из `tdata` Telegram Desktop.
+
+**Как делали пошагово:**
+1. Установлен пакет `@overpod/mcp-telegram` в `scripts/telegram-mcp/` (локально, не глобально).
+2. Создана обёртка `scripts/telegram-mcp/mcp-telegram-wrapper.mjs` — делает `chdir(USERPROFILE)` перед запуском, чтобы GramJS нашёл `.telegram-agent` по относительному пути.
+3. Сессия импортирована из `Telegram Desktop\tdata` через opentele/telethon конвертацию → сохранена в `C:\Users\no-na\.telegram-agent\sessions\<account_id>`.
+4. В `.mcp.json` прописан прямой путь к `node.exe` + wrapper:
+   ```json
+   "telegram": {
+     "command": "C:\\Progra~1\\nodejs\\node.exe",
+     "args": ["${CLAUDE_PROJECT_DIR}/scripts/telegram-mcp/mcp-telegram-wrapper.mjs"],
+     "env": {
+       "TELEGRAM_AGENT_HOME": "C:\\Users\\no-na\\.telegram-agent",
+       "TELEGRAM_API_ID": "2040",
+       "TELEGRAM_API_HASH": "b18441a1ff607e10a989891a5462e627"
+     }
+   }
+   ```
+5. Проверено: 43 инструмента, `list_dialogs` читает реальные чаты, аккаунт `240962808 / JesusMaan`.
+
+**Грабли:**
+- `StoreSession` в GramJS ломается на абсолютных путях и forward slash → запускать из `%USERPROFILE%`, session через backslash.
+- `.cmd`-обёртка зависала в smoke-тестах → заменена на прямой `node.exe`.
+- `tdata` конвертация требует `pip install opentele telethon pyaes rsa pyasn1` (без `tgcrypto` — нужен MSVC); вместо него — шим через `pycryptodome`.
+
+**На рабочем ПК:** Telegram MCP там НЕ настроен. Если нужно — повторить процесс: импортировать tdata с домашнего ПК или авторизоваться заново. Аккаунт тот же: `240962808`.
+
+---
+
+### 6. Скилл `update-config` — создан для добавления MCP серверов
+
+**Зачем:** чтобы не мучиться каждый раз с `.mcp.json` / `claude_desktop_config.json` вручную — один скилл всё знает о путях, форматах, перезапуске.
+
+**Что умеет `/update-config`:**
+- Добавить MCP сервер в `.mcp.json` (Claude Code) или `claude_desktop_config.json` (Claude Desktop)
+- Знает где какой файл на каком компьютере (домашний vs рабочий — пути разные!)
+- Помнит грабли: MSIX виртуализация на домашнем ПК, нужно писать в `AppData\Local\Packages\Claude_...\LocalCache\Roaming\Claude\`
+- Добавляет env-переменные, аргументы, permissions
+
+**Как вызвать:** просто скажи `/update-config` и объясни что нужно добавить.
+
+**Создан после** того как настройка Telegram MCP заняла несколько часов из-за незнания правильных путей конфигов.
+
+---
+
 ## Грабли зафиксированы
 - `brain/grabli.md` — обновлён (bind mount rpg-tracker).
 - `projects/rpg-tracker/context.md` — обновлён (deploy-инструкции).
