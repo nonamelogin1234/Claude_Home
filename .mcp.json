@@ -34,5 +34,14 @@
         "N8N_API_KEY": "${N8N_API_KEY}"
       }
     },
+    "telegram": {
+      "command": "C:\\Progra~1\\nodejs\\node.exe",
+      "args": ["${CLAUDE_PROJECT_DIR}/scripts/telegram-mcp/mcp-telegram-wrapper.mjs"],
+      "env": {
+        "TELEGRAM_AGENT_HOME": "C:\\Users\\no-na\\.telegram-agent",
+        "TELEGRAM_API_ID": "2040",
+        "TELEGRAM_API_HASH": "b18441a1ff607e10a989891a5462e627"
+      }
+    }
   }
 }
