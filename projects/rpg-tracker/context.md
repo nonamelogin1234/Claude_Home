@@ -30,8 +30,10 @@
 - Backend: FastAPI, порт 8768 (внутри Docker)
 - Docker: network_mode host, postgres по IP 172.18.0.4
 - Nginx: /etc/nginx/sites-enabled/rpg-tracker, listen 8769 ssl, cert mcp.myserver-ai.ru
-- Деплой: /opt/rpg-tracker/, клон в /tmp/claude_home
-- Перезапуск: `cd /tmp/claude_home && git pull origin main && cp -r rpg/frontend /opt/rpg-tracker/ && docker restart rpg-tracker`
+- Деплой: `/opt/rpg-tracker/` — контейнер запускается ОТТУДА, bind mount = `/opt/rpg-tracker/frontend:/app/frontend`
+- Обновить фронтенд: `cp -r /tmp/claude_home/projects/rpg-tracker/frontend /opt/rpg-tracker/ && docker restart rpg-tracker`
+- Полный передеплой: `cd /opt/rpg-tracker && docker rm -f rpg-tracker && docker compose up -d`
+- Синхронизировать /opt/rpg-tracker с репо: `cp -r /tmp/claude_home/projects/rpg-tracker/{frontend,backend,docker-compose.yml} /opt/rpg-tracker/`
 - Уровни: Начало (0-10) / На ходу (10-25) / В ритме (25-50) / Форма (50-100) / Образ жизни (100+)
 - Рубежи: 110 / 105 / 99 / 90 / 85 кг
 
