@@ -1,5 +1,11 @@
 # ГРАБЛИ — ЗАПОМНИТЬ НАВСЕГДА
 
+## MCP серверы — проверка перед «готово»
+
+- **НИКОГДА не говорить «перезапускай» для MCP сервера без реального теста.** Тест: `New-Object System.Diagnostics.Process` с `RedirectStandardInput/Output/Error = $true`, отправить `initialize` JSON-RPC запрос, убедиться что получен валидный ответ с `protocolVersion`. Только после этого — перезапуск. Процесс стартовал ≠ MCP работает.
+- **Telegram MCP на Windows (MSIX Claude Desktop):** `@overpod/mcp-telegram` использует Unix-сокет (`daemon.sock`) для IPC — на Windows падает с `EACCES`. Фикс: патч строки `srv.listen(sock, resolve)` в `node_modules/@overpod/mcp-telegram/dist/master.js` — добавить `srv.once("error", function(e){ console.error(...); resolve(); })`. Запускать через `run.bat` (не JS-враппер с `stdio: inherit`), потому что через `.bat`-файл Claude Desktop создаёт правильные stdio-пайпы как у npx.
+- **MSIX Claude Desktop (домашний ПК):** `%APPDATA%` виртуализирован в `C:\Users\no-na\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\`. MCP-серверы добавлять ТОЛЬКО в `claude_desktop_config.json` по этому пути — `.mcp.json` из репо и `~/.claude/settings.json` для Claude Desktop НЕ читаются.
+
 ## PowerShell / Windows
 
 - `shell:run_command` возвращает null — это нормально, команда выполнилась
