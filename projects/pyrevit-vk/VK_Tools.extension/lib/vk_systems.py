@@ -4,7 +4,7 @@
 переключателями на панели Видимость.
 """
 
-from pyrevit import revit, DB, script
+from pyrevit import revit, DB
 
 MEP_CATEGORIES = [
     DB.BuiltInCategory.OST_PipeCurves,
@@ -77,22 +77,32 @@ def is_hidden_in_view(view, elem_ids):
     return False
 
 
+def get_current_state(type_name):
+    """True/False — скрыта ли система в активном виде прямо сейчас, без
+    переключения. None — система с таким именем типа не найдена (например,
+    doc ещё не открыт при старте pyRevit)."""
+    doc = revit.doc
+    if doc is None:
+        return None
+    type_ids = get_system_type_ids(doc, type_name)
+    elem_ids = get_element_ids_for_type_ids(doc, type_ids)
+    if not elem_ids:
+        return None
+    return is_hidden_in_view(revit.active_view, elem_ids)
+
+
 def toggle_system(type_name, abbr):
     """Скрывает систему во всех видах, если она сейчас видна, и наоборот.
     Возвращает True, если после операции система скрыта, False если показана,
     None если система с таким именем типа не найдена в проекте."""
     doc = revit.doc
-    logger = script.get_logger()
 
     type_ids = get_system_type_ids(doc, type_name)
     elem_ids = get_element_ids_for_type_ids(doc, type_ids)
 
     if not elem_ids:
-        logger.warning(
-            "Система '%s' (тип '%s') не найдена в проекте — "
-            "проверьте, что в проекте есть система с таким именем типа.",
-            abbr, type_name,
-        )
+        # система с таким именем типа не найдена в проекте — молча ничего
+        # не делаем, никаких окон/сообщений (по требованию: только галочка)
         return None
 
     active_view = revit.active_view
